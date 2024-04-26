@@ -1,0 +1,40 @@
+{
+  "name": "near-social-js",
+  "version": "1.0.0",
+  "description": "A javascript SDK for interacting with the social contract (social.near) with helper functions for typical social features.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NEARBuilders/near-social-js"
+  },
+  "author": {
+    "name": "Kieran O'Neill",
+    "email": "hello@kieranoneill.com",
+    "url": "https://github.com/kieranroneill"
+  },
+  "license": "MIT",
+  "keywords": [
+    "blockchain",
+    "near",
+    "nearprotocol"
+  ],
+  "private": false,
+  "engines": {
+    "node": ">=18.20.2"
+  },
+  "scripts": {
+    "build": "exit 0",
+    "lint": "eslint . --ext .ts --ext .js",
+    "prepare": "husky",
+    "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
+    "test": "exit 0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5"
+  }
+}
