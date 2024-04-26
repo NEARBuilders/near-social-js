@@ -28,7 +28,7 @@
     "docs:build": "docusaurus build --out-dir .docs",
     "docs:serve": "docusaurus serve --dir .docs --no-open",
     "docs:start": "docusaurus start --no-open --port 8080",
-    "lint": "eslint . --ext .ts --ext .js",
+    "lint": "eslint",
     "prepare": "husky",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
     "test": "exit 0"
@@ -41,10 +41,15 @@
     "@docusaurus/preset-classic": "^3.2.1",
     "@docusaurus/remark-plugin-npm2yarn": "^3.2.1",
     "@docusaurus/tsconfig": "^3.2.1",
+    "@eslint/js": "^9.1.1",
     "@mdx-js/react": "^3.0.1",
     "@types/node": "^20.12.7",
+    "@typescript-eslint/parser": "^7.7.1",
     "clsx": "^2.1.1",
     "docusaurus-plugin-sass": "^0.2.5",
+    "eslint": "^9.1.1",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.0.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
@@ -54,6 +59,7 @@
     "sass": "^1.75.0",
     "ts-patch": "^3.1.2",
     "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.1",
     "typescript-transform-paths": "^3.4.7"
   }
 }
