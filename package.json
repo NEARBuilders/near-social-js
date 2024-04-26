@@ -1,7 +1,7 @@
 {
   "name": "near-social-js",
   "version": "1.0.0",
-  "description": "A javascript SDK for interacting with the social contract (social.near) with helper functions for typical social features.",
+  "description": "A JavaScript SDK for interacting with the social contract (social.near) with helper functions for typical social features.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
@@ -24,7 +24,7 @@
     "node": ">=18.20.2"
   },
   "scripts": {
-    "build": "exit 0",
+    "build": "rm -rf dist && tspc --build tsconfig.build.json --force",
     "lint": "eslint . --ext .ts --ext .js",
     "prepare": "husky",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
@@ -35,6 +35,9 @@
     "@commitlint/config-conventional": "^19.2.2",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "ts-patch": "^3.1.2",
+    "typescript": "^5.4.5",
+    "typescript-transform-paths": "^3.4.7"
   }
 }
