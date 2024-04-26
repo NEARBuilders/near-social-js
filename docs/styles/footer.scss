@@ -1,0 +1,57 @@
+@import "./functions";
+
+$social-image-size: 24px;
+
+.footer {
+  &__copyright-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__icon-container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  &__icon-link {
+    display: inline-block;
+    padding: 0 1rem 0 0;
+
+    &:hover {
+      svg {
+        path {
+          fill: primary-color("dark");
+        }
+      }
+    }
+
+    svg {
+      height: $social-image-size;
+      width: $social-image-size;
+
+      path {
+        fill: text-color("dark");
+        transition: fill var(--ifm-transition-fast) ease-in-out;
+      }
+    }
+  }
+
+  &__text {
+    color: text-color("dark");
+    margin: 0;
+
+    &--link {
+      color: primary-color("dark");
+
+      &:hover {
+        color: primary-color("dark");
+      }
+    }
+  }
+}

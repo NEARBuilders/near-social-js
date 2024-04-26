@@ -1,0 +1,43 @@
+:root {
+  // custom
+  --custom-primary-color-dark-50: #96abba;
+  --custom-primary-color-dark-100: #829bad;
+  --custom-primary-color-dark-200: #6e8b9f;
+  --custom-primary-color-dark-300: #5a7b92;
+  --custom-primary-color-dark-400: #476c85;
+  --custom-primary-color-dark-500: #335d78;
+  --custom-primary-color-dark-600: #2b5067;
+  --custom-primary-color-dark-700: #234357;
+  --custom-primary-color-dark-800: #1c3748;
+  --custom-primary-color-dark-900: #142a39;
+  --custom-primary-color-light-50: #b5ddf7;
+  --custom-primary-color-light-100: #a6d6f5;
+  --custom-primary-color-light-200: #97cef3;
+  --custom-primary-color-light-300: #87c7f1;
+  --custom-primary-color-light-400: #76c0ef;
+  --custom-primary-color-light-500: #65b9ed;
+  --custom-primary-color-light-600: #57a0ce;
+  --custom-primary-color-light-700: #4989b0;
+  --custom-primary-color-light-800: #3c7193;
+  --custom-primary-color-light-900: #2f5b77;
+
+  // overrides - light theme
+  --ifm-color-primary: var(--custom-primary-color-light-500);
+  --ifm-color-primary-dark: var(--custom-primary-color-light-600);
+  --ifm-color-primary-darker: var(--custom-primary-color-light-700);
+  --ifm-color-primary-darkest: var(--custom-primary-color-light-800);
+  --ifm-color-primary-light: var(--custom-primary-color-light-400);
+  --ifm-color-primary-lighter: var(--custom-primary-color-light-300);
+  --ifm-color-primary-lightest: var(--custom-primary-color-light-200);
+}
+
+[data-theme='dark'] {
+  // overrides - dark theme
+  --ifm-color-primary: var(--custom-primary-color-dark-500);
+  --ifm-color-primary-dark: var(--custom-primary-color-dark-600);
+  --ifm-color-primary-darker: var(--custom-primary-color-dark-700);
+  --ifm-color-primary-darkest: var(--custom-primary-color-dark-800);
+  --ifm-color-primary-light: var(--custom-primary-color-dark-400);
+  --ifm-color-primary-lighter: var(--custom-primary-color-dark-300);
+  --ifm-color-primary-lightest: var(--custom-primary-color-dark-200);
+}
