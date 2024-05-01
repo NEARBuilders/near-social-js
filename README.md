@@ -1,5 +1,5 @@
 <h1 align="center">
-  Near Social SDK
+  NEAR Social SDK
 </h1>
 
 <p align="center">
