@@ -1,0 +1,112 @@
+import TOCInline from '@theme/TOCInline';
+
+# Social
+
+<TOCInline
+  maxHeadingLevel={4}
+  toc={toc}
+/>
+
+## Methods
+
+### `comment(item)`
+
+> Comment on an item.
+
+#### Parameters
+
+| Name | Type     | Required | Default | Description |
+|------|----------|----------|---------|-------------|
+| item | [`Item`] | yes      | -       | An item.    |
+
+### `follow(accountID | accountIDs)`
+
+> Follow an account or array of accounts.
+
+#### Parameters
+
+| Name                    | Type                     | Required | Default | Description                               |
+|-------------------------|--------------------------|----------|---------|-------------------------------------------|
+| accountID \| accountIDs | (`string` \| `string[]`) | yes      | -       | An account ID or an array of account IDs. |
+
+### `get()`
+
+> Gets data from `social.near`.
+
+### `getComments(item)`
+
+> Get all comments on an item.
+
+#### Parameters
+
+| Name | Type     | Required | Default | Description |
+|------|----------|----------|---------|-------------|
+| item | [`Item`] | yes      | -       | An item.    |
+
+### `getFollowers(accountID)`
+
+> Get followers for a given account.
+
+#### Parameters
+
+| Name      | Type     | Required | Default | Description    |
+|-----------|----------|----------|---------|----------------|
+| accountID | `string` | yes      | -       | An account ID. |
+
+### `getNotifications(accountID)`
+
+> Get notifications for a given account.
+
+#### Parameters
+
+| Name      | Type     | Required | Default | Description    |
+|-----------|----------|----------|---------|----------------|
+| accountID | `string` | yes      | -       | An account ID. |
+
+### `getPosts()`
+
+> Get all posts.
+
+### `like(item)`
+
+> Like an item.
+
+#### Parameters
+
+| Name | Type     | Required | Default | Description |
+|------|----------|----------|---------|-------------|
+| item | [`Item`] | yes      | -       | An item.    |
+
+### `notify(accountID | accountIDs)`
+
+> Notify an account(s).
+
+#### Parameters
+
+| Name                    | Type                     | Required | Default | Description                               |
+|-------------------------|--------------------------|----------|---------|-------------------------------------------|
+| accountID \| accountIDs | (`string` \| `string[]`) | yes      | -       | An account ID or an array of account IDs. |
+
+### `post(data)`
+
+> Post data.
+
+#### Parameters
+
+| Name | Type     | Required | Default | Description |
+|------|----------|----------|---------|-------------|
+| data | [`Data`] | yes      | -       | Data.       |
+
+### `set()`
+
+> Set data on `social.near`.
+
+### `star(item)`
+
+> Star an item.
+
+#### Parameters
+
+| Name | Type     | Required | Default | Description |
+|------|----------|----------|---------|-------------|
+| item | [`Item`] | yes      | -       | An item.    |

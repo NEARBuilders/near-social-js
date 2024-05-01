@@ -13,7 +13,7 @@ const stylesDir = path.resolve(docsDir, 'styles');
 // links
 const buildDAOLink = 'https://nearbuilders.org';
 const githubLink = 'https://github.com/NEARBuilders/near-social-js';
-const npmLink = 'https://npmjs.com/package/@nearbuilders/near-social-js';
+const npmLink = 'https://npmjs.com/package/@builddao/near-social-js';
 const url = 'https://nearbuilders.github.io';
 
 // header
@@ -93,6 +93,12 @@ const config = {
             position: 'left',
             label: 'Overview',
           },
+          {
+            type: 'doc',
+            docId: 'api-reference/index',
+            position: 'left',
+            label: 'API',
+          },
           // right
           {
             href: githubLink,
@@ -121,6 +127,10 @@ const config = {
               {
                 label: 'Overview',
                 to: '/',
+              },
+              {
+                label: 'API Reference',
+                to: 'api-reference/index',
               },
             ],
           },
