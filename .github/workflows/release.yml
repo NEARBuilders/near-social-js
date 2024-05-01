@@ -1,0 +1,58 @@
+name: "Release"
+
+on:
+  push:
+    branches:
+      - beta
+      - main
+
+jobs:
+  ##
+  # install
+  ##
+
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+
+  ##
+  # release
+  ##
+
+  release:
+    name: "Release"
+    needs: install
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📦 Install yq"
+        uses: ./.github/actions/install-yq
+      - name: "📝 Create .npmrc"
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_READ_AND_WRITE_PACKAGES_TOKEN }}" >> .npmrc
+          echo "@builddao:registry=https://registry.npmjs.org" >> .npmrc
+          echo "access=public" >> .npmrc
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+      - name: "🏗️ Build"
+        run: yarn build
+      - name: "🔖 Release"
+        env:
+          # appears on the release commits
+          GIT_AUTHOR_NAME: nearbuilder
+          GIT_AUTHOR_EMAIL: tech@nearbuilders.org
+          GIT_COMMITTER_NAME: nearbuilder
+          GIT_COMMITTER_EMAIL: tech@nearbuilders.org
+          # used to push the release commit and create the tags
+          GITHUB_TOKEN: ${{ secrets.GH_READ_AND_WRITE_REPOS_TOKEN }}
+        run: yarn semantic-release

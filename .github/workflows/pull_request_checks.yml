@@ -1,0 +1,70 @@
+name: "Pull Request Checks"
+
+on:
+  pull_request:
+
+jobs:
+  ##
+  # install
+  ##
+
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+
+  ##
+  # lint, build documentation, build package and test
+  ##
+
+  lint:
+    name: "Lint"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+      - name: "👕 Lint"
+        run: yarn lint
+
+  build_documenation:
+    name: "Build Documentation"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+      - name: "🏗️ Build"
+        run: yarn docs:build
+
+  build_pakage:
+    name: "Build Package"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+      - name: "🏗️ Build"
+        run: yarn build
+
+  test:
+    name: "Test"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🧶 Setup Yarn Dependencies"
+        uses: ./.github/actions/use-yarn-dependencies
+      - name: "🧪 Test"
+        run: yarn test
