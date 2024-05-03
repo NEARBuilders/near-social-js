@@ -1,3 +1,2 @@
-import { HELLO_HUMIE } from '@app/constants';
-
-console.log(HELLO_HUMIE);
+export * from './controllers';
+export * from './types';

@@ -20,7 +20,9 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "paths": {
-      "@app/constants": ["src/constants"]
+      "@app/controllers": ["src/controllers"],
+      "@app/types": ["src/types"],
+      "@test/helpers/*": ["test/helpers/*"]
     },
     "removeComments": false,
     "resolveJsonModule": true,

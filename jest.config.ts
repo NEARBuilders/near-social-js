@@ -5,6 +5,7 @@ import { pathsToModuleNameMapper } from 'ts-jest';
 import { compilerOptions } from './tsconfig.json';
 
 const config: Config = {
+  globalSetup: '<rootDir>/test/globalSetup.ts',
   moduleNameMapper: {
     ...pathsToModuleNameMapper(compilerOptions.paths, {
       prefix: '<rootDir>/',
