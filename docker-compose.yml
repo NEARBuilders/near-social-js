@@ -1,0 +1,22 @@
+version: '3.5'
+
+services:
+  near_node:
+    build:
+      context: .
+    container_name: builddao_near_node
+    healthcheck:
+      interval: 5s
+      retries: 3
+      start_period: 5s
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3030/status"]
+    image: builddao/near-node
+    ports:
+      - "3030:3030"
+      - "24567:24567"
+    volumes:
+      # node configuration
+      - ./.near/config.json:/usr/app/.near/config.json:cached
+      - ./.near/genesis.json:/usr/app/.near/genesis.json:cached
+      - ./.near/node_key.json:/usr/app/.near/node_key.json:cached
+      - ./.near/validator_key.json:/usr/app/.near/validator_key.json:cached
