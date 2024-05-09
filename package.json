@@ -29,6 +29,8 @@
     "docs:serve": "docusaurus serve --dir .docs --no-open",
     "docs:start": "docusaurus start --no-open --port 8080",
     "lint": "eslint",
+    "node:start": "./scripts/start_node.sh",
+    "node:stop": "./scripts/stop_node.sh",
     "prepare": "husky",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
     "test": "./scripts/test.sh"

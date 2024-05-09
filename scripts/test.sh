@@ -24,7 +24,7 @@ function main {
 
   # start the services
   docker compose \
-    -p builddao_airdroptool_test \
+    -p builddao_near_social_sdk \
     -f docker-compose.yml \
     up \
     --build \
@@ -65,7 +65,7 @@ function main {
 
   # stop the services and remove
   docker compose \
-    -p builddao_airdroptool_test \
+    -p builddao_near_social_sdk \
     -f docker-compose.yml \
     down
 

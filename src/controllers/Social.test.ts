@@ -25,6 +25,21 @@ describe(Social.name, () => {
     signer = await near.account(GENESIS_ACCOUNT_ID);
   });
 
+  describe('get', () => {
+    it('should return the version of the social contract', async () => {
+      // arrange
+      const client = new Social({
+        contractId: SOCIAL_CONTRACT_ACCOUNT_ID,
+        signer,
+      });
+      // act
+      const version = await client.getVersion();
+
+      // assert
+      expect(version).toMatchSnapshot();
+    });
+  });
+
   describe('getVersion', () => {
     it('should return the version of the social contract', async () => {
       // arrange
