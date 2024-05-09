@@ -3,6 +3,9 @@ import { resolve } from 'node:path';
 import { cwd } from 'node:process';
 import { readFile } from 'node:fs/promises';
 
+// constants
+import { GENESIS_ACCOUNT_ID, SOCIAL_CONTRACT_ACCOUNT_ID } from './constants';
+
 // helpers
 import convertNEARToYoctoNEAR from './helpers/convertNEARToYoctoNEAR';
 import createNearConnection from './helpers/createNearConnection';
@@ -10,11 +13,9 @@ import createTestAccount from './helpers/createTestAccount';
 
 export default async function globalSetup() {
   const _functionName = 'globalSetup';
-  const creatorAccountID = 'test.near';
   const contract = await readFile(
     resolve(cwd(), 'test', 'contracts', 'social_db.wasm')
   );
-  const contractAccountID = 'social.test.near';
   const near = await createNearConnection({
     credentialsDir: resolve(cwd(), 'test', 'credentials'),
   });
@@ -22,9 +23,9 @@ export default async function globalSetup() {
   let contractAccount: Account;
   let creatorAccount: Account;
 
-  creatorAccount = await near.account(creatorAccountID);
+  creatorAccount = await near.account(GENESIS_ACCOUNT_ID);
   contractAccountPublicKey = await near.connection.signer.getPublicKey(
-    contractAccountID,
+    SOCIAL_CONTRACT_ACCOUNT_ID,
     'localnet'
   );
 
@@ -32,7 +33,7 @@ export default async function globalSetup() {
   contractAccount = await createTestAccount({
     creatorAccount,
     initialBalanceInAtomicUnits: convertNEARToYoctoNEAR(BigInt('10')),
-    newAccountID: contractAccountID,
+    newAccountID: SOCIAL_CONTRACT_ACCOUNT_ID,
     newAccountPublicKey: contractAccountPublicKey,
     nearConnection: near,
   });

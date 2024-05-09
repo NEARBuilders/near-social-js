@@ -21,7 +21,9 @@
     "noImplicitThis": true,
     "paths": {
       "@app/controllers": ["src/controllers"],
+      "@app/enums": ["src/enums"],
       "@app/types": ["src/types"],
+      "@test/constants": ["test/constants"],
       "@test/helpers/*": ["test/helpers/*"]
     },
     "removeComments": false,

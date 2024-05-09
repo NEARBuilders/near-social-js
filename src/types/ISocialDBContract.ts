@@ -1,7 +1,10 @@
 import type { Contract } from 'near-api-js';
 
+// enums
+import { ViewMethodEnum } from '@app/enums';
+
 interface ISocialDBContract extends Contract {
-  get_version: () => Promise<string>;
+  [ViewMethodEnum.GetVersion]: () => Promise<string>;
 }
 
 export default ISocialDBContract;
