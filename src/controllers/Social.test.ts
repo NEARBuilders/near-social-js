@@ -4,6 +4,7 @@ import { cwd } from 'node:process';
 
 // constants
 import {
+  CAPTAIN_KIRK_ACCOUNT_ID,
   GENESIS_ACCOUNT_ID,
   SOCIAL_CONTRACT_ACCOUNT_ID,
 } from '@test/constants';
@@ -25,18 +26,18 @@ describe(Social.name, () => {
     signer = await near.account(GENESIS_ACCOUNT_ID);
   });
 
-  describe('get', () => {
-    it('should return the version of the social contract', async () => {
+  describe.only('get', () => {
+    it('should return an empty object when the contract does not know the account', async () => {
       // arrange
       const client = new Social({
         contractId: SOCIAL_CONTRACT_ACCOUNT_ID,
         signer,
       });
       // act
-      const version = await client.getVersion();
+      const result = await client.get(['unknown.test.near/profile/name']);
 
       // assert
-      expect(version).toMatchSnapshot();
+      expect(result).toEqual({});
     });
   });
 
