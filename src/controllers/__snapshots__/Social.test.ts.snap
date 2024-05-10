@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Social getVersion should return the version of the social contract 1`] = `"0.12.0"`;
