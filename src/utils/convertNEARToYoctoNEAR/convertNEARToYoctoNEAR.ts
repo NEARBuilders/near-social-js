@@ -7,6 +7,10 @@ import { utils } from 'near-api-js';
  * @returns {string} the yoctoNEAR amount.
  */
 export default function convertNEARToYoctoNEAR(standardAmount: string): string {
+  BigNumber.config({
+    ROUNDING_MODE: 0,
+  });
+
   return new BigNumber(standardAmount)
     .multipliedBy(new BigNumber('10').pow(utils.format.NEAR_NOMINATION_EXP))
     .toFixed();

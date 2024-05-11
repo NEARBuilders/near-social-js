@@ -7,6 +7,10 @@ import { utils } from 'near-api-js';
  * @returns {string} the NEAR amount.
  */
 export default function convertYoctoNEARToNEAR(atomicAmount: string): string {
+  BigNumber.config({
+    ROUNDING_MODE: 0,
+  });
+
   return new BigNumber(atomicAmount)
     .dividedBy(new BigNumber(10).pow(utils.format.NEAR_NOMINATION_EXP))
     .toFixed();
