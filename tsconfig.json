@@ -26,6 +26,7 @@
       "@app/types": ["src/types"],
       "@app/utils/*": ["src/utils/*"],
       "@test/constants": ["test/constants"],
+      "@test/credentials/*": ["test/credentials/*"],
       "@test/helpers/*": ["test/helpers/*"]
     },
     "removeComments": false,

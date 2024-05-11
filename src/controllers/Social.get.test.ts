@@ -1,34 +1,27 @@
-import type { Account, Near } from 'near-api-js';
-import { resolve } from 'node:path';
-import { cwd } from 'node:process';
+import type { Account } from 'near-api-js';
 
-// constants
-import {
-  GENESIS_ACCOUNT_ID,
-  SOCIAL_CONTRACT_ACCOUNT_ID,
-} from '@test/constants';
+// credentials
+import { account_id as socialContractAccountId } from '@test/credentials/localnet/test.near.json';
 
 // controllers
 import Social from './Social';
 
 // helpers
-import createNearConnection from '@test/helpers/createNearConnection';
+import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 describe(`${Social.name}#get`, () => {
-  let connection: Near;
   let signer: Account;
 
-  beforeAll(async () => {
-    connection = await createNearConnection({
-      credentialsDir: resolve(cwd(), 'test', 'credentials'),
-    });
-    signer = await connection.account(GENESIS_ACCOUNT_ID);
+  beforeEach(async () => {
+    const result = await createEphemeralAccount();
+
+    signer = result.account;
   });
 
   it('should return an empty object when the contract does not know the account', async () => {
     // arrange
     const client = new Social({
-      contractId: SOCIAL_CONTRACT_ACCOUNT_ID,
+      contractId: socialContractAccountId,
     });
     // act
     const result = await client.get({

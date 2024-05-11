@@ -1,1 +1,1 @@
-export * from './Accounts';
+export * from './Config';

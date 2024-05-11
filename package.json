@@ -51,11 +51,9 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.0.3",
     "@semantic-release/release-notes-generator": "^13.0.0",
-    "@types/bn.js": "^5.1.5",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.8",
     "@typescript-eslint/parser": "^7.7.1",
-    "bn.js": "^5.2.1",
     "clsx": "^2.1.1",
     "docusaurus-plugin-sass": "^0.2.5",
     "eslint": "^9.1.1",
@@ -78,6 +76,7 @@
     "typescript-transform-paths": "^3.4.7"
   },
   "dependencies": {
+    "bignumber.js": "^9.1.2",
     "near-api-js": "^4.0.1"
   }
 }

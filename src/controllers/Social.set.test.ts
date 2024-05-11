@@ -1,14 +1,8 @@
-import { Account, Near, transactions, utils } from 'near-api-js';
+import { Account, providers, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
-import { resolve } from 'node:path';
-import { cwd } from 'node:process';
 
-// constants
-import {
-  CAPTAIN_KIRK_ACCOUNT_ID,
-  GENESIS_ACCOUNT_ID,
-  SOCIAL_CONTRACT_ACCOUNT_ID,
-} from '@test/constants';
+// credentials
+import { account_id as socialContractAccountId } from '@test/credentials/localnet/test.near.json';
 
 // controllers
 import Social from './Social';
@@ -17,74 +11,70 @@ import Social from './Social';
 import accountAccessKey, {
   IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
-import createNearConnection from '@test/helpers/createNearConnection';
-import convertNEARToYoctoNEAR from '@test/helpers/convertNEARToYoctoNEAR';
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
+import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 describe(`${Social.name}#set`, () => {
+  let keyPair: utils.KeyPairEd25519;
   let signer: Account;
-  let signerAccessKey: IAccessKeyResponse;
-  let signerPublicKey: utils.PublicKey;
-  let connection: Near;
+  let signerAccessKeyResponse: IAccessKeyResponse;
 
-  beforeAll(async () => {
-    let faucetAccount: Account;
+  beforeEach(async () => {
+    const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
 
-    connection = await createNearConnection({
-      credentialsDir: resolve(cwd(), 'test', 'credentials'),
-    });
-    faucetAccount = await connection.account(GENESIS_ACCOUNT_ID);
-    signer = await connection.account(CAPTAIN_KIRK_ACCOUNT_ID);
-    signerPublicKey = await signer.connection.signer.getPublicKey(
-      signer.accountId,
-      signer.connection.networkId
-    );
-
-    // fund the signer account
-    await faucetAccount.sendMoney(
-      signer.accountId,
-      convertNEARToYoctoNEAR(BigInt('10'))
-    );
+    keyPair = result.keyPair;
+    signer = result.account;
   });
 
-  it('should set the name for an account', async () => {
+  it('should set storage and add the data', async () => {
     // arrange
     const client = new Social({
-      contractId: SOCIAL_CONTRACT_ACCOUNT_ID,
+      contractId: socialContractAccountId,
     });
-    const name = randomBytes(32).toString('hex');
+    const data = {
+      [signer.accountId]: {
+        profile: {
+          name: randomBytes(16).toString('hex'),
+        },
+      },
+    };
     let result: Record<string, unknown>;
     let transaction: transactions.Transaction;
 
-    signerAccessKey = await accountAccessKey(signer, signerPublicKey);
+    signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // act
     transaction = await client.set({
-      blockHash: signerAccessKey.block_hash,
-      data: {
-        [CAPTAIN_KIRK_ACCOUNT_ID]: {
-          profile: {
-            name,
-          },
-        },
-      },
-      nonce: BigInt(signerAccessKey.nonce + 1),
-      publicKey: signerPublicKey,
+      blockHash: signerAccessKeyResponse.block_hash,
+      data,
+      nonce: BigInt(signerAccessKeyResponse.nonce + 1),
+      publicKey: keyPair.publicKey,
       signer,
     });
+
+    // the transaction's actions should have `storage_deposit` and the `set` function calls
+    expect(transaction.actions).toHaveLength(2);
+
     const [_, signedTransaction] = await transactions.signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
       signer.connection.networkId
     );
-    await signer.connection.provider.sendTransaction(signedTransaction);
+    const { status } =
+      await signer.connection.provider.sendTransaction(signedTransaction);
+    const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+
+    if (failure) {
+      throw new Error(`${failure.error_type}: ${failure.error_message}`);
+    }
 
     // assert
     result = await client.get({
-      keys: [`${CAPTAIN_KIRK_ACCOUNT_ID}/profile/name`],
+      keys: [`${signer.accountId}/profile/name`],
       signer,
     });
 
-    expect(result).toEqual({});
+    expect(result).toEqual(data);
   });
 });
