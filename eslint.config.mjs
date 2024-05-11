@@ -30,6 +30,15 @@ export default eslintTypescript.config(
     rules: {
       '@typescript-eslint/no-inferrable-types': 'off',
       '@typescript-eslint/no-namespace': ['error', { allowDeclarations: true }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ],
+      'no-unused-vars': 'off',
       'prefer-const': 'off',
     },
   },

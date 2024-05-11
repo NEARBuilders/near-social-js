@@ -52,6 +52,7 @@ describe(`${Social.name}#set`, () => {
       signer,
     });
 
+    // assert
     // the transaction's actions should have `storage_deposit` and the `set` function calls
     expect(transaction.actions).toHaveLength(2);
 
@@ -69,7 +70,6 @@ describe(`${Social.name}#set`, () => {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    // assert
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
       signer,
