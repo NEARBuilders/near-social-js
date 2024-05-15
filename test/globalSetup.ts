@@ -65,7 +65,11 @@ export default async function globalSetup() {
       },
     });
   } catch (error) {
-    // if the contract has already been initialized, this will be thrown
-    console.debug(`${_functionName}:`, error);
+    // if the contract has already been initialized, just ignore
+    if (error.message.includes('The contract has already been initialized')) {
+      return;
+    }
+
+    console.error(`${_functionName}:`, JSON.stringify(error));
   }
 }

@@ -2,7 +2,7 @@ import { Account, providers, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
 // credentials
-import { account_id as socialContractAccountId } from '@test/credentials/localnet/test.near.json';
+import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
