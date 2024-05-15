@@ -30,8 +30,8 @@ import validateAccountId from '@app/utils/validateAccountId';
 export default class Social {
   private contractId: string;
 
-  constructor({ contractId }: INewSocialOptions) {
-    this.contractId = contractId || 'social.near';
+  constructor(options?: INewSocialOptions) {
+    this.contractId = options?.contractId || 'social.near';
   }
 
   /**

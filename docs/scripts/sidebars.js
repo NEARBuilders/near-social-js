@@ -5,7 +5,25 @@ const sidebars = {
   docs: [
     'overview',
     {
-      items: ['api-reference/social'],
+      items: ['usage/getting-started'],
+      label: 'Usage',
+      link: {
+        type: 'doc',
+        id: 'usage/index',
+      },
+      type: 'category',
+    },
+    {
+      items: ['advanced/reading-data'],
+      label: 'Advanced',
+      link: {
+        type: 'doc',
+        id: 'advanced/index',
+      },
+      type: 'category',
+    },
+    {
+      items: ['api-reference/social', 'api-reference/types'],
       label: 'API Reference',
       link: {
         type: 'doc',

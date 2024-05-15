@@ -129,6 +129,14 @@ const config = {
                 to: '/',
               },
               {
+                label: 'Usage',
+                to: 'usage/index',
+              },
+              {
+                label: 'Advanced',
+                to: 'advanced/index',
+              },
+              {
                 label: 'API Reference',
                 to: 'api-reference/index',
               },

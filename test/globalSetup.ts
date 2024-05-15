@@ -8,7 +8,7 @@ import { NETWORK_ID, NODE_URL } from './constants';
 
 // credentials
 import { account_id as genesisAccountId } from './credentials/localnet/test.near.json';
-import { account_id as socialContractAccountId } from './credentials/localnet/test.near.json';
+import { account_id as socialContractAccountId } from './credentials/localnet/social.test.near.json';
 
 // helpers
 import createTestAccount from './helpers/createTestAccount';
