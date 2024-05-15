@@ -1,1 +1,1 @@
-export * from './Strings';
+export * from './Fees';

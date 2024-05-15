@@ -1,0 +1,265 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import TOCInline from '@theme/TOCInline';
+
+# Reading Data
+
+<TOCInline
+  maxHeadingLevel={4}
+  toc={toc}
+/>
+
+## Overview
+
+Reading data is referenced by a set of key paths, where each path corresponds to the object to return.
+
+:::note
+
+The first path within the key **MUST** always be the account ID.
+
+:::
+
+For example, the key `alice.near/profile/name` will return the object:
+
+```json
+{
+  "alice.near": {
+    "profile": {
+      "name": "Alice"
+    }
+  }
+}
+```
+
+As you can see, the returned object and the corresponding `name` value relates the key's path.
+
+## Getting specific values
+
+Getting specific values, like the example from above, you can use a set of keys:
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social();
+    const result = await social.get({
+      keys: [
+        'alice.near/profile/name',
+        'alice.near/profile/image/url',
+        'bob.near/profile/name',
+      ],
+      signer, // an initialized near-api-js account
+    });
+
+    console.log(result);
+    /*
+    {
+      "alice.near": {
+        "profile": {
+          "name": "Alice"
+        }
+      },
+      "alice.near": {
+        "profile": {
+          "image": {
+            "url": "https://gkfjklgdfjkldfg"
+          }
+        }
+      },
+      "bob.near": {
+        "profile": {
+          "name": "Bob"
+        }
+      }
+    }
+    */
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.get({
+      keys: [
+        'alice.near/profile/name',
+        'alice.near/profile/image/url',
+        'bob.near/profile/name',
+      ],
+      signer, // an initialized near-api-js account
+    }).then((result) => {
+      console.log(result);
+      /*
+      {
+        "alice.near": {
+          "profile": {
+            "name": "Alice"
+          }
+        },
+        "alice.near": {
+          "profile": {
+            "image": {
+              "url": "https://gkfjklgdfjkldfg"
+            }
+          }
+        },
+        "bob.near": {
+          "profile": {
+            "name": "Bob"
+          }
+        }
+      }
+      */
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social();
+    const result = await social.get({
+      keys: [
+        'alice.near/profile/name',
+        'alice.near/profile/image/url',
+        'bob.near/profile/name',
+      ],
+      signer, // an initialized near-api-js account
+    });
+
+    console.log(result);
+    /*
+    {
+      "alice.near": {
+        "profile": {
+          "name": "Alice"
+        }
+      },
+      "alice.near": {
+        "profile": {
+          "image": {
+            "url": "https://gkfjklgdfjkldfg"
+          }
+        }
+      },
+      "bob.near": {
+        "profile": {
+          "name": "Bob"
+        }
+      }
+    }
+    */
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Using wildcards
+
+The [`get`](../api-reference/social#getoptions) function also supports wildcard values and can be used to get multiple values within an object.
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social();
+    const result = await social.get({
+      keys: [
+        'alice.near/profile/**',
+      ],
+      signer, // an initialized near-api-js account
+    });
+
+    console.log(result);
+    /*
+    {
+      "alice.near": {
+        "profile": {
+          "image": {
+            "url": "https://gkfjklgdfjkldfg"
+          },
+          "name": "Alice"
+        }
+      }
+    }
+    */
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.get({
+      keys: [
+        'alice.near/profile/**',
+      ],
+      signer, // an initialized near-api-js account
+    }).then((result) => {
+      console.log(result);
+      /*
+      {
+        "alice.near": {
+          "profile": {
+            "image": {
+              "url": "https://gkfjklgdfjkldfg"
+            },
+            "name": "Alice"
+          }
+        }
+      }
+      */
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social();
+    const result = await social.get({
+      keys: [
+        'alice.near/profile/**'
+      ],
+      signer, // an initialized near-api-js account
+    });
+
+    console.log(result);
+    /*
+    {
+      "alice.near": {
+        "profile": {
+          "image": {
+            "url": "https://gkfjklgdfjkldfg"
+          },
+          "name": "Alice"
+        }
+      }
+    }
+    */
+    ```
+
+  </TabItem>
+</Tabs>

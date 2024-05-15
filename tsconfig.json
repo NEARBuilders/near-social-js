@@ -20,7 +20,14 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "paths": {
-      "@app/constants": ["src/constants"]
+      "@app/constants": ["src/constants"],
+      "@app/controllers": ["src/controllers"],
+      "@app/enums": ["src/enums"],
+      "@app/types": ["src/types"],
+      "@app/utils/*": ["src/utils/*"],
+      "@test/constants": ["test/constants"],
+      "@test/credentials/*": ["test/credentials/*"],
+      "@test/helpers/*": ["test/helpers/*"]
     },
     "removeComments": false,
     "resolveJsonModule": true,

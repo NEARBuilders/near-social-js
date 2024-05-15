@@ -7,106 +7,78 @@ import TOCInline from '@theme/TOCInline';
   toc={toc}
 />
 
+## Constructors
+
+### `constructor(options)`
+
+> Initializes the SDK with the social contract.
+
+#### Parameters
+
+| Name    | Type                                           | Required | Default | Description                      |
+|---------|------------------------------------------------|----------|---------|----------------------------------|
+| options | [`INewSocialOptions`](types#inewsocialoptions) | no       | -       | Options that initialize the SDK. |
+
+#### Returns
+
+| Type               | Description          |
+|--------------------|----------------------|
+| [`Social`](social) | The initialized SDK. |
+
 ## Methods
 
-### `comment(item)`
+### `get(options)`
 
-> Comment on an item.
-
-#### Parameters
-
-| Name | Type     | Required | Default | Description |
-|------|----------|----------|---------|-------------|
-| item | [`Item`] | yes      | -       | An item.    |
-
-### `follow(accountID | accountIDs)`
-
-> Follow an account or array of accounts.
+> Reads the data for given set of keys.
+> The key path pattern corresponds to the path of data to return. A string can contain wildcards.
+> For example:
+> * `alice.near/profile/**` - will match the entire profile data of account `alice.near`.
+> * `alice.near/profile/*` - will match all the fields of the profile, but not the nested objects.
+> * `alice.near/profile/name` - will match only the name field of the profile.
+> * `*/widget/*` - will match all the widgets of all the accounts.
 
 #### Parameters
 
-| Name                    | Type                     | Required | Default | Description                               |
-|-------------------------|--------------------------|----------|---------|-------------------------------------------|
-| accountID \| accountIDs | (`string` \| `string[]`) | yes      | -       | An account ID or an array of account IDs. |
+| Name    | Type                               | Required | Default | Description                                                |
+|---------|------------------------------------|----------|---------|------------------------------------------------------------|
+| options | [`IGetOptions`](types#igetoptions) | yes      | -       | Options that include the signer account and a set of keys. |
 
-### `get()`
+#### Returns
 
-> Gets data from `social.near`.
+| Type              | Description                                                                                                                                                   |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Promise<object>` | A promise that resolves to an object with the top-level properties referencing the keys and the nested properties/objects referencing the corresponding path. |
 
-### `getComments(item)`
+### `getVersion()`
 
-> Get all comments on an item.
+> Gets the current version of the social contract.
 
-#### Parameters
+#### Returns
 
-| Name | Type     | Required | Default | Description |
-|------|----------|----------|---------|-------------|
-| item | [`Item`] | yes      | -       | An item.    |
+| Type              | Description                                                     |
+|-------------------|-----------------------------------------------------------------|
+| `Promise<string>` | a promise that resolves to the current version of the contract. |
 
-### `getFollowers(accountID)`
+### `set(options)`
 
-> Get followers for a given account.
+> Stores data to the social contract. The top level properties must be account IDs under which the nested properties/objects are stored.
+>
+> The signer's public key should have permission to write under the specified account keys.
 
-#### Parameters
+:::note
 
-| Name      | Type     | Required | Default | Description    |
-|-----------|----------|----------|---------|----------------|
-| accountID | `string` | yes      | -       | An account ID. |
+Accounts that match the signer's account ID automatically have write permission granted.
 
-### `getNotifications(accountID)`
-
-> Get notifications for a given account.
-
-#### Parameters
-
-| Name      | Type     | Required | Default | Description    |
-|-----------|----------|----------|---------|----------------|
-| accountID | `string` | yes      | -       | An account ID. |
-
-### `getPosts()`
-
-> Get all posts.
-
-### `like(item)`
-
-> Like an item.
+:::
 
 #### Parameters
 
-| Name | Type     | Required | Default | Description |
-|------|----------|----------|---------|-------------|
-| item | [`Item`] | yes      | -       | An item.    |
+| Name    | Type                               | Required | Default | Description                                                                 |
+|---------|------------------------------------|----------|---------|-----------------------------------------------------------------------------|
+| options | [`ISetOptions`](types#isetoptions) | yes      | -       | Options that include the data to set, the signer's account and key details. |
 
-### `notify(accountID | accountIDs)`
+#### Returns
 
-> Notify an account(s).
-
-#### Parameters
-
-| Name                    | Type                     | Required | Default | Description                               |
-|-------------------------|--------------------------|----------|---------|-------------------------------------------|
-| accountID \| accountIDs | (`string` \| `string[]`) | yes      | -       | An account ID or an array of account IDs. |
-
-### `post(data)`
-
-> Post data.
-
-#### Parameters
-
-| Name | Type     | Required | Default | Description |
-|------|----------|----------|---------|-------------|
-| data | [`Data`] | yes      | -       | Data.       |
-
-### `set()`
-
-> Set data on `social.near`.
-
-### `star(item)`
-
-> Star an item.
-
-#### Parameters
-
-| Name | Type     | Required | Default | Description |
-|------|----------|----------|---------|-------------|
-| item | [`Item`] | yes      | -       | An item.    |
+| Type                                                                                                          | Description                                                                                                       |
+|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned trasnaction that contiains the function call to update the specified data. |
