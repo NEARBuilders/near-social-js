@@ -1,0 +1,127 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import TOCInline from '@theme/TOCInline';
+
+# Storing Data
+
+<TOCInline
+  maxHeadingLevel={4}
+  toc={toc}
+/>
+
+## Overview
+
+When storing data, the top-level property must match an account ID. All the nested objects/properties will then be stored under this account.
+
+:::note
+
+The provider signer account **MUST** have write permissions granted for the account to which it wants to write. See [granting permissions](granting-permissions) on how to grant write permissions.
+
+:::
+
+:::note
+
+The signer account automatically has write permissions for their own account.
+
+:::
+
+## Storing data for an account
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const signer = await nearConnection.account('alice.near');
+    const accessKeys = await signer.getAccessKeys();
+    const social = new Social();
+    const transaction = await social.set({
+      blockHash: accessKeys[0].block_hash,
+      data: {
+        ['alice.near']: {
+          profile: {
+            name: 'Alice'
+          }
+        }
+      },
+      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
+      publicKey: accessKeys[0].public_key,
+      signer,
+    });
+
+    // ...sign the returned transaction and post to the network
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var accessKeys;
+    var signer;
+    var social;
+
+    nearConnection.account('alice.near')
+      .then((_signer) => {
+        signer = _signer;
+
+        return signer.getAccessKeys();
+      })
+      .then((_accessKeys) => {
+        accessKeys = _accessKeys;
+        social = new NEARSocialSDK();
+
+        return social.set({
+          blockHash: accessKeys[0].block_hash,
+          data: {
+            ['alice.near']: {
+              profile: {
+                name: 'Alice'
+              }
+            }
+          },
+          nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
+          publicKey: accessKeys[0].public_key,
+          signer,
+        });
+      })
+      .then((transaction) => {
+        // ...sign the returned transaction and post to the network
+      });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const signer = await nearConnection.account('alice.near');
+    const accessKeys = await signer.getAccessKeys();
+    const social = new Social();
+    const transaction = await social.set({
+      blockHash: accessKeys[0].block_hash,
+      data: {
+        ['alice.near']: {
+          profile: {
+            name: 'Alice'
+          }
+        }
+      },
+      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
+      publicKey: accessKeys[0].public_key,
+      signer,
+    });
+
+    // ...sign the returned transaction and post to the network
+    ```
+
+  </TabItem>
+</Tabs>
+

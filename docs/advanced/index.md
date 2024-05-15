@@ -1,3 +1,4 @@
 # Advanced
 
-* [Getting Started](advanced/reading-data)
+* [Reading Data](advanced/reading-data)
+* [Storing Data](advanced/storing-data)

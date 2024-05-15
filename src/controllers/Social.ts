@@ -167,7 +167,7 @@ export default class Social {
 
     return transactions.createTransaction(
       signer.accountId,
-      publicKey,
+      utils.PublicKey.fromString(publicKey.toString()),
       this.contractId,
       nonce,
       actions,

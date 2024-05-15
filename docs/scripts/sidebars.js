@@ -14,7 +14,7 @@ const sidebars = {
       type: 'category',
     },
     {
-      items: ['advanced/reading-data'],
+      items: ['advanced/reading-data', 'advanced/storing-data'],
       label: 'Advanced',
       link: {
         type: 'doc',
