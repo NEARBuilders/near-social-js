@@ -99,10 +99,8 @@ The above command will compile the Typescript source code into a `dist/` directo
 | `yarn docs:serve` | Serves the built documentation from the `.docusaurus/` directory.                   |
 | `yarn docs:start` | Builds and runs the documentation in a development environment with hot reloading.  |
 | `yarn lint`       | Runs the linter on `.js` and `.ts` files.                                           |
-| `yarn node:start` | Starts up a NEAR development node in a Docker container, running in the background. |
-| `yarn node:start` | Stops and removes the NEAR development node that was started in `yarn node:start`.  |
 | `yarn prettier`   | Runs the prettier on `.js` and `.ts` files.                                         |
-| `yarn test`       | Starts a NEAR development node in Docker and runs the tests.                        |
+| `yarn test`       | Runs the tests.                                                                     |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 

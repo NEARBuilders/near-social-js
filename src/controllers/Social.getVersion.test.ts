@@ -1,7 +1,10 @@
-import type { Account } from 'near-api-js';
+import { Account, connect, Near } from 'near-api-js';
+import { NearAccount, Worker } from 'near-workspaces';
+import { resolve } from 'node:path';
+import { cwd } from 'node:process';
 
-// credentials
-import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
+// constants
+import { NETWORK_ID } from '@test/constants';
 
 // controllers
 import Social from './Social';
@@ -10,10 +13,35 @@ import Social from './Social';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 describe(`${Social.name}#getVersion`, () => {
+  let contractAccount: NearAccount;
+  let near: Near;
   let signer: Account;
+  let worker: Worker;
+
+  beforeAll(async () => {
+    worker = await Worker.init({
+      network: NETWORK_ID,
+    });
+
+    contractAccount = await worker.rootAccount.devDeploy(
+      resolve(cwd(), 'test', 'contracts', 'social_db.wasm')
+    );
+    await worker.rootAccount.call(contractAccount.accountId, 'new', {});
+
+    near = await connect({
+      networkId: NETWORK_ID,
+      nodeUrl: worker.provider.connection.url,
+    });
+  });
+
+  afterAll(async () => {
+    await worker.tearDown();
+  });
 
   beforeEach(async () => {
-    const result = await createEphemeralAccount();
+    const result = await createEphemeralAccount({
+      worker,
+    });
 
     signer = result.account;
   });
@@ -21,7 +49,7 @@ describe(`${Social.name}#getVersion`, () => {
   it('should return the version of the social contract', async () => {
     // arrange
     const client = new Social({
-      contractId: socialContractAccountId,
+      contractId: contractAccount.accountId,
     });
     // act
     const version = await client.getVersion({ signer });
