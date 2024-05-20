@@ -26,6 +26,7 @@ import type {
 
 // utils
 import validateAccountId from '@app/utils/validateAccountId';
+import IStorageDepositOptions from 'src/types/IStorageDepositOptions';
 
 export default class Social {
   private contractId: string;
@@ -175,6 +176,45 @@ export default class Social {
     );
   }
 
+  /**
+   * Deposit NEAR to the social DB contract for covering storage for the given account_id or the signer if acount_id is not provided.
+   * It also let you choose the option to pay bare minimum deposit for registering the account in the Social DB contract without any additional storage fees.
+   * @param {IStorageDepositOptions} options - the necessary options to deposit NEAR for covering storage for the account_id or the signer.
+   * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
+   * and sent to the network.
+   */
+  public async storageDeposit({
+    blockHash,
+    account_id,
+    nonce,
+    publicKey,
+    registration_only,
+    signer,
+  }: IStorageDepositOptions): Promise<transactions.Transaction> {
+    //should I filter valid account ids?
+    const actions: transactions.Action[] = [];
+
+    actions.push(
+      transactions.functionCall(
+        ChangeMethodEnum.StorageDeposit,
+        {
+          account_id,
+          registration_only,
+        } as ISocialDBContractStorageDepositArgs,
+        BigInt(GAS_FEE_IN_ATOMIC_UNITS),
+        actions.length <= 0 ? BigInt('1') : BigInt('0')
+      )
+    );
+
+    return transactions.createTransaction(
+      signer.accountId,
+      utils.PublicKey.fromString(publicKey.toString()),
+      this.contractId,
+      nonce,
+      actions,
+      utils.serialize.base_decode(blockHash)
+    );
+  }
   /**
    * Sets the new social contract ID.
    * @param {string} contractId - the account of the new social contract ID.

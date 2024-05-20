@@ -5,6 +5,7 @@ export type { default as IGetOptions } from './IGetOptions';
 export type { default as IGetVersionOptions } from './IGetVersionOptions';
 export type { default as INewSocialOptions } from './INewSocialOptions';
 export type { default as ISetOptions } from './ISetOptions';
+export type { default as IStorageDepositOptions } from './IStorageDepositOptions';
 export type { default as ISocialDBContractAccount } from './ISocialDBContractAccount';
 export type { default as ISocialDBContractAccountSharedStorage } from './ISocialDBContractAccountSharedStorage';
 export type { default as ISocialDBContractGetArgs } from './ISocialDBContractGetArgs';
