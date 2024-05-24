@@ -175,8 +175,9 @@ export default class Social {
   /**
    * Checks if an account, specified in `options.granteeAccountId`, has been granted write access for a key. If the
    * signer and the supplied `options.granteeAccountId` match, true will be returned.
-   * @param {IGrantWritePermissionOptions} options - the key and the grantee account ID.
-   * @returns {Promise<boolean>} true, if the grantee account ID has write access for the given key.
+   * @param {IIsWritePermissionGrantedOptions} options - the key and the grantee account ID.
+   * @returns {Promise<boolean>} a promise that resolves to true, if the grantee account ID has write access for the
+   * given key, or false.
    * @throws {InvalidAccountIdError} if the grantee account ID is not a valid account ID.
    */
   public async isWritePermissionGranted({
