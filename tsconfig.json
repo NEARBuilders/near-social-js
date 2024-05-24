@@ -23,6 +23,7 @@
       "@app/constants": ["src/constants"],
       "@app/controllers": ["src/controllers"],
       "@app/enums": ["src/enums"],
+      "@app/errors": ["src/errors"],
       "@app/types": ["src/types"],
       "@app/utils/*": ["src/utils/*"],
       "@test/constants": ["test/constants"],

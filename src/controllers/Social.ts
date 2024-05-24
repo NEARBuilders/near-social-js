@@ -11,6 +11,9 @@ import {
 // enums
 import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
 
+// errors
+import { InvalidAccountIdError, KeyNotAllowedError } from '@app/errors';
+
 // types
 import type {
   IGetOptions,
@@ -53,6 +56,16 @@ export default class Social {
       contractId: this.contractId,
       methodName: ViewMethodEnum.StorageBalanceOf,
     });
+  }
+
+  private _uniqueAccountIdsFromKeys(keys: string[]): string[] {
+    return keys.reduce<string[]>((acc, currentValue) => {
+      const accountId = currentValue.split('/')[0] || '';
+
+      return acc.find((value) => value === accountId)
+        ? acc
+        : [...acc, currentValue];
+    }, []);
   }
 
   /**
@@ -98,6 +111,15 @@ export default class Social {
     });
   }
 
+  /**
+   * Grants permission for a set of keys and an account, specified by the `options.granteeAccountId`.
+   * The `options.signer` must be the owner of the set of keys.
+   * @param {IGrantWritePermissionOptions} options - the list of keys and the grantee account ID.
+   * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
+   * and sent to the network.
+   * @throws {InvalidAccountIdError} if the grantee account ID or the account ID specified in the keys is invalid.
+   * @throws {KeyNotAllowedError} if account IDs specified in the keys does not match the signer (granter) account ID.
+   */
   public async grantWritePermission({
     blockHash,
     granteeAccountId,
@@ -106,7 +128,30 @@ export default class Social {
     publicKey,
     signer,
   }: IGrantWritePermissionOptions): Promise<transactions.Transaction> {
-    // TODO: throw error if the key is not owned by the signer
+    if (!validateAccountId(granteeAccountId)) {
+      throw new InvalidAccountIdError(
+        granteeAccountId,
+        `the grantee account id is not valid`
+      );
+    }
+
+    // validate the keys
+    keys.forEach((value) => {
+      const accountId = value.split('/')[0] || '';
+
+      if (!validateAccountId(accountId)) {
+        throw new InvalidAccountIdError(accountId);
+      }
+
+      // if the key does not belong to the signer (granter) it cannot give grant permission
+      if (accountId !== signer.accountId) {
+        throw new KeyNotAllowedError(
+          value,
+          `key "${value}" does not belong to granter "${signer.accountId}"`
+        );
+      }
+    });
+
     return transactions.createTransaction(
       signer.accountId,
       utils.PublicKey.fromString(publicKey.toString()),
@@ -127,11 +172,30 @@ export default class Social {
     );
   }
 
+  /**
+   * Checks if an account, specified in `options.granteeAccountId`, has been granted write access for a key. If the
+   * signer and the supplied `options.granteeAccountId` match, true will be returned.
+   * @param {IGrantWritePermissionOptions} options - the key and the grantee account ID.
+   * @returns {Promise<boolean>} true, if the grantee account ID has write access for the given key.
+   * @throws {InvalidAccountIdError} if the grantee account ID is not a valid account ID.
+   */
   public async isWritePermissionGranted({
     granteeAccountId,
     key,
     signer,
   }: IIsWritePermissionGrantedOptions): Promise<boolean> {
+    if (!validateAccountId(granteeAccountId)) {
+      throw new InvalidAccountIdError(
+        granteeAccountId,
+        `the grantee account id is not valid`
+      );
+    }
+
+    // if the signer is the grantee, it has permission to write to itself
+    if (signer.accountId === granteeAccountId) {
+      return true;
+    }
+
     return await signer.viewFunction({
       contractId: this.contractId,
       methodName: ViewMethodEnum.IsWritePermissionGranted,

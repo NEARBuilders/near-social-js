@@ -24,9 +24,9 @@ export default async function signAndSendTransaction({
   const failure =
     (result.status as providers.FinalExecutionStatus)?.Failure || null;
 
-  // if (failure) {
-  //   throw new Error(`${failure.error_type}: ${failure.error_message}`);
-  // }
+  if (failure) {
+    throw new Error(`${failure.error_type}: ${failure.error_message}`);
+  }
 
   return result;
 }
