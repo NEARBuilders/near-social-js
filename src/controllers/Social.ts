@@ -15,13 +15,17 @@ import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
 import type {
   IGetOptions,
   IGetVersionOptions,
+  IGrantWritePermissionOptions,
+  IIsWritePermissionGrantedOptions,
   INewSocialOptions,
   ISetOptions,
   ISocialDBContractGetArgs,
+  ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
   IStorageBalanceOfOptions,
   ISocialDBContractStorageDepositArgs,
+  ISocialDBContractIsWritePermissionGrantedArgs,
 } from '@app/types';
 
 // utils
@@ -91,6 +95,50 @@ export default class Social {
     return await signer.viewFunction({
       contractId: this.contractId,
       methodName: ViewMethodEnum.GetVersion,
+    });
+  }
+
+  public async grantWritePermission({
+    blockHash,
+    granteeAccountId,
+    keys,
+    nonce,
+    publicKey,
+    signer,
+  }: IGrantWritePermissionOptions): Promise<transactions.Transaction> {
+    // TODO: throw error if the key is not owned by the signer
+    return transactions.createTransaction(
+      signer.accountId,
+      utils.PublicKey.fromString(publicKey.toString()),
+      this.contractId,
+      nonce,
+      [
+        transactions.functionCall(
+          ChangeMethodEnum.GrantWritePermission,
+          {
+            keys,
+            predecessor_id: granteeAccountId,
+          } as ISocialDBContractGrantWritePermissionArgs,
+          BigInt(GAS_FEE_IN_ATOMIC_UNITS),
+          BigInt('1')
+        ),
+      ],
+      utils.serialize.base_decode(blockHash)
+    );
+  }
+
+  public async isWritePermissionGranted({
+    granteeAccountId,
+    key,
+    signer,
+  }: IIsWritePermissionGrantedOptions): Promise<boolean> {
+    return await signer.viewFunction({
+      contractId: this.contractId,
+      methodName: ViewMethodEnum.IsWritePermissionGranted,
+      args: {
+        key,
+        predecessor_id: granteeAccountId,
+      } as ISocialDBContractIsWritePermissionGrantedArgs,
     });
   }
 
