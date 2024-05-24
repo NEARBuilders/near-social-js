@@ -1,4 +1,4 @@
-import { Account, providers, transactions, utils } from 'near-api-js';
+import { Account, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
 // credentials
@@ -7,70 +7,122 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 // controllers
 import Social from './Social';
 
+// enums
+import { ErrorCodeEnum } from '@app/enums';
+
+// errors
+import { InvalidAccountIdError } from '@app/errors';
+
 // helpers
-import accountAccessKey from '@test/helpers/accountAccessKey';
+import accountAccessKey, {
+  IAccessKeyResponse,
+} from '@test/helpers/accountAccessKey';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 // utils
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
+import signAndSendTransaction from '@test/helpers/signAndSendTransaction';
 
 describe(`${Social.name}#isWritePermissionGranted`, () => {
-  let keyPair: utils.KeyPairEd25519;
-  let signer: Account;
+  let client: Social;
+  let granteeAccount: Account;
+  let granteeKeyPair: utils.KeyPairEd25519;
+  let granterAccount: Account;
+  let granterKeyPair: utils.KeyPairEd25519;
+  let granterKeyResponse: IAccessKeyResponse;
+  let granterNonce: number;
+  let key: string;
 
   beforeEach(async () => {
-    const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
+    const granteeAccountResult = await createEphemeralAccount(
+      convertNEARToYoctoNEAR('100')
+    );
+    const granterAccountResult = await createEphemeralAccount(
+      convertNEARToYoctoNEAR('100')
+    );
+    let transaction: transactions.Transaction;
 
-    keyPair = result.keyPair;
-    signer = result.account;
-  });
+    granteeAccount = granteeAccountResult.account;
+    granteeKeyPair = granteeAccountResult.keyPair;
+    granterAccount = granterAccountResult.account;
+    granterKeyPair = granterAccountResult.keyPair;
 
-  it('should return true if the write', async () => {
-    // arrange
-    const client = new Social({
+    client = new Social({
       contractId: socialContractAccountId,
     });
-    const data = {
-      [signer.accountId]: {
-        profile: {
-          name: randomBytes(16).toString('hex'),
+    key = `${granterAccount.accountId}/profile/name`;
+    granterKeyResponse = await accountAccessKey(
+      granterAccount,
+      granterKeyPair.publicKey
+    );
+    granterNonce = granterKeyResponse.nonce + 1;
+
+    // set the granter
+    transaction = await client.set({
+      blockHash: granterKeyResponse.block_hash,
+      data: {
+        [granterAccount.accountId]: {
+          profile: {
+            name: randomBytes(16).toString('hex'),
+          },
         },
       },
-    };
-    const signerAccessKeyResponse = await accountAccessKey(
-      signer,
-      keyPair.publicKey
-    );
-    const transaction = await client.set({
-      blockHash: signerAccessKeyResponse.block_hash,
-      data,
-      nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
+      nonce: BigInt(granterNonce),
+      publicKey: granterKeyPair.publicKey,
+      signer: granterAccount,
     });
-    let result: boolean;
 
-    const [_, signedTransaction] = await transactions.signTransaction(
+    await signAndSendTransaction({
+      signerAccount: granterAccount,
       transaction,
-      signer.connection.signer,
-      signer.accountId,
-      signer.connection.networkId
-    );
-    const { status } =
-      await signer.connection.provider.sendTransaction(signedTransaction);
-    const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    });
+  });
 
-    if (failure) {
-      throw new Error(`${failure.error_type}: ${failure.error_message}`);
-    }
+  it('should throw and error the the grantee is not a valid account id', async () => {
+    // arrange
+    const invalidGranteeAccountId = '*&s8_si(.test.near';
 
     // act
-    result = await client.isWritePermissionGranted({
-      key: `${signer.accountId}/profile/name`,
-      signer,
+    try {
+      await client.isWritePermissionGranted({
+        granteeAccountId: invalidGranteeAccountId,
+        key,
+        signer: granterAccount,
+      });
+    } catch (error) {
+      // assert
+      expect((error as InvalidAccountIdError).code).toBe(
+        ErrorCodeEnum.InvalidAccountIdError
+      );
+      expect((error as InvalidAccountIdError).accountId).toBe(
+        invalidGranteeAccountId
+      );
+    }
+  });
+
+  it('should return true if the signer (granter) is the same as the grantee', async () => {
+    // arrange
+    // act
+    const result = await client.isWritePermissionGranted({
+      granteeAccountId: granterAccount.accountId,
+      key,
+      signer: granterAccount,
     });
 
     // assert
     expect(result).toBe(true);
+  });
+
+  it('should return false if the grantee has not been granted write permission', async () => {
+    // arrange
+    // act
+    const result = await client.isWritePermissionGranted({
+      granteeAccountId: granteeAccount.accountId,
+      key,
+      signer: granterAccount,
+    });
+
+    // assert
+    expect(result).toBe(false);
   });
 });

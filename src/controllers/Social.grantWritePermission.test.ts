@@ -76,7 +76,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     });
   });
 
-  it('should return an error if the grantee account is not a valid id', async () => {
+  it('should throw an error if the grantee account is not a valid id', async () => {
     // arrange
     const invalidGranteeAccountId = '*&s8_si(.test.near';
 
@@ -101,7 +101,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     }
   });
 
-  it(`should return an error if the a key's account id is invalid`, async () => {
+  it(`should throw an error if the a key's account id is invalid`, async () => {
     // arrange
     const invalidKeyAccountId = '*&s8_si(.test.near';
 
@@ -126,7 +126,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     }
   });
 
-  it(`should return an error if the a key's account id does not belong the signer (granter)`, async () => {
+  it(`should throw an error if the a key's account id does not belong the signer (granter)`, async () => {
     // arrange
     key = 'iamnotthegranter.test.near/profile/name';
 
