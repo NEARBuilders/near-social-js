@@ -26,7 +26,6 @@ import signAndSendTransaction from '@test/helpers/signAndSendTransaction';
 describe(`${Social.name}#isWritePermissionGranted`, () => {
   let client: Social;
   let granteeAccount: Account;
-  let granteeKeyPair: utils.KeyPairEd25519;
   let granterAccount: Account;
   let granterKeyPair: utils.KeyPairEd25519;
   let granterKeyResponse: IAccessKeyResponse;
@@ -43,7 +42,6 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     let transaction: transactions.Transaction;
 
     granteeAccount = granteeAccountResult.account;
-    granteeKeyPair = granteeAccountResult.keyPair;
     granterAccount = granterAccountResult.account;
     granterKeyPair = granterAccountResult.keyPair;
 
