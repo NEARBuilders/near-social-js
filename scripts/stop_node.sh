@@ -5,7 +5,7 @@ SCRIPT_DIR=$(dirname "${0}")
 source "${SCRIPT_DIR}"/set_vars.sh
 
 
-# Public: Starts up a NEAR development node in Docker.
+# Public: Gets the saved node PID from .near/node.pid and kills the background process.
 #
 # Examples
 #
@@ -13,13 +13,14 @@ source "${SCRIPT_DIR}"/set_vars.sh
 #
 # Returns exit code 0.
 function main {
+  local node_pid
+
   set_vars
 
+  printf "%b killing node process \n" "${INFO_PREFIX}"
+
   # stop the node
-  docker compose \
-    -p builddao_near_social_sdk \
-    -f docker-compose.yml \
-    down
+  pkill -f "near-sandbox"
 
   exit 0
 }
