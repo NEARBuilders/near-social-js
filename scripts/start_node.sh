@@ -20,7 +20,7 @@ function main {
   # start the node
   near-sandbox --home ./.near run > /dev/null 2>&1 &
 
-  sleep 1000
+  sleep 2s
 
   printf "%b node started \n" "${INFO_PREFIX}"
 

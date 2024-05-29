@@ -5,7 +5,7 @@ SCRIPT_DIR=$(dirname "${0}")
 source "${SCRIPT_DIR}"/set_vars.sh
 
 
-# Public: Gets the saved node PID from .near/node.pid and kills the background process.
+# Public: Kills the node's process.
 #
 # Examples
 #
@@ -17,10 +17,12 @@ function main {
 
   set_vars
 
-  printf "%b killing node process \n" "${INFO_PREFIX}"
+  printf "%b stopping the node \n" "${INFO_PREFIX}"
 
   # stop the node
   pkill -f "near-sandbox"
+
+  printf "%b stopped node \n" "${INFO_PREFIX}"
 
   exit 0
 }

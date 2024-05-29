@@ -1,11 +1,8 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
-import { NearAccount, Worker } from 'near-workspaces';
-import { resolve } from 'node:path';
-import { cwd } from 'node:process';
 
-// constants
-import { NETWORK_ID } from '@test/constants';
+// credentials
+import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
@@ -14,38 +11,16 @@ import Social from './Social';
 import accountAccessKey, {
   IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
-// utils
-import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
-
 describe(`${Social.name}#set`, () => {
-  let contractAccount: NearAccount;
   let keyPair: utils.KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
-  let worker: Worker;
-
-  beforeAll(async () => {
-    worker = await Worker.init({
-      network: NETWORK_ID,
-    });
-
-    contractAccount = await worker.rootAccount.devDeploy(
-      resolve(cwd(), 'test', 'contracts', 'social_db.wasm')
-    );
-    await worker.rootAccount.call(contractAccount.accountId, 'new', {});
-  });
-
-  afterAll(async () => {
-    await worker.tearDown();
-  });
 
   beforeEach(async () => {
-    const result = await createEphemeralAccount({
-      initialBalanceInAtomicUnits: convertNEARToYoctoNEAR('100'),
-      worker,
-    });
+    const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
 
     keyPair = result.keyPair;
     signer = result.account;
@@ -54,7 +29,7 @@ describe(`${Social.name}#set`, () => {
   it('should set storage and add the data', async () => {
     // arrange
     const client = new Social({
-      contractId: contractAccount.accountId,
+      contractId: socialContractAccountId,
     });
     const data = {
       [signer.accountId]: {
