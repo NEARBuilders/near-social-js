@@ -5,69 +5,28 @@ SCRIPT_DIR=$(dirname "${0}")
 source "${SCRIPT_DIR}"/set_vars.sh
 
 
-# Public: Starts up a NEAR development node in Docker and runs tests against it.
+# Public: Starts up a NEAR development node in the background and runs tests against it.
 #
 # Examples
 #
 #   ./scripts/test.sh
 #
-# Returns exit code 1 if the node is unhealthy or the tests failed, otherwise, exit code 0 is returned.
+# Returns exit code 1 if the tests failed, otherwise, exit code 0 is returned.
 function main {
-  local attempt
   local exit_code
-  local near_node_health
-
-  attempt=0
-  near_node_health=starting
 
   set_vars
 
-  # start the services
-  docker compose \
-    -p builddao_near_social_sdk \
-    -f docker-compose.yml \
-    up \
-    --build \
-    -d
+  # start the node in the background
+  "${SCRIPT_DIR}"/start_node.sh --background
 
-  # poll the healthchecks
-  while [ ${attempt} -le 15 ]; do
-    sleep 2
+  # run tests
+  yarn jest --passWithNoTests
 
-    printf "%b waiting for healthchecks, attempt: %b...\n" "${INFO_PREFIX}" "${attempt}"
+  exit_code=$?
 
-    near_node_health=$(docker inspect -f "{{.State.Health.Status}}" builddao_near_node)
-
-    if [[ "${near_node_health}" == "unhealthy" ]]; then
-      printf "%b healthchecks failed\n" "${ERROR_PREFIX}"
-      break
-    fi
-
-    if [[ "${near_node_health}" == "healthy" ]]; then
-      break
-    fi
-
-    attempt=$(( attempt + 1 ))
-  done
-
-  printf "%b builddao_near_node=%b\n" "${INFO_PREFIX}" "${near_node_health}"
-
-  # if the services are up and running, we can run tests
-  if [[ "${near_node_health}" == "healthy" ]]; then
-    yarn jest --passWithNoTests
-
-    exit_code=$?
-  else
-    docker logs --details builddao_near_node
-
-    exit_code=1
-  fi
-
-  # stop the services and remove
-  docker compose \
-    -p builddao_near_social_sdk \
-    -f docker-compose.yml \
-    down
+  # stop the node
+  "${SCRIPT_DIR}"/stop_node.sh
 
   exit "${exit_code}"
 }

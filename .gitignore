@@ -284,3 +284,6 @@ fabric.properties
 
 # testing
 /coverage
+
+# near
+.near/data
