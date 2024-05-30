@@ -5,7 +5,7 @@ SCRIPT_DIR=$(dirname "${0}")
 source "${SCRIPT_DIR}"/set_vars.sh
 
 
-# Public: Starts up a NEAR development node and runs tests against it.
+# Public: Starts up a NEAR development node in the background and runs tests against it.
 #
 # Examples
 #
@@ -17,8 +17,8 @@ function main {
 
   set_vars
 
-  # start the node
-  "${SCRIPT_DIR}"/start_node.sh
+  # start the node in the background
+  "${SCRIPT_DIR}"/start_node.sh --background
 
   # run tests
   yarn jest --passWithNoTests
