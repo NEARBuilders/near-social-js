@@ -6,6 +6,7 @@ import {
   GAS_FEE_IN_ATOMIC_UNITS,
   MINIMUM_STORAGE_IN_BYTES,
   STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
+  ONE_YOCTO,
 } from '@app/constants';
 
 // enums
@@ -17,16 +18,18 @@ import type {
   IGetVersionOptions,
   INewSocialOptions,
   ISetOptions,
+  IStorageDepositOptions,
+  IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
   IStorageBalanceOfOptions,
   ISocialDBContractStorageDepositArgs,
+  ISocialDBContractStorageWithdrawArgs,
 } from '@app/types';
 
 // utils
 import validateAccountId from '@app/utils/validateAccountId';
-import IStorageDepositOptions from 'src/types/IStorageDepositOptions';
 
 export default class Social {
   private contractId: string;
@@ -203,6 +206,43 @@ export default class Social {
         } as ISocialDBContractStorageDepositArgs,
         BigInt(GAS_FEE_IN_ATOMIC_UNITS),
         actions.length <= 0 ? BigInt('1') : BigInt('0')
+      )
+    );
+
+    return transactions.createTransaction(
+      signer.accountId,
+      utils.PublicKey.fromString(publicKey.toString()),
+      this.contractId,
+      nonce,
+      actions,
+      utils.serialize.base_decode(blockHash)
+    );
+  }
+  /**
+   * Withdraw available NEAR from the social DB contract for covering storage.
+   * If amount is not specified than all available NEAR is withdrawn.
+   * @param {IStorageWithdrawOptions} options - define the amount to be withdrawn.
+   * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
+   * and sent to the network.
+   */
+  public async storageWithdraw({
+    blockHash,
+    amount,
+    nonce,
+    publicKey,
+    signer,
+  }: IStorageWithdrawOptions): Promise<transactions.Transaction> {
+    const actions: transactions.Action[] = [];
+
+    actions.push(
+      transactions.functionCall(
+        ChangeMethodEnum.StorageWithdraw,
+        {
+          amount,
+        } as ISocialDBContractStorageWithdrawArgs,
+        BigInt(GAS_FEE_IN_ATOMIC_UNITS),
+        //the contract asserts for 1 yocto attached
+        BigInt(ONE_YOCTO)
       )
     );
 
