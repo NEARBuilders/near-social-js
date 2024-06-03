@@ -43,7 +43,6 @@ The signer account automatically has write permissions for their own account.
     const accessKeys = await signer.getAccessKeys();
     const social = new Social();
     const transaction = await social.set({
-      blockHash: accessKeys[0].block_hash,
       data: {
         ['alice.near']: {
           profile: {
@@ -51,7 +50,6 @@ The signer account automatically has write permissions for their own account.
           }
         }
       },
-      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
       publicKey: accessKeys[0].public_key,
       signer,
     });
@@ -78,7 +76,6 @@ The signer account automatically has write permissions for their own account.
         social = new NEARSocialSDK();
 
         return social.set({
-          blockHash: accessKeys[0].block_hash,
           data: {
             ['alice.near']: {
               profile: {
@@ -86,7 +83,6 @@ The signer account automatically has write permissions for their own account.
               }
             }
           },
-          nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
           publicKey: accessKeys[0].public_key,
           signer,
         });
@@ -106,7 +102,6 @@ The signer account automatically has write permissions for their own account.
     const accessKeys = await signer.getAccessKeys();
     const social = new Social();
     const transaction = await social.set({
-      blockHash: accessKeys[0].block_hash,
       data: {
         ['alice.near']: {
           profile: {
@@ -114,7 +109,6 @@ The signer account automatically has write permissions for their own account.
           }
         }
       },
-      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
       publicKey: accessKeys[0].public_key,
       signer,
     });
