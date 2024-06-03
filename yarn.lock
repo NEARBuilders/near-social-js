@@ -2328,6 +2328,11 @@
   resolved "https://registry.yarnpkg.com/@near-js/types/-/types-0.2.0.tgz#5370c3e9230103222b2827dbd6370f03c4e996d1"
   integrity sha512-pTahjni0+PzStseFtnnI9nqmh+ZrHqBqeERo3B3OCXUC/qEie0ZSBMSMt80SgqnaGAy5/CqkCLO9zOx1gA8Cwg==
 
+"@near-js/types@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@near-js/types/-/types-0.2.1.tgz#a298f0e70dbe059ee8c762dfac05c2eae3e0ae0e"
+  integrity sha512-YygQEGMdFe6d2e/6dtNZer9paH396XeAdIKEhY/RPXDUnjDdfiDQ5DK4mM130sEeID2bAH9X1LQ+7vXGRjvyWw==
+
 "@near-js/utils@0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@near-js/utils/-/utils-0.2.1.tgz#6798cf8c3a6ed8057da002401e24409c49454a82"
