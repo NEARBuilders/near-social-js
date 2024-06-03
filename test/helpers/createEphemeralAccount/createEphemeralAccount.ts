@@ -22,7 +22,7 @@ import type { IResult } from './types';
 export default async function createEphemeralAccount(
   initialBalanceInAtomicUnits?: string
 ): Promise<IResult> {
-  const accountId: string = `${randomBytes(8).toString('hex').toLowerCase()}.test.near`;
+  const accountId = `${randomBytes(8).toString('hex').toLowerCase()}.test.near`;
   const faucetKeyPair = KeyPair.fromString(faucetSecretKey); // get the faucet key pair
   const keyPair = utils.KeyPairEd25519.fromRandom(); // create the new access key to be used
   const keyStore = new keyStores.InMemoryKeyStore();
