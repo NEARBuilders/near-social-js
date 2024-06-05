@@ -8,16 +8,12 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 import Social from './Social';
 
 // helpers
-import accountAccessKey, {
-  IAccessKeyResponse,
-} from '@test/helpers/accountAccessKey';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 describe(`${Social.name}#set`, () => {
   let keyPair: utils.KeyPairEd25519;
   let signer: Account;
-  let signerAccessKeyResponse: IAccessKeyResponse;
 
   beforeEach(async () => {
     const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
@@ -41,13 +37,9 @@ describe(`${Social.name}#set`, () => {
     let result: Record<string, unknown>;
     let transaction: transactions.Transaction;
 
-    signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
-
     // act
     transaction = await client.set({
-      blockHash: signerAccessKeyResponse.block_hash,
       data,
-      nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       publicKey: keyPair.publicKey,
       signer,
     });

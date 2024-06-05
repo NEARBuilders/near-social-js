@@ -1,5 +1,11 @@
+import type { AccessKeyView } from '@near-js/types';
 import BigNumber from 'bignumber.js';
-import { transactions, utils } from 'near-api-js';
+import {
+  type Account,
+  type Connection,
+  transactions,
+  utils,
+} from 'near-api-js';
 
 // constants
 import {
@@ -44,6 +50,38 @@ export default class Social {
   /**
    * private methods
    */
+
+  /**
+   * Gets the access key view.
+   * @param {Account} account - an initialized account.
+   * @param {string | utils.PublicKey} publicKey - the public key of the access key to query.
+   * @returns {Promise<AccessKeyView | null>} a promise that resolves to the access key view or null if the access key
+   * for the given public key does not exist.
+   * @private
+   */
+  private async _accessKeyView(
+    account: Account,
+    publicKey: string | utils.PublicKey
+  ): Promise<AccessKeyView | null> {
+    const accessKeys = await account.getAccessKeys();
+
+    return (
+      accessKeys.find((value) => value.public_key === publicKey.toString())
+        ?.access_key || null
+    );
+  }
+
+  /**
+   * Queries the node to get the latest block hash.
+   * @param {Connection} connection - an initialized NEAR connection.
+   * @returns {Promise<string>} a promise that resolves to the latest block hash. The hash will be a base58 encoded string.
+   * @private
+   */
+  private async _latestBlockHash(connection: Connection): Promise<string> {
+    const { sync_info } = await connection.provider.status();
+
+    return sync_info.latest_block_hash;
+  }
 
   private async _storageBalanceOf({
     accountId,
@@ -233,6 +271,26 @@ export default class Social {
         []
       ); // filter out only valid account ids
     const actions: transactions.Action[] = [];
+    let _blockHash: string | null = blockHash || null;
+    let _nonce: bigint | null = nonce || null;
+    let accessKeyView: AccessKeyView | null;
+
+    if (!_blockHash) {
+      _blockHash = await this._latestBlockHash(signer.connection);
+    }
+
+    if (!_nonce) {
+      accessKeyView = await this._accessKeyView(signer, publicKey);
+
+      // TODO: handle errors when 15-implement-function-for-grant-write-permission is merged
+      if (!accessKeyView) {
+        throw new Error(
+          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+        );
+      }
+
+      _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
+    }
 
     // for each account, check if there is storage, if there isn't, add an action to deposit the minimum storage
     for (let i = 0; i < uniqueAccountIds.length; i++) {
@@ -282,9 +340,9 @@ export default class Social {
       signer.accountId,
       utils.PublicKey.fromString(publicKey.toString()),
       this.contractId,
-      nonce,
+      _nonce,
       actions,
-      utils.serialize.base_decode(blockHash)
+      utils.serialize.base_decode(_blockHash)
     );
   }
 
