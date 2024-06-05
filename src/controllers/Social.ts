@@ -18,7 +18,11 @@ import {
 import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
 
 // errors
-import { InvalidAccountIdError, KeyNotAllowedError } from '@app/errors';
+import {
+  AccountNotFoundError,
+  InvalidAccountIdError,
+  KeyNotAllowedError,
+} from '@app/errors';
 
 // types
 import type {
@@ -166,6 +170,10 @@ export default class Social {
     publicKey,
     signer,
   }: IGrantWritePermissionOptions): Promise<transactions.Transaction> {
+    let accessKeyView: AccessKeyView | null;
+    let _blockHash: string | null = blockHash || null;
+    let _nonce: bigint | null = nonce || null;
+
     if (!validateAccountId(granteeAccountId)) {
       throw new InvalidAccountIdError(
         granteeAccountId,
@@ -190,11 +198,28 @@ export default class Social {
       }
     });
 
+    if (!_blockHash) {
+      _blockHash = await this._latestBlockHash(signer.connection);
+    }
+
+    if (!_nonce) {
+      accessKeyView = await this._accessKeyView(signer, publicKey);
+
+      if (!accessKeyView) {
+        throw new AccountNotFoundError(
+          signer.accountId,
+          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+        );
+      }
+
+      _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
+    }
+
     return transactions.createTransaction(
       signer.accountId,
       utils.PublicKey.fromString(publicKey.toString()),
       this.contractId,
-      nonce,
+      _nonce,
       [
         transactions.functionCall(
           ChangeMethodEnum.GrantWritePermission,
@@ -206,7 +231,7 @@ export default class Social {
           BigInt('1')
         ),
       ],
-      utils.serialize.base_decode(blockHash)
+      utils.serialize.base_decode(_blockHash)
     );
   }
 
@@ -282,9 +307,9 @@ export default class Social {
     if (!_nonce) {
       accessKeyView = await this._accessKeyView(signer, publicKey);
 
-      // TODO: handle errors when 15-implement-function-for-grant-write-permission is merged
       if (!accessKeyView) {
-        throw new Error(
+        throw new AccountNotFoundError(
+          signer.accountId,
           `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
         );
       }
