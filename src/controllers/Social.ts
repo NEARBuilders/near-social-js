@@ -268,11 +268,7 @@ export default class Social {
 
     if (
       (options as IIsWritePermissionGrantedWithAccountIdOptions)
-        .granteeAccountId &&
-      !validateAccountId(
-        (options as IIsWritePermissionGrantedWithAccountIdOptions)
-          .granteeAccountId
-      )
+        .granteeAccountId
     ) {
       if (
         !validateAccountId(
