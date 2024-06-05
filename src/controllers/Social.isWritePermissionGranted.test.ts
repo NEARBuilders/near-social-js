@@ -18,14 +18,15 @@ import accountAccessKey, {
   IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
+import signAndSendTransaction from '@test/helpers/signAndSendTransaction';
 
 // utils
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
-import signAndSendTransaction from '@test/helpers/signAndSendTransaction';
 
 describe(`${Social.name}#isWritePermissionGranted`, () => {
   let client: Social;
   let granteeAccount: Account;
+  let granteeKeyPair: utils.KeyPairEd25519;
   let granterAccount: Account;
   let granterKeyPair: utils.KeyPairEd25519;
   let granterKeyResponse: IAccessKeyResponse;
@@ -42,6 +43,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     let transaction: transactions.Transaction;
 
     granteeAccount = granteeAccountResult.account;
+    granteeKeyPair = granteeAccountResult.keyPair;
     granterAccount = granterAccountResult.account;
     granterKeyPair = granterAccountResult.keyPair;
 
@@ -98,7 +100,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     }
   });
 
-  it('should return true if the signer (granter) is the same as the grantee', async () => {
+  it('should return true if the grantee is the same as the key', async () => {
     // arrange
     // act
     const result = await client.isWritePermissionGranted({
@@ -122,5 +124,55 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
 
     // assert
     expect(result).toBe(false);
+  });
+
+  it('should return true if the grantee has been given permission (using account id)', async () => {
+    // arrange
+    const transaction = await client.grantWritePermission({
+      granteeAccountId: granteeAccount.accountId,
+      keys: [key],
+      publicKey: granterKeyPair.getPublicKey(),
+      signer: granterAccount,
+    });
+
+    await signAndSendTransaction({
+      signerAccount: granterAccount,
+      transaction,
+    });
+
+    // act
+    const result = await client.isWritePermissionGranted({
+      granteeAccountId: granteeAccount.accountId,
+      key,
+      signer: granterAccount,
+    });
+
+    // assert
+    expect(result).toBe(true);
+  });
+
+  it('should return true if the grantee has been given permission (using public key)', async () => {
+    // arrange
+    const transaction = await client.grantWritePermission({
+      granteePublicKey: granteeKeyPair.getPublicKey(),
+      keys: [key],
+      publicKey: granterKeyPair.getPublicKey(),
+      signer: granterAccount,
+    });
+
+    await signAndSendTransaction({
+      signerAccount: granterAccount,
+      transaction,
+    });
+
+    // act
+    const result = await client.isWritePermissionGranted({
+      granteePublicKey: granteeKeyPair.getPublicKey(),
+      key,
+      signer: granterAccount,
+    });
+
+    // assert
+    expect(result).toBe(true);
   });
 });

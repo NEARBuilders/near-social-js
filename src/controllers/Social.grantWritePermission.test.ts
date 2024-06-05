@@ -24,6 +24,7 @@ import signAndSendTransaction from '@test/helpers/signAndSendTransaction';
 describe(`${Social.name}#grantWritePermission`, () => {
   let client: Social;
   let granteeAccount: Account;
+  let granteeKeyPair: utils.KeyPairEd25519;
   let granterAccount: Account;
   let granterKeyPair: utils.KeyPairEd25519;
   let granterKeyResponse: IAccessKeyResponse;
@@ -40,6 +41,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     let transaction: transactions.Transaction;
 
     granteeAccount = granteeAccountResult.account;
+    granteeKeyPair = granteeAccountResult.keyPair;
     granterAccount = granterAccountResult.account;
     granterKeyPair = granterAccountResult.keyPair;
 
@@ -147,7 +149,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     }
   });
 
-  it('should set the write permission for a given account', async () => {
+  it('should set the write permission for a given account id', async () => {
     // arrange
     let result: boolean;
     let transaction: transactions.Transaction;
@@ -170,6 +172,36 @@ describe(`${Social.name}#grantWritePermission`, () => {
     // assert
     result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
+      key,
+      signer: granteeAccount,
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should set the write permission for a given public key', async () => {
+    // arrange
+    let result: boolean;
+    let transaction: transactions.Transaction;
+
+    // act
+    transaction = await client.grantWritePermission({
+      blockHash: granterKeyResponse.block_hash,
+      granteePublicKey: granteeKeyPair.getPublicKey(),
+      keys: [key],
+      nonce: BigInt(granterNonce + 1),
+      publicKey: granterKeyPair.getPublicKey(),
+      signer: granterAccount,
+    });
+
+    await signAndSendTransaction({
+      signerAccount: granterAccount,
+      transaction,
+    });
+
+    // assert
+    result = await client.isWritePermissionGranted({
+      granteePublicKey: granteeKeyPair.getPublicKey(),
       key,
       signer: granteeAccount,
     });

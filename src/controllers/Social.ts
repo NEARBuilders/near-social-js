@@ -28,8 +28,10 @@ import {
 import type {
   IGetOptions,
   IGetVersionOptions,
-  IGrantWritePermissionOptions,
-  IIsWritePermissionGrantedOptions,
+  IGrantWritePermissionWithAccountIdOptions,
+  IGrantWritePermissionWithPublicKeyOptions,
+  IIsWritePermissionGrantedWithAccountIdOptions,
+  IIsWritePermissionGrantedWithPublicKeyOptions,
   INewSocialOptions,
   ISetOptions,
   ISocialDBContractGetArgs,
@@ -156,27 +158,30 @@ export default class Social {
   /**
    * Grants permission for a set of keys and an account, specified by the `options.granteeAccountId`.
    * The `options.signer` must be the owner of the set of keys.
-   * @param {IGrantWritePermissionOptions} options - the list of keys and the grantee account ID.
+   * @param {IGrantWritePermissionWithAccountIdOptions | IGrantWritePermissionWithPublicKeyOptions} options - the list of keys and the grantee account ID.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
    * @throws {InvalidAccountIdError} if the grantee account ID or the account ID specified in the keys is invalid.
    * @throws {KeyNotAllowedError} if account IDs specified in the keys does not match the signer (granter) account ID.
    */
-  public async grantWritePermission({
-    blockHash,
-    granteeAccountId,
-    keys,
-    nonce,
-    publicKey,
-    signer,
-  }: IGrantWritePermissionOptions): Promise<transactions.Transaction> {
+  public async grantWritePermission(
+    options:
+      | IGrantWritePermissionWithAccountIdOptions
+      | IGrantWritePermissionWithPublicKeyOptions
+  ): Promise<transactions.Transaction> {
+    const { blockHash, keys, nonce, publicKey, signer } = options;
     let accessKeyView: AccessKeyView | null;
     let _blockHash: string | null = blockHash || null;
     let _nonce: bigint | null = nonce || null;
 
-    if (!validateAccountId(granteeAccountId)) {
+    if (
+      (options as IGrantWritePermissionWithAccountIdOptions).granteeAccountId &&
+      !validateAccountId(
+        (options as IGrantWritePermissionWithAccountIdOptions).granteeAccountId
+      )
+    ) {
       throw new InvalidAccountIdError(
-        granteeAccountId,
+        (options as IGrantWritePermissionWithAccountIdOptions).granteeAccountId,
         `the grantee account id is not valid`
       );
     }
@@ -225,7 +230,18 @@ export default class Social {
           ChangeMethodEnum.GrantWritePermission,
           {
             keys,
-            predecessor_id: granteeAccountId,
+            ...((options as IGrantWritePermissionWithAccountIdOptions)
+              .granteeAccountId && {
+              predecessor_id: (
+                options as IGrantWritePermissionWithAccountIdOptions
+              ).granteeAccountId,
+            }),
+            ...((options as IGrantWritePermissionWithPublicKeyOptions)
+              .granteePublicKey && {
+              public_key: (
+                options as IGrantWritePermissionWithPublicKeyOptions
+              ).granteePublicKey.toString(),
+            }),
           } as ISocialDBContractGrantWritePermissionArgs,
           BigInt(GAS_FEE_IN_ATOMIC_UNITS),
           BigInt('1')
@@ -238,26 +254,47 @@ export default class Social {
   /**
    * Checks if an account, specified in `options.granteeAccountId`, has been granted write access for a key. If the
    * signer and the supplied `options.granteeAccountId` match, true will be returned.
-   * @param {IIsWritePermissionGrantedOptions} options - the key and the grantee account ID.
+   * @param {IIsWritePermissionGrantedWithAccountIdOptions | IIsWritePermissionGrantedWithPublicKeyOptions} options - the key and the grantee account ID.
    * @returns {Promise<boolean>} a promise that resolves to true, if the grantee account ID has write access for the
    * given key, or false.
    * @throws {InvalidAccountIdError} if the grantee account ID is not a valid account ID.
    */
-  public async isWritePermissionGranted({
-    granteeAccountId,
-    key,
-    signer,
-  }: IIsWritePermissionGrantedOptions): Promise<boolean> {
-    if (!validateAccountId(granteeAccountId)) {
-      throw new InvalidAccountIdError(
-        granteeAccountId,
-        `the grantee account id is not valid`
-      );
-    }
+  public async isWritePermissionGranted(
+    options:
+      | IIsWritePermissionGrantedWithAccountIdOptions
+      | IIsWritePermissionGrantedWithPublicKeyOptions
+  ): Promise<boolean> {
+    const { key, signer } = options;
 
-    // if the signer is the grantee, it has permission to write to itself
-    if (signer.accountId === granteeAccountId) {
-      return true;
+    if (
+      (options as IIsWritePermissionGrantedWithAccountIdOptions)
+        .granteeAccountId &&
+      !validateAccountId(
+        (options as IIsWritePermissionGrantedWithAccountIdOptions)
+          .granteeAccountId
+      )
+    ) {
+      if (
+        !validateAccountId(
+          (options as IIsWritePermissionGrantedWithAccountIdOptions)
+            .granteeAccountId
+        )
+      ) {
+        throw new InvalidAccountIdError(
+          (
+            options as IIsWritePermissionGrantedWithAccountIdOptions
+          ).granteeAccountId,
+          `the grantee account id is not valid`
+        );
+      }
+
+      // if the grantee is the key account id, it has permission to write to itself
+      if (
+        (options as IIsWritePermissionGrantedWithAccountIdOptions)
+          .granteeAccountId === (key.split('/')[0] || '')
+      ) {
+        return true;
+      }
     }
 
     return await signer.viewFunction({
@@ -265,7 +302,18 @@ export default class Social {
       methodName: ViewMethodEnum.IsWritePermissionGranted,
       args: {
         key,
-        predecessor_id: granteeAccountId,
+        ...((options as IIsWritePermissionGrantedWithAccountIdOptions)
+          .granteeAccountId && {
+          predecessor_id: (
+            options as IIsWritePermissionGrantedWithAccountIdOptions
+          ).granteeAccountId,
+        }),
+        ...((options as IIsWritePermissionGrantedWithPublicKeyOptions)
+          .granteePublicKey && {
+          public_key: (
+            options as IIsWritePermissionGrantedWithPublicKeyOptions
+          ).granteePublicKey.toString(),
+        }),
       } as ISocialDBContractIsWritePermissionGrantedArgs,
     });
   }
