@@ -14,7 +14,11 @@ const sidebars = {
       type: 'category',
     },
     {
-      items: ['advanced/reading-data', 'advanced/storing-data'],
+      items: [
+        'advanced/reading-data',
+        'advanced/storing-data',
+        'advanced/granting-write-permission',
+      ],
       label: 'Advanced',
       link: {
         type: 'doc',
@@ -23,7 +27,11 @@ const sidebars = {
       type: 'category',
     },
     {
-      items: ['api-reference/social', 'api-reference/types'],
+      items: [
+        'api-reference/social',
+        'api-reference/types',
+        'api-reference/errors',
+      ],
       label: 'API Reference',
       link: {
         type: 'doc',
