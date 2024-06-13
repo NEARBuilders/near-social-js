@@ -4,8 +4,8 @@ import { utils } from 'near-api-js';
 import type IDefaultOptions from './IDefaultOptions';
 
 interface IDefaultChangeOptions extends IDefaultOptions {
-  blockHash: string;
-  nonce: bigint;
+  blockHash?: string;
+  nonce?: bigint;
   publicKey: utils.PublicKey | string;
 }
 

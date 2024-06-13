@@ -59,6 +59,39 @@ import TOCInline from '@theme/TOCInline';
 |-------------------|-----------------------------------------------------------------|
 | `Promise<string>` | a promise that resolves to the current version of the contract. |
 
+### `grantWritePermission(options)`
+
+> Grants permission for a set of keys and an account (a grantee).
+
+#### Parameters
+
+| Name    | Type                                                                 | Required | Default | Description                                                      |
+|---------|----------------------------------------------------------------------|----------|---------|------------------------------------------------------------------|
+| options | [`IGrantWritePermissionOptions`](types#igrantwritepermissionoptions) | yes      | -       | Options that include the set of keys and the grantee account ID. |
+
+#### Returns
+
+| Type                                                                                                          | Description                                                                                                                                          |
+|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned transaction that contains the function call to grant the grantee account write permission to the set of keys. |
+
+### `isWritePermissionGranted(options)`
+
+> Checks if an account, specified in `options.granteeAccountId`, has been granted write access for a key.
+> If the signer and the supplied `options.granteeAccountId` match, true will be returned.
+
+#### Parameters
+
+| Name    | Type                                                                         | Required | Default | Description                                              |
+|---------|------------------------------------------------------------------------------|----------|---------|----------------------------------------------------------|
+| options | [`IIsWritePermissionGrantedOptions`](types#iiswritepermissiongrantedoptions) | yes      | -       | Options that include the key and the grantee account ID. |
+
+#### Returns
+
+| Type               | Description                                                                                              |
+|--------------------|----------------------------------------------------------------------------------------------------------|
+| `Promise<boolean>` | A promise that resolves to true, if the grantee account ID has write access for the given key, or false. |
+
 ### `set(options)`
 
 > Stores data to the social contract. The top level properties must be account IDs under which the nested properties/objects are stored.
@@ -82,31 +115,6 @@ Accounts that match the signer's account ID automatically have write permission 
 | Type                                                                                                          | Description                                                                                                       |
 |---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned trasnaction that contiains the function call to update the specified data. |
-
-
-### `set(options)`
-
-> Stores data to the social contract. The top level properties must be account IDs under which the nested properties/objects are stored.
->
-> The signer's public key should have permission to write under the specified account keys.
-
-:::note
-
-Accounts that match the signer's account ID automatically have write permission granted.
-
-:::
-
-#### Parameters
-
-| Name    | Type                               | Required | Default | Description                                                                 |
-|---------|------------------------------------|----------|---------|-----------------------------------------------------------------------------|
-| options | [`ISetOptions`](types#isetoptions) | yes      | -       | Options that include the data to set, the signer's account and key details. |
-
-#### Returns
-
-| Type                                                                                                          | Description                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned transaction that contains the function call to update the specified data.  |
 
 
 ### `storageDeposit(options)`

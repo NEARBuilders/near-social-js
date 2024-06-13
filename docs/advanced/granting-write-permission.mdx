@@ -1,0 +1,135 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import TOCInline from '@theme/TOCInline';
+
+# Granting Write Permission
+
+<TOCInline
+  maxHeadingLevel={4}
+  toc={toc}
+/>
+
+## Overview
+
+Accounts can grant write permission to other accounts for a set of keys.
+
+## Terminology
+
+* **Grantee**: The account that is being granted write access to the list of keys.
+* **Granter**: The account that will grant access to the list of keys.
+
+## Granting an account write permission
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const grantee = await nearConnection.account('alice.near');
+    const granter = await nearConnection.account('bob.near');
+    const accessKeys = await granter.getAccessKeys();
+    const social = new Social();
+    const transaction = await social.grantWritePermission({
+      blockHash: accessKeys[0].block_hash,
+      granteeAccountId: grantee.accountId,
+      keys: [
+        'alice.near/profile/name',
+        'alice.near/profile/image/url',
+      ],
+      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
+      publicKey: accessKeys[0].public_key,
+      signer: granter,
+    });
+
+    // ...sign the returned transaction and post to the network
+    */
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var accessKeys;
+    var grantee;
+    var granter;
+    var social;
+
+    nearConnection.account('alice.near')
+      .then((_granter) => {
+        granter = _granter;
+
+        return nearConnection.account('bob.near');
+      })
+      .then((_grantee) => {
+        grantee = _grantee;
+
+        return granter.getAccessKeys();
+      })
+      .then((_accessKeys) => {
+        accessKeys = _accessKeys;
+        social = new NEARSocialSDK();
+
+        return social.grantWritePermission({
+          blockHash: accessKeys[0].block_hash,
+          granteeAccountId: grantee.accountId,
+          keys: [
+            'alice.near/profile/name',
+            'alice.near/profile/image/url',
+          ],
+          nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
+          publicKey: accessKeys[0].public_key,
+          signer: granter,
+        });
+      })
+      .then((transaction) => {
+        // ...sign the returned transaction and post to the network
+      });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const grantee = await nearConnection.account('alice.near');
+    const granter = await nearConnection.account('bob.near');
+    const accessKeys = await granter.getAccessKeys();
+    const social = new Social();
+    const transaction = await social.grantWritePermission({
+      blockHash: accessKeys[0].block_hash,
+      granteeAccountId: grantee.accountId,
+      keys: [
+        'alice.near/profile/name',
+        'alice.near/profile/image/url',
+      ],
+      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
+      publicKey: accessKeys[0].public_key,
+      signer: granter,
+    });
+
+    // ...sign the returned transaction and post to the network
+    */
+    ```
+
+  </TabItem>
+</Tabs>
+
+:::caution
+
+If the grantee account ID or the account ID in each key is not a valid account ID then a [`InvalidAccountIdError`](../../api-reference/errors#invalidaccountiderror) is thrown.
+
+:::
+
+:::caution
+
+If a key does is not owned by the granter, then a [`KeyNotAllowedError`](../../api-reference/errors#keynotallowederror) is thrown.
+
+:::
