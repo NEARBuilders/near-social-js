@@ -188,11 +188,12 @@ export default class Social {
    */
   public async storageDeposit({
     blockHash,
-    account_id,
     nonce,
     publicKey,
-    registration_only,
     signer,
+    registration_only,
+    account_id,
+    deposit,
   }: IStorageDepositOptions): Promise<transactions.Transaction> {
     //should I filter valid account ids?
     const actions: transactions.Action[] = [];
@@ -205,7 +206,7 @@ export default class Social {
           registration_only,
         } as ISocialDBContractStorageDepositArgs,
         BigInt(GAS_FEE_IN_ATOMIC_UNITS),
-        actions.length <= 0 ? BigInt('1') : BigInt('0')
+        BigInt(deposit)
       )
     );
 

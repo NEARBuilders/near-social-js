@@ -14,7 +14,11 @@ const sidebars = {
       type: 'category',
     },
     {
-      items: ['advanced/reading-data', 'advanced/storing-data'],
+      items: [
+        'advanced/reading-data',
+        'advanced/storing-data',
+        'advanced/storage-deposit-withdraw',
+      ],
       label: 'Advanced',
       link: {
         type: 'doc',

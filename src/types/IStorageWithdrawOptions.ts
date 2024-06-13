@@ -2,7 +2,7 @@
 import type IDefaultChangeOptions from './IDefaultChangeOptions';
 
 interface IStorageWithdrawOptions extends IDefaultChangeOptions {
-  amount?: bigint;
+  amount?: string;
 }
 
 export default IStorageWithdrawOptions;
