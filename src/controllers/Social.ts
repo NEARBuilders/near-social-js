@@ -450,13 +450,34 @@ export default class Social {
       )
     );
 
+    let _blockHash: string | null = blockHash || null;
+    let _nonce: bigint | null = nonce || null;
+    let accessKeyView: AccessKeyView | null;
+
+    if (!_blockHash) {
+      _blockHash = await this._latestBlockHash(signer.connection);
+    }
+
+    if (!_nonce) {
+      accessKeyView = await this._accessKeyView(signer, publicKey);
+
+      if (!accessKeyView) {
+        throw new AccountNotFoundError(
+          signer.accountId,
+          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+        );
+      }
+
+      _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
+    }
+
     return transactions.createTransaction(
       signer.accountId,
       utils.PublicKey.fromString(publicKey.toString()),
       this.contractId,
-      nonce,
+      _nonce,
       actions,
-      utils.serialize.base_decode(blockHash)
+      utils.serialize.base_decode(_blockHash)
     );
   }
   /**
@@ -487,13 +508,34 @@ export default class Social {
       )
     );
 
+    let _blockHash: string | null = blockHash || null;
+    let _nonce: bigint | null = nonce || null;
+    let accessKeyView: AccessKeyView | null;
+
+    if (!_blockHash) {
+      _blockHash = await this._latestBlockHash(signer.connection);
+    }
+
+    if (!_nonce) {
+      accessKeyView = await this._accessKeyView(signer, publicKey);
+
+      if (!accessKeyView) {
+        throw new AccountNotFoundError(
+          signer.accountId,
+          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+        );
+      }
+
+      _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
+    }
+
     return transactions.createTransaction(
       signer.accountId,
       utils.PublicKey.fromString(publicKey.toString()),
       this.contractId,
-      nonce,
+      _nonce,
       actions,
-      utils.serialize.base_decode(blockHash)
+      utils.serialize.base_decode(_blockHash)
     );
   }
   /**

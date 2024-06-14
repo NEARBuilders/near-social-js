@@ -39,9 +39,8 @@ describe(`${Social.name}#storageDeposit`, () => {
 
     let account_id = signer.accountId;
     let deposit = '2000000000000000000000000';
+    //testing optional blockhash and nonce too
     transaction = await client.storageDeposit({
-      blockHash: signerAccessKeyResponse.block_hash,
-      nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       publicKey: keyPair.publicKey,
       signer,
       account_id,
