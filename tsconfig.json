@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "alwaysStrict": true,
@@ -25,6 +26,7 @@
       "@app/enums": ["src/enums"],
       "@app/types": ["src/types"],
       "@app/utils/*": ["src/utils/*"],
+      "@app/hooks": ["src/hooks"],
       "@test/constants": ["test/constants"],
       "@test/credentials/*": ["test/credentials/*"],
       "@test/helpers/*": ["test/helpers/*"]
