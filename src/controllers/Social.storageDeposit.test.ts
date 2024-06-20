@@ -37,13 +37,13 @@ describe(`${Social.name}#storageDeposit`, () => {
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
-    let account_id = signer.accountId;
+    let accountId = signer.accountId;
     let deposit = '2000000000000000000000000';
     //testing optional blockhash and nonce too
     transaction = await client.storageDeposit({
       publicKey: keyPair.publicKey,
       signer,
-      account_id,
+      accountId,
       deposit,
     });
 
@@ -134,14 +134,14 @@ describe(`${Social.name}#storageDeposit`, () => {
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // act
-    let account_id = String(Math.random()) + '.near';
+    let accountId = String(Math.random()) + '.near';
     let deposit = '2000000000000000000000000';
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       publicKey: keyPair.publicKey,
       signer,
-      account_id,
+      accountId,
       deposit,
     });
 
@@ -165,11 +165,12 @@ describe(`${Social.name}#storageDeposit`, () => {
 
     result = await signer.viewFunction({
       args: {
-        account_id: account_id,
+        account_id: accountId,
       },
       contractId: socialContractAccountId,
       methodName: ViewMethodEnum.StorageBalanceOf,
     });
+    console.log(result);
     expect(result.total).toEqual(deposit);
   });
 });

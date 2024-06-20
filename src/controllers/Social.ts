@@ -431,8 +431,8 @@ export default class Social {
     nonce,
     publicKey,
     signer,
-    registration_only,
-    account_id,
+    registrationOnly,
+    accountId,
     deposit,
   }: IStorageDepositOptions): Promise<transactions.Transaction> {
     //should I filter valid account ids?
@@ -442,8 +442,8 @@ export default class Social {
       transactions.functionCall(
         ChangeMethodEnum.StorageDeposit,
         {
-          account_id,
-          registration_only,
+          account_id: accountId,
+          registration_only: registrationOnly,
         } as ISocialDBContractStorageDepositArgs,
         BigInt(GAS_FEE_IN_ATOMIC_UNITS),
         BigInt(deposit)

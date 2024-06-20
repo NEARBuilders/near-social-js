@@ -39,7 +39,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // act
-    let account_id = signer.accountId;
+    let accountId = signer.accountId;
 
     //Make deposit to the account
     //2N deposit
@@ -49,7 +49,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       publicKey: keyPair.publicKey,
       signer,
-      account_id,
+      accountId,
       deposit,
     });
 
@@ -139,7 +139,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // act
-    let account_id = signer.accountId;
+    let accountId = signer.accountId;
 
     //Make deposit to the account
     //2N deposit
@@ -149,7 +149,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       publicKey: keyPair.publicKey,
       signer,
-      account_id,
+      accountId,
       deposit,
     });
 
