@@ -47,7 +47,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
 
     //Make deposit to the account
     //2N deposit
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
@@ -84,7 +84,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     expect(resultBefore?.total).toEqual(deposit);
 
     //1N withdraw
-    let withdraw_amount = '1000000000000000000000000';
+    let withdraw_amount = convertNEARToYoctoNEAR('1');
     transaction = await client.storageWithdraw({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),

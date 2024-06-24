@@ -41,7 +41,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     let accountId = signer.accountId;
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     //testing optional blockhash and nonce too
     transaction = await client.storageDeposit({
       publicKey: keyPair.publicKey,
@@ -86,7 +86,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // In the absence of account_id, the deposit is made to the signer
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
@@ -132,7 +132,7 @@ describe(`${Social.name}#storageDeposit`, () => {
 
     // act
     let accountId = String(Math.random()) + '.near';
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
@@ -161,7 +161,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     }
 
     result = await client.storageBalanceOf({
-      accountId: signer.accountId,
+      accountId,
       signer,
     });
     expect(result?.total).toEqual(deposit);
