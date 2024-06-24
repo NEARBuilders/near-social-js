@@ -35,16 +35,17 @@ import type {
   IIsWritePermissionGrantedWithPublicKeyOptions,
   INewSocialOptions,
   ISetOptions,
-  IStorageDepositOptions,
-  IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
-  IStorageBalanceOfOptions,
   ISocialDBContractStorageDepositArgs,
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
+  IStorageBalanceOfOptions,
+  IStorageBalanceOfResult,
+  IStorageDepositOptions,
+  IStorageWithdrawOptions,
 } from '@app/types';
 
 // utils
@@ -91,19 +92,6 @@ export default class Social {
     const { sync_info } = await connection.provider.status();
 
     return sync_info.latest_block_hash;
-  }
-
-  private async _storageBalanceOf({
-    accountId,
-    signer,
-  }: IStorageBalanceOfOptions): Promise<ISocialDBContractStorageBalance | null> {
-    return await signer.viewFunction({
-      args: {
-        account_id: accountId,
-      },
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
-    });
   }
 
   private _uniqueAccountIdsFromKeys(keys: string[]): string[] {
@@ -368,7 +356,7 @@ export default class Social {
     // for each account, check if there is storage, if there isn't, add an action to deposit the minimum storage
     for (let i = 0; i < uniqueAccountIds.length; i++) {
       if (
-        !(await this._storageBalanceOf({
+        !(await this.storageBalanceOf({
           accountId: uniqueAccountIds[i],
           signer,
         }))
@@ -417,6 +405,44 @@ export default class Social {
       actions,
       utils.serialize.base_decode(_blockHash)
     );
+  }
+
+  /**
+   * Sets the new social contract ID.
+   * @param {string} contractId - the account of the new social contract ID.
+   */
+  public setContractId(contractId: string): void {
+    this.contractId = contractId;
+  }
+
+  /**
+   * Gets the storage balance for a given account ID.
+   * @param {IStorageBalanceOfOptions} options - the account ID to check and the signer that is used to call the view
+   * method.
+   * @returns {Promise<IStorageBalanceOfResult | null>} a promise that resolves the total & available balance or null
+   * if the account ID does not have a balance.
+   */
+  public async storageBalanceOf({
+    accountId,
+    signer,
+  }: IStorageBalanceOfOptions): Promise<IStorageBalanceOfResult | null> {
+    const result: ISocialDBContractStorageBalance | null =
+      await signer.viewFunction({
+        args: {
+          account_id: accountId,
+        },
+        contractId: this.contractId,
+        methodName: ViewMethodEnum.StorageBalanceOf,
+      });
+
+    if (!result) {
+      return null;
+    }
+
+    return {
+      available: String(result.available),
+      total: String(result.total),
+    };
   }
 
   /**
@@ -537,12 +563,5 @@ export default class Social {
       actions,
       utils.serialize.base_decode(_blockHash)
     );
-  }
-  /**
-   * Sets the new social contract ID.
-   * @param {string} contractId - the account of the new social contract ID.
-   */
-  public setContractId(contractId: string): void {
-    this.contractId = contractId;
   }
 }

@@ -1,6 +1,4 @@
-import { Account, providers, transactions, utils } from 'near-api-js';
-//import { randomBytes } from 'node:crypto';
-import { ViewMethodEnum } from '@app/enums';
+import { type Account, providers, transactions, utils } from 'near-api-js';
 
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
@@ -10,10 +8,15 @@ import Social from './Social';
 
 // helpers
 import accountAccessKey, {
-  IAccessKeyResponse,
+  type IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
-import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
+
+// types
+import type { IStorageBalanceOfResult } from '@app/types';
+
+// utils
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 
 describe(`${Social.name}#storageDeposit`, () => {
   let keyPair: utils.KeyPairEd25519;
@@ -32,13 +35,13 @@ describe(`${Social.name}#storageDeposit`, () => {
     const client = new Social({
       contractId: socialContractAccountId,
     });
-    let result: Record<string, unknown>;
+    let result: IStorageBalanceOfResult | null;
     let transaction: transactions.Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     let accountId = signer.accountId;
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     //testing optional blockhash and nonce too
     transaction = await client.storageDeposit({
       publicKey: keyPair.publicKey,
@@ -65,14 +68,11 @@ describe(`${Social.name}#storageDeposit`, () => {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    result = await signer.viewFunction({
-      args: {
-        account_id: signer.accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    result = await client.storageBalanceOf({
+      accountId: signer.accountId,
+      signer,
     });
-    expect(result.total).toEqual(deposit);
+    expect(result?.total).toEqual(deposit);
   });
 
   it('should deposit storage for the signer account without account_id', async () => {
@@ -80,13 +80,13 @@ describe(`${Social.name}#storageDeposit`, () => {
     const client = new Social({
       contractId: socialContractAccountId,
     });
-    let result: Record<string, unknown>;
+    let result: IStorageBalanceOfResult | null;
     let transaction: transactions.Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // In the absence of account_id, the deposit is made to the signer
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
@@ -113,14 +113,11 @@ describe(`${Social.name}#storageDeposit`, () => {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    result = await signer.viewFunction({
-      args: {
-        account_id: signer.accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    result = await client.storageBalanceOf({
+      accountId: signer.accountId,
+      signer,
     });
-    expect(result.total).toEqual(deposit);
+    expect(result?.total).toEqual(deposit);
   });
 
   it('should deposit storage for some third person account', async () => {
@@ -128,14 +125,14 @@ describe(`${Social.name}#storageDeposit`, () => {
     const client = new Social({
       contractId: socialContractAccountId,
     });
-    let result: Record<string, unknown>;
+    let result: IStorageBalanceOfResult | null;
     let transaction: transactions.Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
     // act
     let accountId = String(Math.random()) + '.near';
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
@@ -163,14 +160,10 @@ describe(`${Social.name}#storageDeposit`, () => {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    result = await signer.viewFunction({
-      args: {
-        account_id: accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    result = await client.storageBalanceOf({
+      accountId,
+      signer,
     });
-    console.log(result);
-    expect(result.total).toEqual(deposit);
+    expect(result?.total).toEqual(deposit);
   });
 });
