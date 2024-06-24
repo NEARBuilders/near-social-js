@@ -25,3 +25,4 @@ export type { default as ISocialDBContractStorageDepositArgs } from './ISocialDB
 export type { default as ISocialDBContractStorageWithdrawArgs } from './ISocialDBContractStorageWithdrawArgs';
 export type { default as ISocialDBContractStorageTracker } from './ISocialDBContractStorageTracker';
 export type { default as IStorageBalanceOfOptions } from './IStorageBalanceOfOptions';
+export type { default as ISocialProfile } from './ISocialProfile';
