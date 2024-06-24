@@ -117,10 +117,28 @@ Accounts that match the signer's account ID automatically have write permission 
 | [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned trasnaction that contiains the function call to update the specified data. |
 
 
+### `storageBalanceOf(options)`
+
+> Gets the storage balance for a given account ID.
+
+
+#### Parameters
+
+| Name    | Type                                                         | Required | Default | Description                                                                                          |
+|---------|--------------------------------------------------------------|----------|---------|------------------------------------------------------------------------------------------------------|
+| options | [`IStorageBalanceOfOptions`](types#istoragebalanceofoptions) | yes      | -       | Options that include the account ID to check and a signer account to use to check read the contract. |
+
+#### Returns
+
+| Type                                                                        | Description                                                                                                |
+|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| [`Promise<IStorageBalanceOfResult \| null>`](types#istoragebalanceofresult) | A promise that resolves the total and available balance or null if the account ID does not have a balance. |
+
+
+
 ### `storageDeposit(options)`
 
 > Deposit NEAR to the social DB contract to cover storage costs for a given `account_id` or the signer if `account_id` is not provided. Optionally, you can choose to pay only the bare minimum deposit for registering the account in the Social DB contract without any additional storage fees.
->
 
 :::note
 
@@ -130,21 +148,20 @@ The signer account must have sufficient NEAR balance to cover the deposit.
 
 #### Parameters
 
-| Name            | Type                                       | Required | Default | Description                                                                 |
-|-----------------|--------------------------------------------|----------|---------|-----------------------------------------------------------------------------|
-| options         | [`IStorageDepositOptions`](types#istorage-deposit-options) | yes      | -       | Options that include the deposit details, the signer's account and key details. |
+| Name    | Type                                                       | Required | Default | Description                                                                     |
+|---------|------------------------------------------------------------|----------|---------|---------------------------------------------------------------------------------|
+| options | [`IStorageDepositOptions`](types#istorage-deposit-options) | yes      | -       | Options that include the deposit details, the signer's account and key details. |
 
 #### Returns
 
-| Type                                                                                                          | Description                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| Type                                                                                                          | Description                                                                                                         |
+|---------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 | [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned transaction that contains the function call to deposit the specified amount. |
 
 
 ### `storageWithdraw(options)`
 
 > Withdraw NEAR from the social DB contract for covering storage. If the `amount` is not specified, all available NEAR is withdrawn.
->
 
 :::note
 
@@ -154,12 +171,12 @@ The signer account must have sufficient NEAR balance available for withdrawal.
 
 #### Parameters
 
-| Name    | Type                                       | Required | Default | Description                                                                 |
-|---------|--------------------------------------------|----------|---------|-----------------------------------------------------------------------------|
+| Name    | Type                                                         | Required | Default | Description                                                                        |
+|---------|--------------------------------------------------------------|----------|---------|------------------------------------------------------------------------------------|
 | options | [`IStorageWithdrawOptions`](types#istorage-withdraw-options) | yes      | -       | Options that include the withdrawal details, the signer's account and key details. |
 
 #### Returns
 
-| Type                                                                                                          | Description                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| Type                                                                                                          | Description                                                                                                          |
+|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | [`Promise<Transaction>`](https://near.github.io/near-api-js/classes/near_api_js.transaction.Transaction.html) | A promise that resolves to an unsigned transaction that contains the function call to withdraw the specified amount. |
