@@ -12,6 +12,7 @@ import {
   GAS_FEE_IN_ATOMIC_UNITS,
   MINIMUM_STORAGE_IN_BYTES,
   STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
+  ONE_YOCTO,
 } from '@app/constants';
 
 // enums
@@ -34,6 +35,8 @@ import type {
   IIsWritePermissionGrantedWithPublicKeyOptions,
   INewSocialOptions,
   ISetOptions,
+  IStorageDepositOptions,
+  IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
@@ -41,6 +44,7 @@ import type {
   IStorageBalanceOfOptions,
   ISocialDBContractStorageDepositArgs,
   ISocialDBContractIsWritePermissionGrantedArgs,
+  ISocialDBContractStorageWithdrawArgs,
 } from '@app/types';
 
 // utils
@@ -415,6 +419,125 @@ export default class Social {
     );
   }
 
+  /**
+   * Deposit NEAR to the social DB contract for covering storage for the given account_id or the signer if acount_id is not provided.
+   * It also let you choose the option to pay bare minimum deposit for registering the account in the Social DB contract without any additional storage fees.
+   * @param {IStorageDepositOptions} options - the necessary options to deposit NEAR for covering storage for the account_id or the signer.
+   * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
+   * and sent to the network.
+   */
+  public async storageDeposit({
+    blockHash,
+    nonce,
+    publicKey,
+    signer,
+    registrationOnly,
+    accountId,
+    deposit,
+  }: IStorageDepositOptions): Promise<transactions.Transaction> {
+    //should I filter valid account ids?
+    const actions: transactions.Action[] = [];
+
+    actions.push(
+      transactions.functionCall(
+        ChangeMethodEnum.StorageDeposit,
+        {
+          account_id: accountId,
+          registration_only: registrationOnly,
+        } as ISocialDBContractStorageDepositArgs,
+        BigInt(GAS_FEE_IN_ATOMIC_UNITS),
+        BigInt(deposit)
+      )
+    );
+
+    let _blockHash: string | null = blockHash || null;
+    let _nonce: bigint | null = nonce || null;
+    let accessKeyView: AccessKeyView | null;
+
+    if (!_blockHash) {
+      _blockHash = await this._latestBlockHash(signer.connection);
+    }
+
+    if (!_nonce) {
+      accessKeyView = await this._accessKeyView(signer, publicKey);
+
+      if (!accessKeyView) {
+        throw new AccountNotFoundError(
+          signer.accountId,
+          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+        );
+      }
+
+      _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
+    }
+
+    return transactions.createTransaction(
+      signer.accountId,
+      utils.PublicKey.fromString(publicKey.toString()),
+      this.contractId,
+      _nonce,
+      actions,
+      utils.serialize.base_decode(_blockHash)
+    );
+  }
+  /**
+   * Withdraw available NEAR from the social DB contract for covering storage.
+   * If amount is not specified than all available NEAR is withdrawn.
+   * @param {IStorageWithdrawOptions} options - define the amount to be withdrawn.
+   * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
+   * and sent to the network.
+   */
+  public async storageWithdraw({
+    blockHash,
+    amount,
+    nonce,
+    publicKey,
+    signer,
+  }: IStorageWithdrawOptions): Promise<transactions.Transaction> {
+    const actions: transactions.Action[] = [];
+
+    actions.push(
+      transactions.functionCall(
+        ChangeMethodEnum.StorageWithdraw,
+        {
+          amount,
+        } as ISocialDBContractStorageWithdrawArgs,
+        BigInt(GAS_FEE_IN_ATOMIC_UNITS),
+        //the contract asserts for 1 yocto attached
+        BigInt(ONE_YOCTO)
+      )
+    );
+
+    let _blockHash: string | null = blockHash || null;
+    let _nonce: bigint | null = nonce || null;
+    let accessKeyView: AccessKeyView | null;
+
+    if (!_blockHash) {
+      _blockHash = await this._latestBlockHash(signer.connection);
+    }
+
+    if (!_nonce) {
+      accessKeyView = await this._accessKeyView(signer, publicKey);
+
+      if (!accessKeyView) {
+        throw new AccountNotFoundError(
+          signer.accountId,
+          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+        );
+      }
+
+      _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
+    }
+
+    return transactions.createTransaction(
+      signer.accountId,
+      utils.PublicKey.fromString(publicKey.toString()),
+      this.contractId,
+      _nonce,
+      actions,
+      utils.serialize.base_decode(_blockHash)
+    );
+  }
   /**
    * Sets the new social contract ID.
    * @param {string} contractId - the account of the new social contract ID.
