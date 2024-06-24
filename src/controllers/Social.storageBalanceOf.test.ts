@@ -8,9 +8,6 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 import Social from './Social';
 
 // helpers
-import accountAccessKey, {
-  type IAccessKeyResponse,
-} from '@test/helpers/accountAccessKey';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 // types
@@ -22,7 +19,6 @@ import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 describe(`${Social.name}#getVersion`, () => {
   let keyPair: utils.KeyPairEd25519;
   let signer: Account;
-  let signerAccessKeyResponse: IAccessKeyResponse;
 
   beforeEach(async () => {
     const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
@@ -52,17 +48,14 @@ describe(`${Social.name}#getVersion`, () => {
       contractId: socialContractAccountId,
     });
     const deposit = convertNEARToYoctoNEAR('1');
-    let failure: ExecutionError | null;
-    let result: IStorageBalanceOfResult | null;
-    let transaction: transactions.Transaction;
-
-    signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
-    transaction = await client.storageDeposit({
+    const transaction = await client.storageDeposit({
       publicKey: keyPair.publicKey,
       signer,
       accountId: signer.accountId,
       deposit,
     });
+    let failure: ExecutionError | null;
+    let result: IStorageBalanceOfResult | null;
     const [_, signedTransaction] = await transactions.signTransaction(
       transaction,
       signer.connection.signer,
