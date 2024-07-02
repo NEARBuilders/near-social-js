@@ -367,7 +367,7 @@ export default class Social {
       }
     }
 
-    // if the signer is updating their own data, check for minimum storage deposit
+    // if the signer is updating their own data, calculate storage deposit
     if (
       this._uniqueAccountIdsFromKeys(keys).find(
         (value) => value === signer.accountId
