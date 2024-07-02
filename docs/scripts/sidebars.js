@@ -18,6 +18,7 @@ const sidebars = {
         'advanced/reading-data',
         'advanced/storing-data',
         'advanced/granting-write-permission',
+        'advanced/storage-deposit-withdraw',
       ],
       label: 'Advanced',
       link: {

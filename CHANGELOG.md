@@ -1,3 +1,10 @@
+# [1.0.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2024-06-24)
+
+
+### Features
+
+* adding more change methods from the social contract ([#9](https://github.com/NEARBuilders/near-social-js/issues/9)) ([1605f62](https://github.com/NEARBuilders/near-social-js/commit/1605f62407cf3d091e24e391059dab02db3f9839))
+
 # [1.0.0-beta.3](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2024-06-12)
 
 
