@@ -53,22 +53,37 @@ import TOCInline from '@theme/TOCInline';
 | refundUnusedDeposit | `boolean`                                                                                              | no       | `false` | If true, will refund any left over deposit to the signer's account.                                                                                                                                                                                       |
 | signer              | [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html)               | yes      | -       | An account that will read the data. For details on getting the account object see the NEAR API [docs](https://docs.near.org/tools/near-api-js/account).                                                                                                   |
 
-### `IStorageDepositOptions`
-| Name                | Type                                                                                                   | Required | Default | Description                                                                                                                                                                                                                                               |
-|---------------------|--------------------------------------------------------------------------------------------------------|----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| account_id        | `string`  																				| no  			| -            | The account ID for which to deposit storage. Defaults to the signer account if not provided.
-| registration_only| `boolean` | no | `false` | If true, deposits the minimum amount required for account registration without additional storage.|
-| deposit | `string` | yes | - | The amount of NEAR to deposit for storage, in yoctoNEAR. | | blockHash | `string` | no | - | A current block hash (within 24 hours). Defaults to the latest block hash. |
-| nonce | `bigint` | no | - | The access key's nonce. Defaults to the current access key nonce incremented by 1. |
-| publicKey | [`PublicKey`](https://near.github.io/near-api-js/classes/near_api_js.utils.PublicKey.html) \| `string` | yes | - | The signer's public key for the access key that will be used to write to the contract. |
-| signer | [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html) | yes | - | An account that will read the data. For details on getting the account object see the NEAR API [docs](https://docs.near.org/tools/near-api-js/account).   |
+### `IStorageBalanceOfOptions`
+
+| Name      | Type                                                                                     | Required | Default | Description                                                                                                                                             |
+|-----------|------------------------------------------------------------------------------------------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| accountId | `string`  																				                                                           | yes  			 | -       | The account ID for which to check the balance of.                                                                                                       |
+| signer    | [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html) | yes      | -       | An account that will read the data. For details on getting the account object see the NEAR API [docs](https://docs.near.org/tools/near-api-js/account). |
+
+### `IStorageBalanceOfResult`
+
+| Name      | Type                 | Required | Default | Description                               |
+|-----------|----------------------|----------|---------|-------------------------------------------|
+| available | `string`  										 | yes  		  | -       | The yotoNEAR amount of deposit available. |
+| total     | `string`             | yes      | -       | The total yotoNEAR amount deposited.      |
+
+### `IStorageDepositResult`
+
+| Name              | Type                                                                                                   | Required | Default | Description                                                                                                                                             |
+|-------------------|--------------------------------------------------------------------------------------------------------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| account_id        | `string`  																				                                                                         | no  			  | -       | The account ID for which to deposit storage. Defaults to the signer account if not provided.                                                            |
+| registration_only | `boolean`                                                                                              | no       | `false` | If true, deposits the minimum amount required for account registration without additional storage.                                                      |
+| deposit           | `string`                                                                                               | yes      | -       | The amount of NEAR to deposit for storage, in yoctoNEAR.                                                                                                | | blockHash | `string` | no | - | A current block hash (within 24 hours). Defaults to the latest block hash. |
+| nonce             | `bigint`                                                                                               | no       | -       | The access key's nonce. Defaults to the current access key nonce incremented by 1.                                                                      |
+| publicKey         | [`PublicKey`](https://near.github.io/near-api-js/classes/near_api_js.utils.PublicKey.html) \| `string` | yes      | -       | The signer's public key for the access key that will be used to write to the contract.                                                                  |
+| signer            | [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html)               | yes      | -       | An account that will read the data. For details on getting the account object see the NEAR API [docs](https://docs.near.org/tools/near-api-js/account). |
 
 ### `IStorageWithdrawOptions`
 
-| Name | Type | Required | Default | Description |
-|------------------|--------------------------------------------------------------------------------------------------------|----------|---------|----------------------------------------------------------------------------------------------|
-| amount | `string` | no | - | The amount of NEAR to withdraw, in yoctoNEAR. If not specified, withdraws all available NEAR.|
-| blockHash | `string` | no | - | A current block hash (within 24 hours). Defaults to the latest block hash. |
-| nonce | `bigint` | no | - | The access key's nonce. Defaults to the current access key nonce incremented by 1. |
-| publicKey | [`PublicKey`](https://near.github.io/near-api-js/classes/near_api_js.utils.PublicKey.html) \| `string` | yes | - | The signer's public key for the access key that will be used to write to the contract. |
-| signer | [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html) | yes | - | An account that will read the data. For details on getting the account object see the NEAR API [docs](https://docs.near.org/tools/near-api-js/account).  |
+| Name      | Type                                                                                                   | Required | Default | Description                                                                                                                                             |
+|-----------|--------------------------------------------------------------------------------------------------------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| amount    | `string`                                                                                               | no       | -       | The amount of NEAR to withdraw, in yoctoNEAR. If not specified, withdraws all available NEAR.                                                           |
+| blockHash | `string`                                                                                               | no       | -       | A current block hash (within 24 hours). Defaults to the latest block hash.                                                                              |
+| nonce     | `bigint`                                                                                               | no       | -       | The access key's nonce. Defaults to the current access key nonce incremented by 1.                                                                      |
+| publicKey | [`PublicKey`](https://near.github.io/near-api-js/classes/near_api_js.utils.PublicKey.html) \| `string` | yes      | -       | The signer's public key for the access key that will be used to write to the contract.                                                                  |
+| signer    | [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html)               | yes      | -       | An account that will read the data. For details on getting the account object see the NEAR API [docs](https://docs.near.org/tools/near-api-js/account). |
