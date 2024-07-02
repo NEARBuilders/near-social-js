@@ -8,11 +8,7 @@ import {
 } from 'near-api-js';
 
 // constants
-import {
-  GAS_FEE_IN_ATOMIC_UNITS,
-  MINIMUM_STORAGE_IN_BYTES,
-  STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
-} from '@app/constants';
+import { GAS_FEE_IN_ATOMIC_UNITS } from '@app/constants';
 
 // enums
 import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
@@ -43,6 +39,7 @@ import type {
 } from '@app/types';
 
 // utils
+import calculateRequiredDeposit from '@app/utils/calculateRequiredDeposit';
 import parseKeysFromData from '@app/utils/parseKeysFromData';
 import validateAccountId from '@app/utils/validateAccountId';
 
@@ -381,12 +378,10 @@ export default class Social {
         signer,
       });
 
-      // if there is no storage balance, use the minimum storage cost as the deposit
-      if (!storageBalance) {
-        deposit = new BigNumber(MINIMUM_STORAGE_IN_BYTES).multipliedBy(
-          new BigNumber(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS)
-        );
-      }
+      deposit = calculateRequiredDeposit({
+        data,
+        storageBalance,
+      });
     }
 
     return transactions.createTransaction(
