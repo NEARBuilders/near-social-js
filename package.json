@@ -81,5 +81,9 @@
   "dependencies": {
     "bignumber.js": "^9.1.2",
     "near-api-js": "^4.0.1"
+  },
+  "resolutions": {
+    "braces": "^3.0.3",
+    "ws": "^8.17.1"
   }
 }
