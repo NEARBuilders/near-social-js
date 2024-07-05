@@ -50,6 +50,7 @@
   * [3.3. Build](#33-build)
 * [4. Appendix](#-4-appendix)
   * [4.1. Useful Commands](#41-useful-commands)
+  * [4.2. Social Contract](#42-social-contract)
 * [5. How To Contribute](#-5-how-to-contribute)
 * [6. License](#-6-license)
 
@@ -109,6 +110,15 @@ The above command will compile the Typescript source code into a `dist/` directo
 | `yarn node:start` | Stops the NEAR development node that was started in `yarn node:start`.             |
 | `yarn prettier`   | Runs the prettier on `.js` and `.ts` files.                                        |
 | `yarn test`       | Starts a NEAR development node and runs the tests.                                 |
+
+<sup>[Back to top ^][table-of-contents]</sup>
+
+### 4.2. Social Contract
+
+| Network | Account ID            | Link                                                                                                                   |
+|---------|-----------------------|------------------------------------------------------------------------------------------------------------------------|
+| Mainnet | `social.near`         | [https://nearblocks.io/address/social.near](https://nearblocks.io/address/social.near)                                 |
+| Testnet | `v1.social08.testnet` | [https://testnet.nearblocks.io/address/v1.social08.testnet](https://testnet.nearblocks.io/address/v1.social08.testnet) |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
