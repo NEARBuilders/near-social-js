@@ -1,6 +1,6 @@
 {
   "name": "@builddao/near-social-js",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.5",
   "description": "A JavaScript SDK for interacting with the social contract (social.near) with helper functions for typical social features.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

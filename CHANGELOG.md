@@ -1,3 +1,10 @@
+# [1.0.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2024-07-05)
+
+
+### Features
+
+* check for write permissions for each key in the set function ([#23](https://github.com/NEARBuilders/near-social-js/issues/23)) ([f95db02](https://github.com/NEARBuilders/near-social-js/commit/f95db020e02e4b77956d6058dc2d59778eb803a1))
+
 # [1.0.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2024-06-24)
 
 
