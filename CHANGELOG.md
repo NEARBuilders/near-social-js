@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0...v1.0.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* **readme:** broken docs link on readme ([#32](https://github.com/NEARBuilders/near-social-js/issues/32)) ([b5235e4](https://github.com/NEARBuilders/near-social-js/commit/b5235e46a969d615fb159f4ed2c3fbf983b1f255))
+
 # 1.0.0 (2024-07-05)
 
 
