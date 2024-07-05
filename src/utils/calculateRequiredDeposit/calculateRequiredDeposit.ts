@@ -3,11 +3,16 @@ import BigNumber from 'bignumber.js';
 // constants
 import {
   MINIMUM_STORAGE_IN_BYTES,
+  ONE_YOCTO,
   STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
 } from '@app/constants';
+import { EXTRA_STORAGE_BALANCE } from './constants';
 
 // types
 import type { IOptions } from './types';
+
+// utils
+import calculateSizeOfData from '../calculateSizeOfData';
 
 /**
  * Calculates the deposit required for storage. If the storage balance is not available, a minimum storage cost is
@@ -25,8 +30,10 @@ export default function calculateRequiredDeposit({
     MINIMUM_STORAGE_IN_BYTES
   ).multipliedBy(new BigNumber(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS));
   const storageCostOfData: BigNumber = new BigNumber(
-    new Blob([JSON.stringify(data)]).size
-  ).multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
+    String(calculateSizeOfData(data))
+  )
+    .plus(EXTRA_STORAGE_BALANCE) // https://github.com/NearSocial/VM/blob/6047c6a9b96f3de14e600c1d2b96c432bbb76dd4/src/lib/data/commitData.js#L62
+    .multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
   let storageDepositAvailable: BigNumber;
 
   // if there is no balance, use the minimum storage cost, or the storage cost of the data
@@ -41,5 +48,5 @@ export default function calculateRequiredDeposit({
   // if the storage deposit available is less than the cost of storage, use the difference as the required deposit
   return storageDepositAvailable.lt(storageCostOfData)
     ? storageCostOfData.minus(storageDepositAvailable)
-    : new BigNumber('1');
+    : new BigNumber(ONE_YOCTO);
 }

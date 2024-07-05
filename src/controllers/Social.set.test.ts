@@ -4,6 +4,9 @@ import { randomBytes } from 'node:crypto';
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
+// constants
+import { MINIMUM_STORAGE_IN_BYTES } from '@app/constants';
+
 // controllers
 import Social from './Social';
 
@@ -17,8 +20,29 @@ import { KeyNotAllowedError } from '@app/errors';
 import accountAccessKey, {
   IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
-import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
+
+// utils
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
+
+async function sendTransaction(
+  transaction: transactions.Transaction,
+  signer: Account
+): Promise<void> {
+  const [_, signedTransaction] = await transactions.signTransaction(
+    transaction,
+    signer.connection.signer,
+    signer.accountId,
+    signer.connection.networkId
+  );
+  const { status } =
+    await signer.connection.provider.sendTransaction(signedTransaction);
+  const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+
+  if (failure) {
+    throw new Error(JSON.stringify(failure));
+  }
+}
 
 describe(`${Social.name}#set`, () => {
   let keyPair: utils.KeyPairEd25519;
@@ -68,12 +92,12 @@ describe(`${Social.name}#set`, () => {
     throw new Error(`should throw a key not allowed error`);
   });
 
-  it('should set storage and add the data', async () => {
+  it('should add some arbitrary data', async () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
     });
-    const data = {
+    const data: Record<string, Record<string, unknown>> = {
       [signer.accountId]: {
         profile: {
           name: randomBytes(16).toString('hex'),
@@ -91,19 +115,42 @@ describe(`${Social.name}#set`, () => {
     });
 
     // assert
-    const [_, signedTransaction] = await transactions.signTransaction(
-      transaction,
-      signer.connection.signer,
-      signer.accountId,
-      signer.connection.networkId
-    );
-    const { status } =
-      await signer.connection.provider.sendTransaction(signedTransaction);
-    const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    await sendTransaction(transaction, signer);
 
-    if (failure) {
-      throw new Error(`${failure.error_type}: ${failure.error_message}`);
-    }
+    result = await client.get({
+      keys: [`${signer.accountId}/profile/name`],
+      signer,
+    });
+
+    expect(result).toEqual(data);
+  });
+
+  it('should add data that exceeds the minimum storage amount', async () => {
+    // arrange
+    const client = new Social({
+      contractId: socialContractAccountId,
+    });
+    const data: Record<string, Record<string, unknown>> = {
+      [signer.accountId]: {
+        profile: {
+          name: randomBytes(parseInt(MINIMUM_STORAGE_IN_BYTES) + 1).toString(
+            'hex'
+          ),
+        },
+      },
+    };
+    let result: Record<string, unknown>;
+    let transaction: transactions.Transaction;
+
+    // act
+    transaction = await client.set({
+      data,
+      publicKey: keyPair.publicKey,
+      signer,
+    });
+
+    // assert
+    await sendTransaction(transaction, signer);
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
