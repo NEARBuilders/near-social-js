@@ -29,7 +29,10 @@
 
 <p align="center">
   <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
-    <img src="https://img.shields.io/npm/v/@builddao/near-social-js" alt="npm" />
+    <img src="https://img.shields.io/npm/v/%40builddao%2Fnear-social-js?logo=npm" alt="npm" />
+  </a>
+  <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
+    <img src="https://img.shields.io/npm/dw/%40builddao%2Fnear-social-js?logo=npm&label=weekly%20downloads" alt="weekly npm downloads" />
   </a>
 </p>
 
