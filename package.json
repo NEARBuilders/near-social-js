@@ -11,6 +11,10 @@
   },
   "contributors": [
     {
+      "name": "Elliot Braem",
+      "url": "https://github.com/elliotBraem"
+    },
+    {
       "name": "Jas",
       "email": "jaswinder@harmonicguild.io",
       "url": "https://github.com/jaswinder6991"
@@ -21,11 +25,13 @@
       "url": "https://github.com/kieranroneill"
     }
   ],
+  "bugs": "https://github.com/NEARBuilders/near-social-js/issues/new?assignees=kieranroneill&labels=%F0%9F%90%9B+bug&projects=&template=bug_report_template.yml&title=%5BBug%5D%3A+",
   "license": "MIT",
   "keywords": [
     "blockchain",
     "near",
-    "nearprotocol"
+    "nearprotocol",
+    "social"
   ],
   "private": false,
   "engines": {
