@@ -2,6 +2,7 @@
   "name": "@builddao/near-social-js",
   "version": "1.0.0",
   "description": "A JavaScript SDK for interacting with the social contract (social.near) with helper functions for typical social features.",
+  "homepage": "https://nearbuilders.github.io/near-social-js/",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
@@ -9,6 +10,10 @@
     "url": "https://github.com/NEARBuilders/near-social-js"
   },
   "contributors": [
+    {
+      "name": "Elliot Braem",
+      "url": "https://github.com/elliotBraem"
+    },
     {
       "name": "Jas",
       "email": "jaswinder@harmonicguild.io",
@@ -20,11 +25,13 @@
       "url": "https://github.com/kieranroneill"
     }
   ],
+  "bugs": "https://github.com/NEARBuilders/near-social-js/issues/new?assignees=kieranroneill&labels=%F0%9F%90%9B+bug&projects=&template=bug_report_template.yml&title=%5BBug%5D%3A+",
   "license": "MIT",
   "keywords": [
     "blockchain",
     "near",
-    "nearprotocol"
+    "nearprotocol",
+    "social"
   ],
   "private": false,
   "engines": {

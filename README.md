@@ -16,7 +16,8 @@
     <img alt="GitHub Pre-release" src="https://img.shields.io/github/v/release/NEARBuilders/near-social-js?include_prereleases&label=pre-release&logo=github">
   </a>
   <a href="https://github.com/NEARBuilders/near-social-js/releases">
-    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/NEARBuilders/near-social-js?label=pre-release date&logo=github">
+    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/NEARBuilders/near-social-js?label=pre-release%20date&logo=github
+">
   </a>
 </p>
 
@@ -28,7 +29,10 @@
 
 <p align="center">
   <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
-    <img src="https://img.shields.io/npm/v/@builddao/near-social-js" alt="npm" />
+    <img src="https://img.shields.io/npm/v/%40builddao%2Fnear-social-js?logo=npm" alt="npm" />
+  </a>
+  <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
+    <img src="https://img.shields.io/npm/dw/%40builddao%2Fnear-social-js?logo=npm&label=weekly%20downloads" alt="weekly npm downloads" />
   </a>
 </p>
 
@@ -46,10 +50,13 @@
   * [3.3. Build](#33-build)
 * [4. Appendix](#-4-appendix)
   * [4.1. Useful Commands](#41-useful-commands)
+  * [4.2. Social Contract](#42-social-contract)
 * [5. How To Contribute](#-5-how-to-contribute)
 * [6. License](#-6-license)
 
 ## 🔭 1. Overview
+
+TBC...
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -106,6 +113,15 @@ The above command will compile the Typescript source code into a `dist/` directo
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
+### 4.2. Social Contract
+
+| Network | Account ID            | Link                                                                                                                   |
+|---------|-----------------------|------------------------------------------------------------------------------------------------------------------------|
+| Mainnet | `social.near`         | [https://nearblocks.io/address/social.near](https://nearblocks.io/address/social.near)                                 |
+| Testnet | `v1.social08.testnet` | [https://testnet.nearblocks.io/address/v1.social08.testnet](https://testnet.nearblocks.io/address/v1.social08.testnet) |
+
+<sup>[Back to top ^][table-of-contents]</sup>
+
 ## 👏 5. How To Contribute
 
 Please read the [**Contributing Guide**][contribute] to learn about the development process.
@@ -120,7 +136,7 @@ Please refer to the [LICENSE][license] file.
 
 <!-- Links -->
 [contribute]: ./CONTRIBUTING.md
-[documentation]: https://https://nearbuilders.github.io//near-social-js
+[documentation]: https://nearbuilders.github.io/near-social-js
 [license]: ./LICENSE
 [node]: https://nodejs.org/en/
 [table-of-contents]: #table-of-contents
