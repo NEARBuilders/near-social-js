@@ -16,7 +16,8 @@
     <img alt="GitHub Pre-release" src="https://img.shields.io/github/v/release/NEARBuilders/near-social-js?include_prereleases&label=pre-release&logo=github">
   </a>
   <a href="https://github.com/NEARBuilders/near-social-js/releases">
-    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/NEARBuilders/near-social-js?label=pre-release date&logo=github">
+    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/NEARBuilders/near-social-js?label=pre-release%20date&logo=github
+">
   </a>
 </p>
 
@@ -120,7 +121,7 @@ Please refer to the [LICENSE][license] file.
 
 <!-- Links -->
 [contribute]: ./CONTRIBUTING.md
-[documentation]: https://https://nearbuilders.github.io//near-social-js
+[documentation]: https://nearbuilders.github.io/near-social-js
 [license]: ./LICENSE
 [node]: https://nodejs.org/en/
 [table-of-contents]: #table-of-contents
