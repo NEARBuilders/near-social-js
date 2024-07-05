@@ -8,12 +8,7 @@ import {
 } from 'near-api-js';
 
 // constants
-import {
-  GAS_FEE_IN_ATOMIC_UNITS,
-  MINIMUM_STORAGE_IN_BYTES,
-  STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
-  ONE_YOCTO,
-} from '@app/constants';
+import { GAS_FEE_IN_ATOMIC_UNITS, ONE_YOCTO } from '@app/constants';
 
 // enums
 import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
@@ -42,12 +37,14 @@ import type {
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
   IStorageBalanceOfOptions,
-  ISocialDBContractStorageDepositArgs,
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
+  ISocialDBContractStorageDepositArgs,
 } from '@app/types';
 
 // utils
+import calculateRequiredDeposit from '@app/utils/calculateRequiredDeposit';
+import parseKeysFromData from '@app/utils/parseKeysFromData';
 import validateAccountId from '@app/utils/validateAccountId';
 
 export default class Social {
@@ -112,7 +109,7 @@ export default class Social {
 
       return acc.find((value) => value === accountId)
         ? acc
-        : [...acc, currentValue];
+        : [...acc, accountId];
     }, []);
   }
 
@@ -320,8 +317,7 @@ export default class Social {
 
   /**
    * Stores some data to the contract for a given set of keys. The `options.data`'s top-level key should be an account
-   * ID to which the nested data is stored. The signer's public key should have permission to write to the
-   * aforementioned account IDs.
+   * ID to which the nested data is stored. The signer's public key should have permission to write to the keys.
    * @param {ISetOptions} options - the necessary options to set some data.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
@@ -334,19 +330,12 @@ export default class Social {
     refundUnusedDeposit,
     signer,
   }: ISetOptions): Promise<transactions.Transaction> {
-    const uniqueAccountIds = Object.keys(data)
-      .filter(validateAccountId)
-      .reduce<string[]>(
-        (acc, currentValue) =>
-          acc.find((value) => value === currentValue)
-            ? acc
-            : [...acc, currentValue],
-        []
-      ); // filter out only valid account ids
-    const actions: transactions.Action[] = [];
+    const keys = parseKeysFromData(data);
     let _blockHash: string | null = blockHash || null;
     let _nonce: bigint | null = nonce || null;
     let accessKeyView: AccessKeyView | null;
+    let deposit: BigNumber = new BigNumber('1');
+    let storageBalance: ISocialDBContractStorageBalance | null;
 
     if (!_blockHash) {
       _blockHash = await this._latestBlockHash(signer.connection);
@@ -365,56 +354,60 @@ export default class Social {
       _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
     }
 
-    // for each account, check if there is storage, if there isn't, add an action to deposit the minimum storage
-    for (let i = 0; i < uniqueAccountIds.length; i++) {
+    // for each key, check if the signer has been granted write permission for the key
+    for (let i = 0; i < keys.length; i++) {
       if (
-        !(await this._storageBalanceOf({
-          accountId: uniqueAccountIds[i],
+        (keys[i].split('/')[0] || '') !== signer.accountId &&
+        !(await this.isWritePermissionGranted({
+          granteePublicKey: publicKey,
+          key: keys[i],
           signer,
         }))
       ) {
-        actions.push(
-          transactions.functionCall(
-            ChangeMethodEnum.StorageDeposit,
-            {
-              account_id: uniqueAccountIds[i],
-              registration_only: true,
-            } as ISocialDBContractStorageDepositArgs,
-            BigInt(GAS_FEE_IN_ATOMIC_UNITS),
-            BigInt(
-              new BigNumber(MINIMUM_STORAGE_IN_BYTES)
-                .multipliedBy(
-                  new BigNumber(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS)
-                )
-                .toFixed()
-            ) // minimum storage cost
-          )
+        throw new KeyNotAllowedError(
+          keys[i],
+          `the supplied public key has not been granted write permission for "${keys[i]}"`
         );
       }
     }
 
-    actions.push(
-      transactions.functionCall(
-        ChangeMethodEnum.Set,
-        {
-          data,
-          ...(refundUnusedDeposit && {
-            options: {
-              refund_unused_deposit: refundUnusedDeposit,
-            },
-          }),
-        } as ISocialDBContractSetArgs,
-        BigInt(GAS_FEE_IN_ATOMIC_UNITS),
-        actions.length <= 0 ? BigInt('1') : BigInt('0')
+    // if the signer is updating their own data, calculate storage deposit
+    if (
+      this._uniqueAccountIdsFromKeys(keys).find(
+        (value) => value === signer.accountId
       )
-    );
+    ) {
+      storageBalance = await this._storageBalanceOf({
+        accountId: signer.accountId,
+        signer,
+      });
+
+      deposit = calculateRequiredDeposit({
+        data,
+        storageBalance,
+      });
+    }
 
     return transactions.createTransaction(
       signer.accountId,
       utils.PublicKey.fromString(publicKey.toString()),
       this.contractId,
       _nonce,
-      actions,
+      [
+        transactions.functionCall(
+          ChangeMethodEnum.Set,
+          {
+            data,
+            ...(refundUnusedDeposit && {
+              options: {
+                refund_unused_deposit: refundUnusedDeposit,
+              },
+            }),
+          } as ISocialDBContractSetArgs,
+          BigInt(GAS_FEE_IN_ATOMIC_UNITS),
+          BigInt(deposit.toFixed())
+        ),
+      ],
       utils.serialize.base_decode(_blockHash)
     );
   }
