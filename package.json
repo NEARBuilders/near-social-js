@@ -8,11 +8,18 @@
     "type": "git",
     "url": "https://github.com/NEARBuilders/near-social-js"
   },
-  "author": {
-    "name": "Kieran O'Neill",
-    "email": "hello@kieranoneill.com",
-    "url": "https://github.com/kieranroneill"
-  },
+  "contributors": [
+    {
+      "name": "Jas",
+      "email": "jaswinder@harmonicguild.io",
+      "url": "https://github.com/jaswinder6991"
+    },
+    {
+      "name": "Kieran O'Neill",
+      "email": "hello@kieranoneill.com",
+      "url": "https://github.com/kieranroneill"
+    }
+  ],
   "license": "MIT",
   "keywords": [
     "blockchain",
