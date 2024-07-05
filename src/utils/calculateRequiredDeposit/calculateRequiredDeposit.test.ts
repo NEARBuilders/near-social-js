@@ -6,8 +6,10 @@ import {
   MINIMUM_STORAGE_IN_BYTES,
   STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
 } from '@app/constants';
+import { EXTRA_STORAGE_BALANCE } from './constants';
 
 // utils
+import calculateSizeOfData from '../calculateSizeOfData';
 import calculateRequiredDeposit from './calculateRequiredDeposit';
 
 describe('calculateRequiredDeposit()', () => {
@@ -46,9 +48,9 @@ describe('calculateRequiredDeposit()', () => {
           },
         },
       };
-      const storageCostOfData = new BigNumber(
-        new Blob([JSON.stringify(data)]).size
-      ).multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
+      const storageCostOfData = new BigNumber(String(calculateSizeOfData(data)))
+        .plus(EXTRA_STORAGE_BALANCE)
+        .multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
 
       // act
       const result = calculateRequiredDeposit({
@@ -72,9 +74,9 @@ describe('calculateRequiredDeposit()', () => {
         },
       };
       const difference = new BigNumber('12');
-      const storageCostOfData = new BigNumber(
-        new Blob([JSON.stringify(data)]).size
-      ).multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
+      const storageCostOfData = new BigNumber(String(calculateSizeOfData(data)))
+        .plus(EXTRA_STORAGE_BALANCE)
+        .multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
 
       // act
       const result = calculateRequiredDeposit({
@@ -98,9 +100,9 @@ describe('calculateRequiredDeposit()', () => {
           },
         },
       };
-      const storageCostOfData = new BigNumber(
-        new Blob([JSON.stringify(data)]).size
-      ).multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
+      const storageCostOfData = new BigNumber(String(calculateSizeOfData(data)))
+        .plus(EXTRA_STORAGE_BALANCE)
+        .multipliedBy(STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS);
 
       // act
       const result = calculateRequiredDeposit({
