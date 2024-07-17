@@ -27,9 +27,31 @@ describe(`${Social.name}#get`, () => {
     const result = await client.get({
       keys: ['unknown.test.near/profile/name'],
       signer,
+      useApiServer: false,
     });
 
     // assert
     expect(result).toEqual({});
+  });
+
+  it('should return an empty object when the contract does not know the account', async () => {
+    //This test could use some improvement. Maybe we create a test account on mainnet for this.
+    //Or atleast information here that these tests are not meant for local tests.
+    // arrange
+    const client = new Social({
+      contractId: socialContractAccountId,
+    });
+    // act
+    const result = await client.get({
+      keys: ['jass.near/profile/name/'],
+    });
+
+    expect(result).toEqual({
+      'jass.near': {
+        profile: {
+          name: 'Jaswinder Singh',
+        },
+      },
+    });
   });
 });

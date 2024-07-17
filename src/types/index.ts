@@ -1,6 +1,7 @@
 export type { default as IDefaultChangeOptions } from './IDefaultChangeOptions';
 export type { default as IDefaultOptions } from './IDefaultOptions';
 export type { default as IDefaultViewOptions } from './IDefaultViewOptions';
+export type { default as IDefaultViewOptionsApiServer } from './IDefaultViewOptionsApiServer';
 export type { default as IGetOptions } from './IGetOptions';
 export type { default as IGrantWritePermissionWithAccountIdOptions } from './IGrantWritePermissionWithAccountIdOptions';
 export type { default as IGrantWritePermissionWithPublicKeyOptions } from './IGrantWritePermissionWithPublicKeyOptions';

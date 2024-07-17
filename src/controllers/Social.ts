@@ -49,9 +49,11 @@ import validateAccountId from '@app/utils/validateAccountId';
 
 export default class Social {
   private contractId: string;
+  private apiServer: string;
 
   constructor(options?: INewSocialOptions) {
     this.contractId = options?.contractId || 'social.near';
+    this.apiServer = options?.apiServer || 'https://api.near.social/get';
   }
 
   /**
@@ -128,21 +130,37 @@ export default class Social {
     returnDeleted,
     withBlockHeight,
     withNodeId,
+    useApiServer = true,
   }: IGetOptions): Promise<Record<string, unknown>> {
-    return await signer.viewFunction({
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.Get,
-      args: {
-        keys,
-        ...((returnDeleted || withBlockHeight || withNodeId) && {
-          options: {
-            with_block_height: withBlockHeight,
-            with_node_id: withNodeId,
-            return_deleted: returnDeleted,
+    if (useApiServer) {
+      // Handle API server operation
+      const args = { keys };
+      console.log(JSON.stringify(args));
+      return await (
+        await fetch(this.apiServer, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        }),
-      } as ISocialDBContractGetArgs,
-    });
+          body: JSON.stringify(args),
+        })
+      ).json();
+    } else {
+      return await signer?.viewFunction({
+        contractId: this.contractId,
+        methodName: ViewMethodEnum.Get,
+        args: {
+          keys,
+          ...((returnDeleted || withBlockHeight || withNodeId) && {
+            options: {
+              with_block_height: withBlockHeight,
+              with_node_id: withNodeId,
+              return_deleted: returnDeleted,
+            },
+          }),
+        } as ISocialDBContractGetArgs,
+      });
+    }
   }
 
   /**
