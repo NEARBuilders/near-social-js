@@ -33,6 +33,7 @@ import type {
   IStorageDepositOptions,
   IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
+  ISocialApiServerGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
@@ -40,6 +41,9 @@ import type {
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
   ISocialDBContractStorageDepositArgs,
+  IKeysOptions,
+  ISocialApiServerKeysArgs,
+  ISocialDBContractKeysArgs,
 } from '@app/types';
 
 // utils
@@ -53,7 +57,7 @@ export default class Social {
 
   constructor(options?: INewSocialOptions) {
     this.contractId = options?.contractId || 'social.near';
-    this.apiServer = options?.apiServer || 'https://api.near.social/get';
+    this.apiServer = options?.apiServer || 'https://api.near.social';
   }
 
   /**
@@ -127,22 +131,31 @@ export default class Social {
   public async get({
     signer,
     keys,
+    blockHeight,
     returnDeleted,
     withBlockHeight,
     withNodeId,
+    withTimestamp,
     useApiServer = true,
   }: IGetOptions): Promise<Record<string, unknown>> {
     if (useApiServer) {
-      // Handle API server operation
-      const args = { keys };
-      console.log(JSON.stringify(args));
       return await (
-        await fetch(this.apiServer, {
+        await fetch(this.apiServer + '/get', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(args),
+          body: JSON.stringify({
+            keys,
+            blockHeight,
+            ...((returnDeleted || withBlockHeight || withTimestamp) && {
+              options: {
+                with_block_height: withBlockHeight,
+                return_deleted: returnDeleted,
+                with_timestamp: withTimestamp,
+              },
+            }),
+          } as ISocialApiServerGetArgs),
         })
       ).json();
     } else {
@@ -159,6 +172,59 @@ export default class Social {
             },
           }),
         } as ISocialDBContractGetArgs,
+      });
+    }
+  }
+
+  /**
+   * Needs update
+   * Reads the data for given set of keys.
+   * @param {IGetOptions} options - the signer and a set of keys to read.
+   * @returns {Promise<Record<string, unknown>>} a promise that resolves to the given data.
+   */
+  public async keys({
+    signer,
+    keys,
+    blockHeight,
+    returnDeleted,
+    returnType,
+    valuesOnly,
+    useApiServer = true,
+  }: IKeysOptions): Promise<Record<string, unknown>> {
+    if (useApiServer) {
+      return await (
+        await fetch(this.apiServer + '/keys', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            keys,
+            blockHeight,
+            ...((returnDeleted || returnType || valuesOnly) && {
+              options: {
+                return_deleted: returnDeleted,
+                return_type: returnType, //Server supports additional "History" type.
+                values_only: valuesOnly,
+              },
+            }),
+          } as ISocialApiServerKeysArgs),
+        })
+      ).json();
+    } else {
+      return await signer?.viewFunction({
+        contractId: this.contractId,
+        methodName: ViewMethodEnum.Keys,
+        args: {
+          keys,
+          ...((returnDeleted || returnType || valuesOnly) && {
+            options: {
+              return_deleted: returnDeleted,
+              return_type: returnType,
+              values_only: valuesOnly,
+            },
+          }),
+        } as ISocialDBContractKeysArgs,
       });
     }
   }

@@ -5,10 +5,9 @@ interface IGetOptions extends IDefaultViewOptionsApiServer {
   keys: string[];
   blockHeight?: bigint;
   returnDeleted?: boolean;
-  withBlockHeight?: boolean;
-  withNodeId?: boolean;
+  returnType?: boolean;
+  valuesOnly?: boolean;
   useApiServer?: boolean;
-  withTimestamp?: boolean;
 }
 
 export default IGetOptions;

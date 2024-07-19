@@ -34,7 +34,7 @@ describe(`${Social.name}#get`, () => {
     expect(result).toEqual({});
   });
 
-  it('should return an empty object when the contract does not know the account', async () => {
+  it('should return the object from mainnet api server', async () => {
     //This test could use some improvement. Maybe we create a test account on mainnet for this.
     //Or atleast information here that these tests are not meant for local tests.
     // arrange
