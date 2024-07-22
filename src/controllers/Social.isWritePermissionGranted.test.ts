@@ -7,6 +7,8 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 // controllers
 import Social from './Social';
 
+import { networkRPCs } from '@app/constants';
+
 // enums
 import { ErrorCodeEnum } from '@app/enums';
 
@@ -87,7 +89,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
       await client.isWritePermissionGranted({
         granteeAccountId: invalidGranteeAccountId,
         key,
-        signer: granterAccount,
+        rpcURL: networkRPCs.localnet,
       });
     } catch (error) {
       // assert
@@ -106,7 +108,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteeAccountId: granterAccount.accountId,
       key,
-      signer: granterAccount,
+      rpcURL: networkRPCs.localnet,
     });
 
     // assert
@@ -119,7 +121,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
       key,
-      signer: granterAccount,
+      rpcURL: networkRPCs.localnet,
     });
 
     // assert
@@ -144,7 +146,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
       key,
-      signer: granterAccount,
+      rpcURL: networkRPCs.localnet,
     });
 
     // assert
@@ -169,7 +171,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteePublicKey: granteeKeyPair.getPublicKey(),
       key,
-      signer: granterAccount,
+      rpcURL: networkRPCs.localnet,
     });
 
     // assert

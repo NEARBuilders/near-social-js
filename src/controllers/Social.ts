@@ -8,7 +8,12 @@ import {
 } from 'near-api-js';
 
 // constants
-import { GAS_FEE_IN_ATOMIC_UNITS, ONE_YOCTO } from '@app/constants';
+import {
+  GAS_FEE_IN_ATOMIC_UNITS,
+  NetworkIds,
+  networkRPCs,
+  ONE_YOCTO,
+} from '@app/constants';
 
 // enums
 import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
@@ -46,6 +51,7 @@ import type {
 import calculateRequiredDeposit from '@app/utils/calculateRequiredDeposit';
 import parseKeysFromData from '@app/utils/parseKeysFromData';
 import validateAccountId from '@app/utils/validateAccountId';
+import viewFunction from '@app/utils/rpcQueries/viewFunction';
 
 export default class Social {
   private contractId: string;
@@ -92,15 +98,37 @@ export default class Social {
 
   private async _storageBalanceOf({
     accountId,
-    signer,
+    rpcURL,
   }: IStorageBalanceOfOptions): Promise<ISocialDBContractStorageBalance | null> {
-    return await signer.viewFunction({
+    const result = await viewFunction({
+      contractId: this.contractId,
+      method: ViewMethodEnum.StorageBalanceOf,
       args: {
         account_id: accountId,
       },
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+      rpcURL,
     });
+
+    if (this.isStorageBalance(result)) {
+      return result;
+    } else if (result === null) {
+      return null;
+    } else {
+      throw new Error('Unexpected response format from storage_balance_of');
+    }
+  }
+
+  private isStorageBalance(
+    data: unknown
+  ): data is ISocialDBContractStorageBalance {
+    return (
+      typeof data === 'object' &&
+      data !== null &&
+      'total' in data &&
+      'available' in data &&
+      typeof (data as ISocialDBContractStorageBalance).total === 'string' &&
+      typeof (data as ISocialDBContractStorageBalance).available === 'string'
+    );
   }
 
   private _uniqueAccountIdsFromKeys(keys: string[]): string[] {
@@ -119,41 +147,53 @@ export default class Social {
 
   /**
    * Reads the data for given set of keys.
-   * @param {IGetOptions} options - the signer and a set of keys to read.
+   * @param {IGetOptions} options - the set of keys to read and other options.
    * @returns {Promise<Record<string, unknown>>} a promise that resolves to the given data.
    */
   public async get({
-    signer,
     keys,
     returnDeleted,
     withBlockHeight,
     withNodeId,
+    rpcURL,
   }: IGetOptions): Promise<Record<string, unknown>> {
-    return await signer.viewFunction({
+    const args: ISocialDBContractGetArgs = {
+      keys,
+      ...((returnDeleted || withBlockHeight || withNodeId) && {
+        options: {
+          with_block_height: withBlockHeight,
+          with_node_id: withNodeId,
+          return_deleted: returnDeleted,
+        },
+      }),
+    };
+
+    return (await viewFunction({
       contractId: this.contractId,
-      methodName: ViewMethodEnum.Get,
-      args: {
-        keys,
-        ...((returnDeleted || withBlockHeight || withNodeId) && {
-          options: {
-            with_block_height: withBlockHeight,
-            with_node_id: withNodeId,
-            return_deleted: returnDeleted,
-          },
-        }),
-      } as ISocialDBContractGetArgs,
-    });
+      method: ViewMethodEnum.Get,
+      args,
+      rpcURL,
+    })) as Record<string, unknown>;
   }
 
   /**
    * Gets the current version of the social contract.
+   * @param {IGetVersionOptions} options - Optional parameters including rpcURL.
    * @returns {Promise<string>} a promise that resolves to the current version of the contract.
    */
-  public async getVersion({ signer }: IGetVersionOptions): Promise<string> {
-    return await signer.viewFunction({
+  public async getVersion({ rpcURL }: IGetVersionOptions): Promise<string> {
+    const version = await viewFunction({
       contractId: this.contractId,
-      methodName: ViewMethodEnum.GetVersion,
+      method: ViewMethodEnum.GetVersion,
+      rpcURL,
     });
+
+    if (typeof version !== 'string') {
+      throw new Error(
+        `Unexpected response format from get_version: ${JSON.stringify(version)}`
+      );
+    }
+    return version;
   }
 
   /**
@@ -265,7 +305,7 @@ export default class Social {
       | IIsWritePermissionGrantedWithAccountIdOptions
       | IIsWritePermissionGrantedWithPublicKeyOptions
   ): Promise<boolean> {
-    const { key, signer } = options;
+    const { key, rpcURL } = options;
 
     if (
       (options as IIsWritePermissionGrantedWithAccountIdOptions)
@@ -294,9 +334,9 @@ export default class Social {
       }
     }
 
-    return await signer.viewFunction({
+    const result = await viewFunction({
       contractId: this.contractId,
-      methodName: ViewMethodEnum.IsWritePermissionGranted,
+      method: ViewMethodEnum.IsWritePermissionGranted,
       args: {
         key,
         ...((options as IIsWritePermissionGrantedWithAccountIdOptions)
@@ -312,7 +352,28 @@ export default class Social {
           ).granteePublicKey.toString(),
         }),
       } as ISocialDBContractIsWritePermissionGrantedArgs,
+      rpcURL,
     });
+
+    // //if null returned, in what case is null returned for writePermission?
+    // //When the account does not exist in Permissions?
+    // if (
+    //   Array.isArray(result) &&
+    //   result.every((num) => typeof num === 'number')
+    // ) {
+    //   const stringResult = String.fromCharCode(...result);
+    //   if (stringResult === 'null') {
+    //     return false;
+    //   }
+    // }
+
+    if (typeof result !== 'boolean') {
+      throw new Error(
+        `Unexpected response format from isWritePermissionGranted: ${JSON.stringify(result)}`
+      );
+    }
+
+    return result;
   }
 
   /**
@@ -354,6 +415,8 @@ export default class Social {
       _nonce = accessKeyView.nonce + BigInt(1); // increment nonce as this will be a new transaction for the access key
     }
 
+    const networkId = signer.connection.networkId as NetworkIds;
+    const rpcURL = networkRPCs[networkId];
     // for each key, check if the signer has been granted write permission for the key
     for (let i = 0; i < keys.length; i++) {
       if (
@@ -361,7 +424,7 @@ export default class Social {
         !(await this.isWritePermissionGranted({
           granteePublicKey: publicKey,
           key: keys[i],
-          signer,
+          rpcURL,
         }))
       ) {
         throw new KeyNotAllowedError(
@@ -379,7 +442,7 @@ export default class Social {
     ) {
       storageBalance = await this._storageBalanceOf({
         accountId: signer.accountId,
-        signer,
+        rpcURL,
       });
 
       deposit = calculateRequiredDeposit({

@@ -5,6 +5,7 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 
 // controllers
 import Social from './Social';
+import { networkRPCs } from '@app/constants';
 
 // helpers
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
@@ -26,7 +27,7 @@ describe(`${Social.name}#get`, () => {
     // act
     const result = await client.get({
       keys: ['unknown.test.near/profile/name'],
-      signer,
+      rpcURL: networkRPCs.localnet,
     });
 
     // assert

@@ -5,6 +5,7 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 
 // controllers
 import Social from './Social';
+import { networkRPCs } from '@app/constants';
 
 // helpers
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
@@ -24,7 +25,9 @@ describe(`${Social.name}#getVersion`, () => {
       contractId: socialContractAccountId,
     });
     // act
-    const version = await client.getVersion({ signer });
+    const version = await client.getVersion({
+      rpcURL: networkRPCs.localnet,
+    });
 
     // assert
     expect(version).toMatchSnapshot();

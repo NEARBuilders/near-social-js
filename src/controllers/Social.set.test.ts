@@ -10,6 +10,8 @@ import { MINIMUM_STORAGE_IN_BYTES } from '@app/constants';
 // controllers
 import Social from './Social';
 
+import { networkRPCs } from '@app/constants';
+
 // enums
 import { ErrorCodeEnum } from '@app/enums';
 
@@ -119,7 +121,7 @@ describe(`${Social.name}#set`, () => {
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
-      signer,
+      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toEqual(data);
@@ -154,7 +156,7 @@ describe(`${Social.name}#set`, () => {
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
-      signer,
+      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toEqual(data);
