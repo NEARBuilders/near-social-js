@@ -1,5 +1,3 @@
-import type { Account } from 'near-api-js';
-
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
