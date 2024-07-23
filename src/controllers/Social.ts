@@ -355,18 +355,6 @@ export default class Social {
       rpcURL,
     });
 
-    // //if null returned, in what case is null returned for writePermission?
-    // //When the account does not exist in Permissions?
-    // if (
-    //   Array.isArray(result) &&
-    //   result.every((num) => typeof num === 'number')
-    // ) {
-    //   const stringResult = String.fromCharCode(...result);
-    //   if (stringResult === 'null') {
-    //     return false;
-    //   }
-    // }
-
     if (typeof result !== 'boolean') {
       throw new Error(
         `Unexpected response format from isWritePermissionGranted: ${JSON.stringify(result)}`

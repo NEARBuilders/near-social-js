@@ -41,7 +41,7 @@ import TOCInline from '@theme/TOCInline';
 
 | Name    | Type                               | Required | Default | Description                                                |
 |---------|------------------------------------|----------|---------|------------------------------------------------------------|
-| options | [`IGetOptions`](types#igetoptions) | yes      | -       | Options that include the signer account and a set of keys. |
+| options | [`IGetOptions`](types#igetoptions) | yes      | -       | Options that include the rpc url and a set of keys. |
 
 #### Returns
 
@@ -78,7 +78,6 @@ import TOCInline from '@theme/TOCInline';
 ### `isWritePermissionGranted(options)`
 
 > Checks if an account, specified in `options.granteeAccountId`, has been granted write access for a key.
-> If the signer and the supplied `options.granteeAccountId` match, true will be returned.
 
 #### Parameters
 
