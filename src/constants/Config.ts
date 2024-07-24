@@ -1,4 +1,3 @@
-export type NetworkIds = 'testnet' | 'mainnet' | 'betanet' | 'localnet';
 export const networkRPCs = {
   testnet: 'https://rpc.testnet.near.org',
   mainnet: 'https://rpc.mainnet.near.org',

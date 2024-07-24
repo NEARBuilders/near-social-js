@@ -10,7 +10,6 @@ import {
 // constants
 import {
   GAS_FEE_IN_ATOMIC_UNITS,
-  NetworkIds,
   networkRPCs,
   ONE_YOCTO,
 } from '@app/constants';
@@ -45,6 +44,7 @@ import type {
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
   ISocialDBContractStorageDepositArgs,
+  NetworkIds,
 } from '@app/types';
 
 // utils
@@ -109,7 +109,7 @@ export default class Social {
       rpcURL,
     });
 
-    if (this.isStorageBalance(result)) {
+    if (this._isStorageBalance(result)) {
       return result;
     } else if (result === null) {
       return null;
@@ -118,7 +118,7 @@ export default class Social {
     }
   }
 
-  private isStorageBalance(
+  private _isStorageBalance(
     data: unknown
   ): data is ISocialDBContractStorageBalance {
     return (

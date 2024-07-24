@@ -14,7 +14,7 @@ type ViewFunctionResult =
   | undefined;
 
 function parseJsonFromRawResponse(response: Uint8Array): ViewFunctionResult {
-  return JSON.parse(Buffer.from(response).toString());
+  return JSON.parse(new TextDecoder().decode(response));
 }
 
 export default async function viewFunction({
@@ -30,7 +30,7 @@ export default async function viewFunction({
     request_type: 'call_function',
     account_id: contractId,
     method_name: method,
-    args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
+    args_base64: btoa(JSON.stringify(args)),
     finality: 'optimistic',
   });
 
@@ -44,7 +44,7 @@ export default async function viewFunction({
     res.result.length > 0 &&
     res.result !== undefined
   ) {
-    return res.result && parseJsonFromRawResponse(Buffer.from(res.result));
+    return parseJsonFromRawResponse(new Uint8Array(res.result));
   }
 
   return undefined;
