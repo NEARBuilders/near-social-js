@@ -1,6 +1,5 @@
-// types
-import type IDefaultOptions from './IDefaultOptions';
-
-type IDefaultViewOptions = IDefaultOptions;
+interface IDefaultViewOptions {
+  rpcURL: string;
+}
 
 export default IDefaultViewOptions;

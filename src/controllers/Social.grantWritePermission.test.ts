@@ -7,6 +7,8 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 // controllers
 import Social from './Social';
 
+import { networkRPCs } from '@app/constants';
+
 // enums
 import { ErrorCodeEnum } from '@app/enums';
 
@@ -173,7 +175,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
       key,
-      signer: granteeAccount,
+      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toBe(true);
@@ -203,7 +205,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     result = await client.isWritePermissionGranted({
       granteePublicKey: granteeKeyPair.getPublicKey(),
       key,
-      signer: granteeAccount,
+      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toBe(true);

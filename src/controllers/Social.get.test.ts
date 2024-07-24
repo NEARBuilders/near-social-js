@@ -1,23 +1,11 @@
-import type { Account } from 'near-api-js';
-
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
-
-// helpers
-import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
+import { networkRPCs } from '@app/constants';
 
 describe(`${Social.name}#get`, () => {
-  let signer: Account;
-
-  beforeEach(async () => {
-    const result = await createEphemeralAccount();
-
-    signer = result.account;
-  });
-
   it('should return an empty object when the contract does not know the account', async () => {
     // arrange
     const client = new Social({
@@ -26,7 +14,7 @@ describe(`${Social.name}#get`, () => {
     // act
     const result = await client.get({
       keys: ['unknown.test.near/profile/name'],
-      signer,
+      rpcURL: networkRPCs.localnet,
     });
 
     // assert

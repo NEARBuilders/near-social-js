@@ -170,7 +170,6 @@ describe(`${Social.name}#storageDeposit`, () => {
       contractId: socialContractAccountId,
       methodName: ViewMethodEnum.StorageBalanceOf,
     });
-    console.log(result);
     expect(result.total).toEqual(deposit);
   });
 });
