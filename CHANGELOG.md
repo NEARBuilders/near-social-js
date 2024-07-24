@@ -1,3 +1,10 @@
+# [1.1.0-beta.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.1...v1.1.0-beta.1) (2024-07-24)
+
+
+### Features
+
+* **wip:** removed signer from viewMethods by dropping NAJ account.ViewFunction ([#35](https://github.com/NEARBuilders/near-social-js/issues/35)) ([a57edc4](https://github.com/NEARBuilders/near-social-js/commit/a57edc42bee279abc1f3925acd130cba29cd239a))
+
 ## [1.0.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0...v1.0.1) (2024-07-05)
 
 
