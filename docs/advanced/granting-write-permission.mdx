@@ -39,8 +39,10 @@ Accounts can grant write permission to other accounts for a set of keys.
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      signerAccountId: 'bob.near',
-      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      signer: {
+        accountID: 'bob.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
     });
 
     // ...sign the returned transaction and post to the network
@@ -59,8 +61,10 @@ Accounts can grant write permission to other accounts for a set of keys.
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      signerAccountId: 'bob.near',
-      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
+      signer: {
+        accountID: 'bob.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
+      }
     })
     .then((transaction) => {
       // ...sign the returned transaction and post to the network
@@ -80,8 +84,10 @@ Accounts can grant write permission to other accounts for a set of keys.
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      signerAccountId: 'bob.near',
-      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      signer: {
+        accountID: 'bob.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
     });
 
     // ...sign the returned transaction and post to the network
@@ -93,12 +99,12 @@ Accounts can grant write permission to other accounts for a set of keys.
 
 :::caution
 
-If the grantee account ID or the account ID in each key is not a valid account ID then a [`InvalidAccountIdError`](../../api-reference/errors#invalidaccountiderror) is thrown.
+If the grantee account ID or the account ID in each key is not a valid account ID then a [`InvalidAccountIdError`](../api-reference/errors#invalidaccountiderror) is thrown.
 
 :::
 
 :::caution
 
-If a key does is not owned by the granter, then a [`KeyNotAllowedError`](../../api-reference/errors#keynotallowederror) is thrown.
+If a key does is not owned by the granter, then a [`KeyNotAllowedError`](../api-reference/errors#keynotallowederror) is thrown.
 
 :::

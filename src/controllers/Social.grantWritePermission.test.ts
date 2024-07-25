@@ -67,8 +67,10 @@ describe(`${Social.name}#grantWritePermission`, () => {
         },
       },
       nonce: BigInt(granterNonce),
-      signerAccountId: granterAccount.accountId,
-      signerPublicKey: granterKeyPair.publicKey,
+      signer: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
     });
 
     await signAndSendTransaction({
@@ -88,8 +90,10 @@ describe(`${Social.name}#grantWritePermission`, () => {
         granteeAccountId: invalidGranteeAccountId,
         keys: [key],
         nonce: BigInt(granterNonce + 1),
-        signerAccountId: granterAccount.accountId,
-        signerPublicKey: granterKeyPair.publicKey,
+        signer: {
+          accountID: granterAccount.accountId,
+          publicKey: granterKeyPair.publicKey,
+        },
       });
     } catch (error) {
       // assert
@@ -113,8 +117,10 @@ describe(`${Social.name}#grantWritePermission`, () => {
         granteeAccountId: granteeAccount.accountId,
         keys: [`${invalidKeyAccountId}/profile/name`],
         nonce: BigInt(granterNonce + 1),
-        signerAccountId: granterAccount.accountId,
-        signerPublicKey: granterKeyPair.publicKey,
+        signer: {
+          accountID: granterAccount.accountId,
+          publicKey: granterKeyPair.publicKey,
+        },
       });
     } catch (error) {
       // assert
@@ -138,8 +144,10 @@ describe(`${Social.name}#grantWritePermission`, () => {
         granteeAccountId: granteeAccount.accountId,
         keys: [key],
         nonce: BigInt(granterNonce + 1),
-        signerAccountId: granterAccount.accountId,
-        signerPublicKey: granterKeyPair.publicKey,
+        signer: {
+          accountID: granterAccount.accountId,
+          publicKey: granterKeyPair.publicKey,
+        },
       });
     } catch (error) {
       // assert
@@ -161,8 +169,10 @@ describe(`${Social.name}#grantWritePermission`, () => {
       granteeAccountId: granteeAccount.accountId,
       keys: [key],
       nonce: BigInt(granterNonce + 1),
-      signerAccountId: granterAccount.accountId,
-      signerPublicKey: granterKeyPair.publicKey,
+      signer: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
     });
 
     await signAndSendTransaction({
@@ -190,8 +200,10 @@ describe(`${Social.name}#grantWritePermission`, () => {
       granteePublicKey: granteeKeyPair.publicKey,
       keys: [key],
       nonce: BigInt(granterNonce + 1),
-      signerAccountId: granterAccount.accountId,
-      signerPublicKey: granterKeyPair.publicKey,
+      signer: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
     });
 
     await signAndSendTransaction({

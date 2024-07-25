@@ -45,8 +45,10 @@ describe(`${Social.name}#storageDeposit`, () => {
     transaction = await client.storageDeposit({
       accountId,
       deposit,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -93,8 +95,10 @@ describe(`${Social.name}#storageDeposit`, () => {
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       deposit,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -143,8 +147,10 @@ describe(`${Social.name}#storageDeposit`, () => {
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       accountId,
       deposit,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert

@@ -69,8 +69,10 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
         },
       },
       nonce: BigInt(granterNonce),
-      signerAccountId: granterAccount.accountId,
-      signerPublicKey: granterKeyPair.publicKey,
+      signer: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
     });
 
     await signAndSendTransaction({
@@ -129,8 +131,10 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const transaction = await client.grantWritePermission({
       granteeAccountId: granteeAccount.accountId,
       keys: [key],
-      signerAccountId: granterAccount.accountId,
-      signerPublicKey: granterKeyPair.publicKey,
+      signer: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
     });
 
     await signAndSendTransaction({
@@ -153,8 +157,10 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const transaction = await client.grantWritePermission({
       granteePublicKey: granteeKeyPair.publicKey,
       keys: [key],
-      signerAccountId: granterAccount.accountId,
-      signerPublicKey: granterKeyPair.publicKey,
+      signer: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
     });
 
     await signAndSendTransaction({

@@ -39,6 +39,7 @@ import type {
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
   ISocialDBContractStorageDepositArgs,
+  ISigner,
 } from '@app/types';
 
 // utils
@@ -111,16 +112,15 @@ export default class Social {
 
   /**
    * Gets the access key view.
-   * @param {string} accountID - the account ID.
-   * @param {string | utils.PublicKey} publicKey - the public key of the access key to query.
+   * @param {ISigner} account - the account ID and public key of the account.
    * @returns {Promise<AccessKeyView | null>} a promise that resolves to the access key view or null if the access key
    * for the given public key does not exist.
    * @private
    */
-  private async _accessKeyView(
-    accountID: string,
-    publicKey: string | utils.PublicKey
-  ): Promise<AccessKeyView | null> {
+  private async _accessKeyView({
+    accountID,
+    publicKey,
+  }: ISigner): Promise<AccessKeyView | null> {
     const accessKeys = await viewAccessKeyList({
       accountID,
       provider: this._provider,
@@ -257,8 +257,7 @@ export default class Social {
       | IGrantWritePermissionWithAccountIdOptions
       | IGrantWritePermissionWithPublicKeyOptions
   ): Promise<transactions.Transaction> {
-    const { blockHash, keys, nonce, signerAccountId, signerPublicKey } =
-      options;
+    const { blockHash, keys, nonce, signer } = options;
     let accessKeyView: AccessKeyView | null;
     let _blockHash: string | null = blockHash || null;
     let _nonce: bigint | null = nonce || null;
@@ -284,10 +283,10 @@ export default class Social {
       }
 
       // if the key does not belong to the signer (granter) it cannot give grant permission
-      if (accountId !== signerAccountId) {
+      if (accountId !== signer.accountID) {
         throw new KeyNotAllowedError(
           value,
-          `key "${value}" does not belong to granter "${signerAccountId}"`
+          `key "${value}" does not belong to granter "${signer.accountID}"`
         );
       }
     });
@@ -297,15 +296,12 @@ export default class Social {
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(
-        signerAccountId,
-        signerPublicKey
-      );
+      accessKeyView = await this._accessKeyView(signer);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signerAccountId,
-          `failed to get nonce for access key for "${signerAccountId}" with public key "${signerPublicKey.toString()}"`
+          signer.accountID,
+          `failed to get nonce for access key for "${signer.accountID}" with public key "${signer.publicKey.toString()}"`
         );
       }
 
@@ -313,8 +309,8 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signerAccountId,
-      utils.PublicKey.fromString(signerPublicKey.toString()),
+      signer.accountID,
+      utils.PublicKey.fromString(signer.publicKey.toString()),
       this._contractId,
       _nonce,
       [
@@ -429,8 +425,7 @@ export default class Social {
     data,
     nonce,
     refundUnusedDeposit,
-    signerPublicKey,
-    signerAccountId,
+    signer,
   }: ISetOptions): Promise<transactions.Transaction> {
     const keys = parseKeysFromData(data);
     let _blockHash = blockHash || null;
@@ -444,15 +439,12 @@ export default class Social {
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(
-        signerAccountId,
-        signerPublicKey
-      );
+      accessKeyView = await this._accessKeyView(signer);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signerAccountId,
-          `failed to get nonce for access key for "${signerAccountId}" with public key "${signerPublicKey.toString()}"`
+          signer.accountID,
+          `failed to get nonce for access key for "${signer.accountID}" with public key "${signer.publicKey.toString()}"`
         );
       }
 
@@ -462,9 +454,9 @@ export default class Social {
     // for each key, check if the signer has been granted write permission for the key
     for (let i = 0; i < keys.length; i++) {
       if (
-        (keys[i].split('/')[0] || '') !== signerAccountId &&
+        (keys[i].split('/')[0] || '') !== signer.accountID &&
         !(await this.isWritePermissionGranted({
-          granteePublicKey: signerPublicKey,
+          granteePublicKey: signer.publicKey,
           key: keys[i],
         }))
       ) {
@@ -478,10 +470,10 @@ export default class Social {
     // if the signer is updating their own data, calculate storage deposit
     if (
       this._uniqueAccountIdsFromKeys(keys).find(
-        (value) => value === signerAccountId
+        (value) => value === signer.accountID
       )
     ) {
-      storageBalance = await this._storageBalanceOf(signerAccountId);
+      storageBalance = await this._storageBalanceOf(signer.accountID);
 
       deposit = calculateRequiredDeposit({
         data,
@@ -490,8 +482,8 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signerAccountId,
-      utils.PublicKey.fromString(signerPublicKey.toString()),
+      signer.accountID,
+      utils.PublicKey.fromString(signer.publicKey.toString()),
       this._contractId,
       _nonce,
       [
@@ -527,8 +519,7 @@ export default class Social {
     registrationOnly,
     accountId,
     deposit,
-    signerAccountId,
-    signerPublicKey,
+    signer,
   }: IStorageDepositOptions): Promise<transactions.Transaction> {
     //should I filter valid account ids?
     const actions: transactions.Action[] = [];
@@ -554,15 +545,12 @@ export default class Social {
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(
-        signerAccountId,
-        signerPublicKey
-      );
+      accessKeyView = await this._accessKeyView(signer);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signerAccountId,
-          `failed to get nonce for access key for "${signerAccountId}" with public key "${signerPublicKey.toString()}"`
+          signer.accountID,
+          `failed to get nonce for access key for "${signer.accountID}" with public key "${signer.publicKey.toString()}"`
         );
       }
 
@@ -570,8 +558,8 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signerAccountId,
-      utils.PublicKey.fromString(signerPublicKey.toString()),
+      signer.accountID,
+      utils.PublicKey.fromString(signer.publicKey.toString()),
       this._contractId,
       _nonce,
       actions,
@@ -590,8 +578,7 @@ export default class Social {
     blockHash,
     amount,
     nonce,
-    signerAccountId,
-    signerPublicKey,
+    signer,
   }: IStorageWithdrawOptions): Promise<transactions.Transaction> {
     const actions: transactions.Action[] = [];
 
@@ -616,15 +603,12 @@ export default class Social {
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(
-        signerAccountId,
-        signerPublicKey
-      );
+      accessKeyView = await this._accessKeyView(signer);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signerAccountId,
-          `failed to get nonce for access key for "${signerAccountId}" with public key "${signerPublicKey.toString()}"`
+          signer.accountID,
+          `failed to get nonce for access key for "${signer.accountID}" with public key "${signer.publicKey.toString()}"`
         );
       }
 
@@ -632,8 +616,8 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signerAccountId,
-      utils.PublicKey.fromString(signerPublicKey.toString()),
+      signer.accountID,
+      utils.PublicKey.fromString(signer.publicKey.toString()),
       this._contractId,
       _nonce,
       actions,

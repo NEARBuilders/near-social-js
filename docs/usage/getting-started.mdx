@@ -78,7 +78,7 @@ By default, the Social SDK is initialized for the mainnet social contract ([`soc
 
 :::note
 
-See [`INewSocialOptions`](../../api-reference/types#inewsocialoptions) for more information on what options are supported.
+See [`INewSocialOptions`](../api-reference/types#inewsocialoptions) for more information on what options are supported.
 
 :::
 
@@ -128,7 +128,7 @@ You can initialize the SDK with a different social contract account by specifyin
 
 ## Initialization with a different network ID
 
-You can initialize the SDK with a different network ID by specifying it in the options:
+You can use a specific network by initializing the SDK with a known network ID. See [networks](../api-reference/networks) on the supported networks and the RPC URLs they point to.
 
 <Tabs
   defaultValue="javascript-via-package-manager"
@@ -181,7 +181,7 @@ If using the network ID, make sure you provide the correct social contract for t
 
 :::note
 
-An [`UnknownNetworkError`](../../api-reference/errors#unkownnetworkerror) will be thrown if the supplied network ID is not known.
+An [`UnknownNetworkError`](../api-reference/errors#unkownnetworkerror) will be thrown if the supplied network ID is not known.
 
 :::
 

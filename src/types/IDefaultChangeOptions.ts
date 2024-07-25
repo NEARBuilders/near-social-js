@@ -1,10 +1,10 @@
-import { utils } from 'near-api-js';
+// types
+import type ISigner from './ISigner';
 
 interface IDefaultChangeOptions {
   blockHash?: string;
   nonce?: bigint;
-  signerPublicKey: utils.PublicKey | string;
-  signerAccountId: string;
+  signer: ISigner;
 }
 
 export default IDefaultChangeOptions;

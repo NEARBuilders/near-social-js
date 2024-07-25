@@ -78,8 +78,10 @@ describe(`${Social.name}#set`, () => {
           },
         },
         nonce: BigInt(signerNonce + 1),
-        signerAccountId: signer.accountId,
-        signerPublicKey: keyPair.publicKey,
+        signer: {
+          accountID: signer.accountId,
+          publicKey: keyPair.publicKey,
+        },
       });
     } catch (error) {
       // assert
@@ -108,8 +110,10 @@ describe(`${Social.name}#set`, () => {
     // act
     transaction = await client.set({
       data,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -139,8 +143,10 @@ describe(`${Social.name}#set`, () => {
     // act
     transaction = await client.set({
       data,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert

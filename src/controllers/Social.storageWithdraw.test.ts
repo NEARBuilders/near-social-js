@@ -52,8 +52,10 @@ describe(`${Social.name}#storageWithdraw`, () => {
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       accountId,
       deposit,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -91,8 +93,10 @@ describe(`${Social.name}#storageWithdraw`, () => {
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
       amount: withdraw_amount,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -152,8 +156,10 @@ describe(`${Social.name}#storageWithdraw`, () => {
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       accountId,
       deposit,
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -189,8 +195,10 @@ describe(`${Social.name}#storageWithdraw`, () => {
     transaction = await client.storageWithdraw({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      signerAccountId: signer.accountId,
-      signerPublicKey: keyPair.publicKey,
+      signer: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert

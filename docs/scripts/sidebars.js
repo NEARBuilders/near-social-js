@@ -32,6 +32,7 @@ const sidebars = {
         'api-reference/social',
         'api-reference/types',
         'api-reference/errors',
+        'api-reference/networks',
       ],
       label: 'API Reference',
       link: {
