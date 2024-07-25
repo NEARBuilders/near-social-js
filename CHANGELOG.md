@@ -1,3 +1,10 @@
+# [1.1.0-beta.2](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2024-07-25)
+
+
+### Features
+
+* remove near-api-js account object dependency from change functions ([#38](https://github.com/NEARBuilders/near-social-js/issues/38)) ([134e463](https://github.com/NEARBuilders/near-social-js/commit/134e4638341febdaf945fe8412479172421332d3))
+
 # [1.1.0-beta.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.1...v1.1.0-beta.1) (2024-07-24)
 
 
