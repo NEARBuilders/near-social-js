@@ -1,4 +1,3 @@
-import { providers } from 'near-api-js';
 import { printTxOutcomeLogs } from '@near-js/utils';
 
 // types
