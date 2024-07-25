@@ -60,6 +60,10 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
 
     // set the granter
     transaction = await client.set({
+      account: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
       blockHash: granterKeyResponse.block_hash,
       data: {
         [granterAccount.accountId]: {
@@ -69,10 +73,6 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
         },
       },
       nonce: BigInt(granterNonce),
-      signer: {
-        accountID: granterAccount.accountId,
-        publicKey: granterKeyPair.publicKey,
-      },
     });
 
     await signAndSendTransaction({
@@ -129,12 +129,12 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
   it('should return true if the grantee has been given permission (using account id)', async () => {
     // arrange
     const transaction = await client.grantWritePermission({
-      granteeAccountId: granteeAccount.accountId,
-      keys: [key],
-      signer: {
+      account: {
         accountID: granterAccount.accountId,
         publicKey: granterKeyPair.publicKey,
       },
+      keys: [key],
+      granteeAccountId: granteeAccount.accountId,
     });
 
     await signAndSendTransaction({
@@ -155,12 +155,12 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
   it('should return true if the grantee has been given permission (using public key)', async () => {
     // arrange
     const transaction = await client.grantWritePermission({
-      granteePublicKey: granteeKeyPair.publicKey,
-      keys: [key],
-      signer: {
+      account: {
         accountID: granterAccount.accountId,
         publicKey: granterKeyPair.publicKey,
       },
+      granteePublicKey: granteeKeyPair.publicKey,
+      keys: [key],
     });
 
     await signAndSendTransaction({

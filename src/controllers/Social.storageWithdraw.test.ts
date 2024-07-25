@@ -48,14 +48,14 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //2N deposit
     let deposit = '2000000000000000000000000';
     transaction = await client.storageDeposit({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       accountId,
       deposit,
-      signer: {
-        accountID: signer.accountId,
-        publicKey: keyPair.publicKey,
-      },
     });
 
     // assert
@@ -90,13 +90,13 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //1N withdraw
     let withdraw_amount = '1000000000000000000000000';
     transaction = await client.storageWithdraw({
-      blockHash: signerAccessKeyResponse.block_hash,
-      nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      amount: withdraw_amount,
-      signer: {
+      account: {
         accountID: signer.accountId,
         publicKey: keyPair.publicKey,
       },
+      amount: withdraw_amount,
+      blockHash: signerAccessKeyResponse.block_hash,
+      nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
     });
 
     // assert
@@ -152,14 +152,14 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //2N deposit
     let deposit = '2000000000000000000000000';
     transaction = await client.storageDeposit({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
       accountId,
       deposit,
-      signer: {
-        accountID: signer.accountId,
-        publicKey: keyPair.publicKey,
-      },
     });
 
     // assert
@@ -193,12 +193,12 @@ describe(`${Social.name}#storageWithdraw`, () => {
 
     //No withdrawal amount specified
     transaction = await client.storageWithdraw({
-      blockHash: signerAccessKeyResponse.block_hash,
-      nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      signer: {
+      account: {
         accountID: signer.accountId,
         publicKey: keyPair.publicKey,
       },
+      blockHash: signerAccessKeyResponse.block_hash,
+      nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
     });
 
     // assert

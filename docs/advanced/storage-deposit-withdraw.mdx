@@ -29,13 +29,13 @@ The signer account MUST have sufficient NEAR balance to cover the deposit.
 
     const social = new Social();
     const transaction = await social.storageDeposit({
-      registration_only: true, // set to true if you want to pay only the bare minimum deposit
-      account_id: 'bob.near', // optional, defaults to the signer account
-      deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
-      signer: {
+      account: {
         accountID: 'alice.near',
         publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
       },
+      registration_only: true, // set to true if you want to pay only the bare minimum deposit
+      account_id: 'bob.near', // optional, defaults to the signer account
+      deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
     });
     // ...sign the returned transaction and post to the network
     ```
@@ -47,13 +47,13 @@ The signer account MUST have sufficient NEAR balance to cover the deposit.
     var social = new NEARSocialSDK();
 
     social.storageDeposit({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       account_id: 'bob.near', // optional, defaults to the signer account
       deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
-      registration_only: true, // set to true if you want to pay only the bare minimum deposit
-      signer: {
-        accountID: 'alice.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
-      }
+      registration_only: true // set to true if you want to pay only the bare minimum deposit
     })
     .then((transaction) => {
       // ...sign the returned transaction and post to the network
@@ -67,13 +67,13 @@ The signer account MUST have sufficient NEAR balance to cover the deposit.
 
   const social = new Social();
   const transaction = await social.storageDeposit({
-    account_id: 'bob.near', // optional, defaults to the signer account
-    deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
-    registration_only: true, // set to true if you want to pay only the bare minimum deposit
-    signer: {
+    account: {
       accountID: 'alice.near',
       publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
     },
+    account_id: 'bob.near', // optional, defaults to the signer account
+    deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
+    registration_only: true, // set to true if you want to pay only the bare minimum deposit
   });
   // ...sign the returned transaction and post to the network
   ```
@@ -102,11 +102,11 @@ The signer account MUST have sufficient NEAR balance available for withdrawal.
 
     const social = new Social();
     const transaction = await social.storageWithdraw({
-      amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
-      signer: {
+      account: {
         accountID: 'alice.near',
         publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
       },
+      amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
     });
     // ...sign the returned transaction and post to the network
     ```
@@ -117,11 +117,11 @@ The signer account MUST have sufficient NEAR balance available for withdrawal.
     var social = new NEARSocialSDK();
 
     social.storageWithdraw({
-      amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
-      signer: {
+      account: {
         accountID: 'alice.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
-      }
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      amount: '5000000000000000000000' // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
     })
     .then((transaction) => {
       // ...sign the returned transaction and post to the network
@@ -135,11 +135,11 @@ The signer account MUST have sufficient NEAR balance available for withdrawal.
 
     const social = new Social();
     const transaction = await social.storageWithdraw({
-      amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
-      signer: {
+      account: {
         accountID: 'alice.near',
         publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
       },
+      amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
     });
     // ...sign the returned transaction and post to the network
     ```

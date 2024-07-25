@@ -1,3 +1,4 @@
+export type { default as IAccount } from './IAccount';
 export type { default as IDefaultChangeOptions } from './IDefaultChangeOptions';
 export type { default as IGetOptions } from './IGetOptions';
 export type { default as NetworkIds } from './NetworkIds';
@@ -8,7 +9,6 @@ export type { default as IIsWritePermissionGrantedWithPublicKeyOptions } from '.
 export type { default as INewSocialOptions } from './INewSocialOptions';
 export type { default as IRPCOptions } from './IRPCOptions';
 export type { default as ISetOptions } from './ISetOptions';
-export type { default as ISigner } from './ISigner';
 export type { default as IStorageDepositOptions } from './IStorageDepositOptions';
 export type { default as IStorageWithdrawOptions } from './IStorageWithdrawOptions';
 export type { default as ISocialDBContractAccount } from './ISocialDBContractAccount';

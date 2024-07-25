@@ -34,15 +34,15 @@ Accounts can grant write permission to other accounts for a set of keys.
 
     const social = new Social();
     const transaction = await social.grantWritePermission({
+      account: {
+        accountID: 'bob.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       granteeAccountId: 'alice.near',
       keys: [
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      signer: {
-        accountID: 'bob.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
-      },
     });
 
     // ...sign the returned transaction and post to the network
@@ -56,15 +56,15 @@ Accounts can grant write permission to other accounts for a set of keys.
     var social = new NEARSocialSDK();
 
     social.grantWritePermission({
+      account: {
+        accountID: 'bob.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       granteeAccountId: 'alice.near',
       keys: [
         'alice.near/profile/name',
-        'alice.near/profile/image/url',
-      ],
-      signer: {
-        accountID: 'bob.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
-      }
+        'alice.near/profile/image/url'
+      ]
     })
     .then((transaction) => {
       // ...sign the returned transaction and post to the network
@@ -79,15 +79,15 @@ Accounts can grant write permission to other accounts for a set of keys.
 
     const social = new Social();
     const transaction = await social.grantWritePermission({
+      account: {
+        accountID: 'bob.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       granteeAccountId: 'alice.near',
       keys: [
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      signer: {
-        accountID: 'bob.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
-      },
     });
 
     // ...sign the returned transaction and post to the network

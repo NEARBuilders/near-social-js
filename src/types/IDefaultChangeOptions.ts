@@ -1,10 +1,10 @@
 // types
-import type ISigner from './ISigner';
+import type IAccount from './IAccount';
 
 interface IDefaultChangeOptions {
+  account: IAccount;
   blockHash?: string;
   nonce?: bigint;
-  signer: ISigner;
 }
 
 export default IDefaultChangeOptions;

@@ -67,7 +67,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
         },
       },
       nonce: BigInt(granterNonce),
-      signer: {
+      account: {
         accountID: granterAccount.accountId,
         publicKey: granterKeyPair.publicKey,
       },
@@ -86,14 +86,14 @@ describe(`${Social.name}#grantWritePermission`, () => {
     // act
     try {
       await client.grantWritePermission({
+        account: {
+          accountID: granterAccount.accountId,
+          publicKey: granterKeyPair.publicKey,
+        },
         blockHash: granterKeyResponse.block_hash,
         granteeAccountId: invalidGranteeAccountId,
         keys: [key],
         nonce: BigInt(granterNonce + 1),
-        signer: {
-          accountID: granterAccount.accountId,
-          publicKey: granterKeyPair.publicKey,
-        },
       });
     } catch (error) {
       // assert
@@ -113,14 +113,14 @@ describe(`${Social.name}#grantWritePermission`, () => {
     // act
     try {
       await client.grantWritePermission({
+        account: {
+          accountID: granterAccount.accountId,
+          publicKey: granterKeyPair.publicKey,
+        },
         blockHash: granterKeyResponse.block_hash,
         granteeAccountId: granteeAccount.accountId,
         keys: [`${invalidKeyAccountId}/profile/name`],
         nonce: BigInt(granterNonce + 1),
-        signer: {
-          accountID: granterAccount.accountId,
-          publicKey: granterKeyPair.publicKey,
-        },
       });
     } catch (error) {
       // assert
@@ -140,14 +140,14 @@ describe(`${Social.name}#grantWritePermission`, () => {
     // act
     try {
       await client.grantWritePermission({
+        account: {
+          accountID: granterAccount.accountId,
+          publicKey: granterKeyPair.publicKey,
+        },
         blockHash: granterKeyResponse.block_hash,
         granteeAccountId: granteeAccount.accountId,
         keys: [key],
         nonce: BigInt(granterNonce + 1),
-        signer: {
-          accountID: granterAccount.accountId,
-          publicKey: granterKeyPair.publicKey,
-        },
       });
     } catch (error) {
       // assert
@@ -165,14 +165,14 @@ describe(`${Social.name}#grantWritePermission`, () => {
 
     // act
     transaction = await client.grantWritePermission({
+      account: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
       blockHash: granterKeyResponse.block_hash,
       granteeAccountId: granteeAccount.accountId,
       keys: [key],
       nonce: BigInt(granterNonce + 1),
-      signer: {
-        accountID: granterAccount.accountId,
-        publicKey: granterKeyPair.publicKey,
-      },
     });
 
     await signAndSendTransaction({
@@ -196,14 +196,14 @@ describe(`${Social.name}#grantWritePermission`, () => {
 
     // act
     transaction = await client.grantWritePermission({
+      account: {
+        accountID: granterAccount.accountId,
+        publicKey: granterKeyPair.publicKey,
+      },
       blockHash: granterKeyResponse.block_hash,
       granteePublicKey: granteeKeyPair.publicKey,
       keys: [key],
       nonce: BigInt(granterNonce + 1),
-      signer: {
-        accountID: granterAccount.accountId,
-        publicKey: granterKeyPair.publicKey,
-      },
     });
 
     await signAndSendTransaction({

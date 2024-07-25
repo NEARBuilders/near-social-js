@@ -41,16 +41,16 @@ The signer account automatically has write permissions for their own account.
 
     const social = new Social();
     const transaction = await social.set({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       data: {
         ['alice.near']: {
           profile: {
             name: 'Alice',
           },
         },
-      },
-      signer: {
-        accountID: 'alice.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
       },
     });
 
@@ -64,16 +64,16 @@ The signer account automatically has write permissions for their own account.
     var social = new NEARSocialSDK();
 
     social.set({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       data: {
         ['alice.near']: {
           profile: {
             name: 'Alice'
           }
         }
-      },
-      signer: {
-        accountID: 'alice.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
       }
     })
     .then((transaction) => {
@@ -89,16 +89,16 @@ The signer account automatically has write permissions for their own account.
 
     const social = new Social();
     const transaction = await social.set({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       data: {
         ['alice.near']: {
           profile: {
             name: 'Alice',
           },
         },
-      },
-      signer: {
-        accountID: 'alice.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
       },
     });
 

@@ -69,6 +69,10 @@ describe(`${Social.name}#set`, () => {
     try {
       // act
       await client.set({
+        account: {
+          accountID: signer.accountId,
+          publicKey: keyPair.publicKey,
+        },
         blockHash: signerAccessKeyResponse.block_hash,
         data: {
           ['iamnotthesigner.test.near']: {
@@ -78,10 +82,6 @@ describe(`${Social.name}#set`, () => {
           },
         },
         nonce: BigInt(signerNonce + 1),
-        signer: {
-          accountID: signer.accountId,
-          publicKey: keyPair.publicKey,
-        },
       });
     } catch (error) {
       // assert
@@ -109,11 +109,11 @@ describe(`${Social.name}#set`, () => {
 
     // act
     transaction = await client.set({
-      data,
-      signer: {
+      account: {
         accountID: signer.accountId,
         publicKey: keyPair.publicKey,
       },
+      data,
     });
 
     // assert
@@ -142,11 +142,11 @@ describe(`${Social.name}#set`, () => {
 
     // act
     transaction = await client.set({
-      data,
-      signer: {
+      account: {
         accountID: signer.accountId,
         publicKey: keyPair.publicKey,
       },
+      data,
     });
 
     // assert

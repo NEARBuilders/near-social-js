@@ -1,8 +1,8 @@
 import { utils } from 'near-api-js';
 
-interface ISigner {
+interface IAccount {
   accountID: string;
   publicKey: string | utils.PublicKey;
 }
 
-export default ISigner;
+export default IAccount;
