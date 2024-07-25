@@ -1,9 +1,6 @@
 import { Account, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
-// constants
-import { networkRPCs } from '@app/constants';
-
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
@@ -11,7 +8,7 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 import Social from './Social';
 
 // enums
-import { ErrorCodeEnum } from '@app/enums';
+import { ErrorCodeEnum, NetworkIDEnum } from '@app/enums';
 
 // errors
 import { InvalidAccountIdError, KeyNotAllowedError } from '@app/errors';
@@ -50,7 +47,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
 
     client = new Social({
       contractId: socialContractAccountId,
-      network: networkRPCs.localnet,
+      network: NetworkIDEnum.Localnet,
     });
     key = `${granterAccount.accountId}/profile/name`;
     granterKeyResponse = await accountAccessKey(

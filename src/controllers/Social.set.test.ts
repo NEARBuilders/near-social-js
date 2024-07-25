@@ -2,7 +2,7 @@ import { Account, providers, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
 // constants
-import { MINIMUM_STORAGE_IN_BYTES, networkRPCs } from '@app/constants';
+import { MINIMUM_STORAGE_IN_BYTES } from '@app/constants';
 
 // controllers
 import Social from './Social';
@@ -11,7 +11,7 @@ import Social from './Social';
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // enums
-import { ErrorCodeEnum } from '@app/enums';
+import { ErrorCodeEnum, NetworkIDEnum } from '@app/enums';
 
 // errors
 import { KeyNotAllowedError } from '@app/errors';
@@ -56,7 +56,7 @@ describe(`${Social.name}#set`, () => {
 
     client = new Social({
       contractId: socialContractAccountId,
-      network: networkRPCs.localnet,
+      network: NetworkIDEnum.Localnet,
     });
     keyPair = result.keyPair;
     signer = result.account;

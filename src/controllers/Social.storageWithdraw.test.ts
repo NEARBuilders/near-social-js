@@ -1,14 +1,14 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
 import { ViewMethodEnum } from '@app/enums';
 
-// constants
-import { networkRPCs } from '@app/constants';
-
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
+
+// enums
+import { NetworkIDEnum } from '@app/enums';
 
 // helpers
 import accountAccessKey, {
@@ -33,7 +33,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
-      network: networkRPCs.localnet,
+      network: NetworkIDEnum.Localnet,
     });
     let resultBefore: Record<string, unknown>;
     let resultAfter: Record<string, unknown>;

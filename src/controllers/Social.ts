@@ -44,6 +44,7 @@ import type {
 // utils
 import calculateRequiredDeposit from '@app/utils/calculateRequiredDeposit';
 import parseKeysFromData from '@app/utils/parseKeysFromData';
+import rpcURLFromNetworkID from '@app/utils/rpcURLFromNetworkID';
 import validateAccountId from '@app/utils/validateAccountId';
 import viewAccessKeyList from '@app/utils/rpcQueries/viewAccessKeyList';
 import viewFunction from '@app/utils/rpcQueries/viewFunction';
@@ -69,20 +70,21 @@ export default class Social {
    * @returns {providers.JsonRpcProvider} an initialized provider to query the network with.
    * @throws {UnknownNetworkError} if a network ID is supplied, but is not known.
    * @private
+   * @static
    */
   private static _initializeProvider(
     networkIDOrRPCOptions?: string | IRPCOptions
   ): providers.JsonRpcProvider {
-    let url: string | undefined;
+    let url: string | null;
 
-    // if there is no network ID/RPC details, default to mainnet
+    // if there is no network id/rpc details, default to mainnet
     if (!networkIDOrRPCOptions) {
       return new providers.JsonRpcProvider({ url: networkRPCs.mainnet });
     }
 
     // if there is a network id, attempt to get the rpc url
     if (typeof networkIDOrRPCOptions === 'string') {
-      url = networkRPCs[networkIDOrRPCOptions];
+      url = rpcURLFromNetworkID(networkIDOrRPCOptions);
 
       if (!url) {
         throw new UnknownNetworkError(networkIDOrRPCOptions);

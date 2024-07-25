@@ -1,8 +1,5 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
 
-// constants
-import { networkRPCs } from '@app/constants';
-
 // controllers
 import Social from './Social';
 
@@ -10,7 +7,7 @@ import Social from './Social';
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // enums
-import { ViewMethodEnum } from '@app/enums';
+import { NetworkIDEnum, ViewMethodEnum } from '@app/enums';
 
 // helpers
 import accountAccessKey, {
@@ -35,7 +32,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
-      network: networkRPCs.localnet,
+      network: NetworkIDEnum.Localnet,
     });
     let result: Record<string, unknown>;
     let transaction: transactions.Transaction;
