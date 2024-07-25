@@ -1,19 +1,17 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
-// credentials
-import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
-
 // constants
 import { MINIMUM_STORAGE_IN_BYTES } from '@app/constants';
 
 // controllers
 import Social from './Social';
 
-import { networkRPCs } from '@app/constants';
+// credentials
+import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // enums
-import { ErrorCodeEnum } from '@app/enums';
+import { ErrorCodeEnum, NetworkIDEnum } from '@app/enums';
 
 // errors
 import { KeyNotAllowedError } from '@app/errors';
@@ -47,6 +45,7 @@ async function sendTransaction(
 }
 
 describe(`${Social.name}#set`, () => {
+  let client: Social;
   let keyPair: utils.KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
@@ -55,6 +54,10 @@ describe(`${Social.name}#set`, () => {
   beforeEach(async () => {
     const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
 
+    client = new Social({
+      contractId: socialContractAccountId,
+      network: NetworkIDEnum.Localnet,
+    });
     keyPair = result.keyPair;
     signer = result.account;
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
@@ -63,13 +66,13 @@ describe(`${Social.name}#set`, () => {
 
   it('should throw an error if the public key does not have write permission', async () => {
     // arrange
-    const client = new Social({
-      contractId: socialContractAccountId,
-    });
-
     try {
       // act
       await client.set({
+        account: {
+          accountID: signer.accountId,
+          publicKey: keyPair.publicKey,
+        },
         blockHash: signerAccessKeyResponse.block_hash,
         data: {
           ['iamnotthesigner.test.near']: {
@@ -79,8 +82,6 @@ describe(`${Social.name}#set`, () => {
           },
         },
         nonce: BigInt(signerNonce + 1),
-        publicKey: keyPair.publicKey,
-        signer,
       });
     } catch (error) {
       // assert
@@ -96,9 +97,6 @@ describe(`${Social.name}#set`, () => {
 
   it('should add some arbitrary data', async () => {
     // arrange
-    const client = new Social({
-      contractId: socialContractAccountId,
-    });
     const data: Record<string, Record<string, unknown>> = {
       [signer.accountId]: {
         profile: {
@@ -111,9 +109,11 @@ describe(`${Social.name}#set`, () => {
 
     // act
     transaction = await client.set({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       data,
-      publicKey: keyPair.publicKey,
-      signer,
     });
 
     // assert
@@ -121,7 +121,6 @@ describe(`${Social.name}#set`, () => {
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
-      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toEqual(data);
@@ -129,9 +128,6 @@ describe(`${Social.name}#set`, () => {
 
   it('should add data that exceeds the minimum storage amount', async () => {
     // arrange
-    const client = new Social({
-      contractId: socialContractAccountId,
-    });
     const data: Record<string, Record<string, unknown>> = {
       [signer.accountId]: {
         profile: {
@@ -146,9 +142,11 @@ describe(`${Social.name}#set`, () => {
 
     // act
     transaction = await client.set({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       data,
-      publicKey: keyPair.publicKey,
-      signer,
     });
 
     // assert
@@ -156,7 +154,6 @@ describe(`${Social.name}#set`, () => {
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
-      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toEqual(data);

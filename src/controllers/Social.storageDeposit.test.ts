@@ -1,12 +1,13 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
-//import { randomBytes } from 'node:crypto';
-import { ViewMethodEnum } from '@app/enums';
+
+// controllers
+import Social from './Social';
 
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
-// controllers
-import Social from './Social';
+// enums
+import { NetworkIDEnum, ViewMethodEnum } from '@app/enums';
 
 // helpers
 import accountAccessKey, {
@@ -31,6 +32,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
+      network: NetworkIDEnum.Localnet,
     });
     let result: Record<string, unknown>;
     let transaction: transactions.Transaction;
@@ -41,10 +43,12 @@ describe(`${Social.name}#storageDeposit`, () => {
     let deposit = '2000000000000000000000000';
     //testing optional blockhash and nonce too
     transaction = await client.storageDeposit({
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -90,9 +94,11 @@ describe(`${Social.name}#storageDeposit`, () => {
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       deposit,
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
@@ -139,10 +145,12 @@ describe(`${Social.name}#storageDeposit`, () => {
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
