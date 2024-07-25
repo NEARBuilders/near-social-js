@@ -32,20 +32,15 @@ Accounts can grant write permission to other accounts for a set of keys.
     ```js
     const { Social } = require('@builddao/near-social-js');
 
-    const grantee = await nearConnection.account('alice.near');
-    const granter = await nearConnection.account('bob.near');
-    const accessKeys = await granter.getAccessKeys();
     const social = new Social();
     const transaction = await social.grantWritePermission({
-      blockHash: accessKeys[0].block_hash,
-      granteeAccountId: grantee.accountId,
+      granteeAccountId: 'alice.near',
       keys: [
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-      publicKey: accessKeys[0].public_key,
-      signer: granter,
+      signerAccountId: 'bob.near',
+      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
     });
 
     // ...sign the returned transaction and post to the network
@@ -56,41 +51,20 @@ Accounts can grant write permission to other accounts for a set of keys.
   <TabItem value="javascript-via-cdn">
 
     ```js
-    var accessKeys;
-    var grantee;
-    var granter;
-    var social;
+    var social = new NEARSocialSDK();
 
-    nearConnection.account('alice.near')
-      .then((_granter) => {
-        granter = _granter;
-
-        return nearConnection.account('bob.near');
-      })
-      .then((_grantee) => {
-        grantee = _grantee;
-
-        return granter.getAccessKeys();
-      })
-      .then((_accessKeys) => {
-        accessKeys = _accessKeys;
-        social = new NEARSocialSDK();
-
-        return social.grantWritePermission({
-          blockHash: accessKeys[0].block_hash,
-          granteeAccountId: grantee.accountId,
-          keys: [
-            'alice.near/profile/name',
-            'alice.near/profile/image/url',
-          ],
-          nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-          publicKey: accessKeys[0].public_key,
-          signer: granter,
-        });
-      })
-      .then((transaction) => {
-        // ...sign the returned transaction and post to the network
-      });
+    social.grantWritePermission({
+      granteeAccountId: 'alice.near',
+      keys: [
+        'alice.near/profile/name',
+        'alice.near/profile/image/url',
+      ],
+      signerAccountId: 'bob.near',
+      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
+    })
+    .then((transaction) => {
+      // ...sign the returned transaction and post to the network
+    });
     ```
 
   </TabItem>
@@ -99,20 +73,15 @@ Accounts can grant write permission to other accounts for a set of keys.
     ```typescript
     import { Social } from '@builddao/near-social-js';
 
-    const grantee = await nearConnection.account('alice.near');
-    const granter = await nearConnection.account('bob.near');
-    const accessKeys = await granter.getAccessKeys();
     const social = new Social();
     const transaction = await social.grantWritePermission({
-      blockHash: accessKeys[0].block_hash,
-      granteeAccountId: grantee.accountId,
+      granteeAccountId: 'alice.near',
       keys: [
         'alice.near/profile/name',
         'alice.near/profile/image/url',
       ],
-      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-      publicKey: accessKeys[0].public_key,
-      signer: granter,
+      signerAccountId: 'bob.near',
+      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
     });
 
     // ...sign the returned transaction and post to the network

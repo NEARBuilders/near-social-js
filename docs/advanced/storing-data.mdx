@@ -39,19 +39,17 @@ The signer account automatically has write permissions for their own account.
     ```js
     const { Social } = require('@builddao/near-social-js');
 
-    const signer = await nearConnection.account('alice.near');
-    const accessKeys = await signer.getAccessKeys();
     const social = new Social();
     const transaction = await social.set({
       data: {
         ['alice.near']: {
           profile: {
-            name: 'Alice'
-          }
-        }
+            name: 'Alice',
+          },
+        },
       },
-      publicKey: accessKeys[0].public_key,
-      signer,
+      signerAccountId: 'alice.near',
+      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
     });
 
     // ...sign the returned transaction and post to the network
@@ -61,35 +59,22 @@ The signer account automatically has write permissions for their own account.
   <TabItem value="javascript-via-cdn">
 
     ```js
-    var accessKeys;
-    var signer;
-    var social;
+    var social = new NEARSocialSDK();
 
-    nearConnection.account('alice.near')
-      .then((_signer) => {
-        signer = _signer;
-
-        return signer.getAccessKeys();
-      })
-      .then((_accessKeys) => {
-        accessKeys = _accessKeys;
-        social = new NEARSocialSDK();
-
-        return social.set({
-          data: {
-            ['alice.near']: {
-              profile: {
-                name: 'Alice'
-              }
-            }
-          },
-          publicKey: accessKeys[0].public_key,
-          signer,
-        });
-      })
-      .then((transaction) => {
-        // ...sign the returned transaction and post to the network
-      });
+    social.set({
+      data: {
+        ['alice.near']: {
+          profile: {
+            name: 'Alice'
+          }
+        }
+      },
+      signerAccountId: 'alice.near',
+      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW'
+    })
+    .then((transaction) => {
+      // ...sign the returned transaction and post to the network
+    });
     ```
 
   </TabItem>
@@ -98,19 +83,17 @@ The signer account automatically has write permissions for their own account.
     ```typescript
     import { Social } from '@builddao/near-social-js';
 
-    const signer = await nearConnection.account('alice.near');
-    const accessKeys = await signer.getAccessKeys();
     const social = new Social();
     const transaction = await social.set({
       data: {
         ['alice.near']: {
           profile: {
-            name: 'Alice'
-          }
-        }
+            name: 'Alice',
+          },
+        },
       },
-      publicKey: accessKeys[0].public_key,
-      signer,
+      signerAccountId: 'alice.near',
+      signerPublicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
     });
 
     // ...sign the returned transaction and post to the network

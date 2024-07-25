@@ -50,8 +50,9 @@ import viewAccessKeyList from '@app/utils/rpcQueries/viewAccessKeyList';
 import viewFunction from '@app/utils/rpcQueries/viewFunction';
 
 export default class Social {
-  private _contractId: string;
-  private _provider: providers.JsonRpcProvider;
+  // private variables
+  private readonly _contractId: string;
+  private readonly _provider: providers.JsonRpcProvider;
 
   constructor(options?: INewSocialOptions) {
     this._contractId = options?.contractId || 'social.near';
@@ -194,6 +195,7 @@ export default class Social {
    * Reads the data for given set of keys.
    * @param {IGetOptions} options - the set of keys to read and other options.
    * @returns {Promise<Record<string, unknown>>} a promise that resolves to the given data.
+   * @public
    */
   public async get({
     keys,
@@ -223,6 +225,7 @@ export default class Social {
   /**
    * Gets the current version of the social contract.
    * @returns {Promise<string>} a promise that resolves to the current version of the contract.
+   * @public
    */
   public async getVersion(): Promise<string> {
     const version = await viewFunction({
@@ -247,6 +250,7 @@ export default class Social {
    * and sent to the network.
    * @throws {InvalidAccountIdError} if the grantee account ID or the account ID specified in the keys is invalid.
    * @throws {KeyNotAllowedError} if account IDs specified in the keys does not match the signer (granter) account ID.
+   * @public
    */
   public async grantWritePermission(
     options:
@@ -346,6 +350,7 @@ export default class Social {
    * @returns {Promise<boolean>} a promise that resolves to true, if the grantee account ID has write access for the
    * given key, or false.
    * @throws {InvalidAccountIdError} if the grantee account ID is not a valid account ID.
+   * @public
    */
   public async isWritePermissionGranted(
     options:
@@ -417,6 +422,7 @@ export default class Social {
    * @param {ISetOptions} options - the necessary options to set some data.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
+   * @public
    */
   public async set({
     blockHash,
@@ -513,6 +519,7 @@ export default class Social {
    * @param {IStorageDepositOptions} options - the necessary options to deposit NEAR for covering storage for the account_id or the signer.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
+   * @public
    */
   public async storageDeposit({
     blockHash,
@@ -577,6 +584,7 @@ export default class Social {
    * @param {IStorageWithdrawOptions} options - define the amount to be withdrawn.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
+   * @public
    */
   public async storageWithdraw({
     blockHash,
@@ -631,13 +639,5 @@ export default class Social {
       actions,
       utils.serialize.base_decode(_blockHash)
     );
-  }
-
-  /**
-   * Sets the new social contract ID.
-   * @param {string} contractId - the account of the new social contract ID.
-   */
-  public setContractId(contractId: string): void {
-    this._contractId = contractId;
   }
 }
