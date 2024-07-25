@@ -1,13 +1,14 @@
 import { Account, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
+// constants
+import { networkRPCs } from '@app/constants';
+
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
-
-import { networkRPCs } from '@app/constants';
 
 // enums
 import { ErrorCodeEnum } from '@app/enums';
@@ -49,6 +50,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
 
     client = new Social({
       contractId: socialContractAccountId,
+      network: networkRPCs.localnet,
     });
     key = `${granterAccount.accountId}/profile/name`;
     granterKeyResponse = await accountAccessKey(
@@ -68,8 +70,8 @@ describe(`${Social.name}#grantWritePermission`, () => {
         },
       },
       nonce: BigInt(granterNonce),
-      publicKey: granterKeyPair.publicKey,
-      signer: granterAccount,
+      signerAccountId: granterAccount.accountId,
+      signerPublicKey: granterKeyPair.publicKey,
     });
 
     await signAndSendTransaction({
@@ -89,8 +91,8 @@ describe(`${Social.name}#grantWritePermission`, () => {
         granteeAccountId: invalidGranteeAccountId,
         keys: [key],
         nonce: BigInt(granterNonce + 1),
-        publicKey: granterKeyPair.publicKey,
-        signer: granterAccount,
+        signerAccountId: granterAccount.accountId,
+        signerPublicKey: granterKeyPair.publicKey,
       });
     } catch (error) {
       // assert
@@ -114,8 +116,8 @@ describe(`${Social.name}#grantWritePermission`, () => {
         granteeAccountId: granteeAccount.accountId,
         keys: [`${invalidKeyAccountId}/profile/name`],
         nonce: BigInt(granterNonce + 1),
-        publicKey: granterKeyPair.publicKey,
-        signer: granterAccount,
+        signerAccountId: granterAccount.accountId,
+        signerPublicKey: granterKeyPair.publicKey,
       });
     } catch (error) {
       // assert
@@ -139,8 +141,8 @@ describe(`${Social.name}#grantWritePermission`, () => {
         granteeAccountId: granteeAccount.accountId,
         keys: [key],
         nonce: BigInt(granterNonce + 1),
-        publicKey: granterKeyPair.publicKey,
-        signer: granterAccount,
+        signerAccountId: granterAccount.accountId,
+        signerPublicKey: granterKeyPair.publicKey,
       });
     } catch (error) {
       // assert
@@ -162,8 +164,8 @@ describe(`${Social.name}#grantWritePermission`, () => {
       granteeAccountId: granteeAccount.accountId,
       keys: [key],
       nonce: BigInt(granterNonce + 1),
-      publicKey: granterKeyPair.publicKey,
-      signer: granterAccount,
+      signerAccountId: granterAccount.accountId,
+      signerPublicKey: granterKeyPair.publicKey,
     });
 
     await signAndSendTransaction({
@@ -175,7 +177,6 @@ describe(`${Social.name}#grantWritePermission`, () => {
     result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
       key,
-      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toBe(true);
@@ -189,11 +190,11 @@ describe(`${Social.name}#grantWritePermission`, () => {
     // act
     transaction = await client.grantWritePermission({
       blockHash: granterKeyResponse.block_hash,
-      granteePublicKey: granteeKeyPair.getPublicKey(),
+      granteePublicKey: granteeKeyPair.publicKey,
       keys: [key],
       nonce: BigInt(granterNonce + 1),
-      publicKey: granterKeyPair.getPublicKey(),
-      signer: granterAccount,
+      signerAccountId: granterAccount.accountId,
+      signerPublicKey: granterKeyPair.publicKey,
     });
 
     await signAndSendTransaction({
@@ -203,9 +204,8 @@ describe(`${Social.name}#grantWritePermission`, () => {
 
     // assert
     result = await client.isWritePermissionGranted({
-      granteePublicKey: granteeKeyPair.getPublicKey(),
+      granteePublicKey: granteeKeyPair.publicKey,
       key,
-      rpcURL: networkRPCs.localnet,
     });
 
     expect(result).toBe(true);

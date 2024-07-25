@@ -14,7 +14,7 @@ export default async function viewAccessKeyList({
 }: IOptions): Promise<AccessKeyInfoView[]> {
   const response = await provider.query<IResponse>({
     account_id: accountID,
-    finality: 'final',
+    finality: 'optimistic',
     request_type: 'view_access_key_list',
   });
 

@@ -1,13 +1,14 @@
 import { Account, transactions, utils } from 'near-api-js';
 import { randomBytes } from 'node:crypto';
 
+// constants
+import { networkRPCs } from '@app/constants';
+
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
-
-import { networkRPCs } from '@app/constants';
 
 // enums
 import { ErrorCodeEnum } from '@app/enums';
@@ -51,6 +52,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
 
     client = new Social({
       contractId: socialContractAccountId,
+      network: networkRPCs.localnet,
     });
     key = `${granterAccount.accountId}/profile/name`;
     granterKeyResponse = await accountAccessKey(
@@ -70,8 +72,8 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
         },
       },
       nonce: BigInt(granterNonce),
-      publicKey: granterKeyPair.publicKey,
-      signer: granterAccount,
+      signerAccountId: granterAccount.accountId,
+      signerPublicKey: granterKeyPair.publicKey,
     });
 
     await signAndSendTransaction({
@@ -89,7 +91,6 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
       await client.isWritePermissionGranted({
         granteeAccountId: invalidGranteeAccountId,
         key,
-        rpcURL: networkRPCs.localnet,
       });
     } catch (error) {
       // assert
@@ -108,7 +109,6 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteeAccountId: granterAccount.accountId,
       key,
-      rpcURL: networkRPCs.localnet,
     });
 
     // assert
@@ -121,7 +121,6 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
       key,
-      rpcURL: networkRPCs.localnet,
     });
 
     // assert
@@ -133,8 +132,8 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const transaction = await client.grantWritePermission({
       granteeAccountId: granteeAccount.accountId,
       keys: [key],
-      publicKey: granterKeyPair.getPublicKey(),
-      signer: granterAccount,
+      signerAccountId: granterAccount.accountId,
+      signerPublicKey: granterKeyPair.publicKey,
     });
 
     await signAndSendTransaction({
@@ -146,7 +145,6 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const result = await client.isWritePermissionGranted({
       granteeAccountId: granteeAccount.accountId,
       key,
-      rpcURL: networkRPCs.localnet,
     });
 
     // assert
@@ -156,10 +154,10 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
   it('should return true if the grantee has been given permission (using public key)', async () => {
     // arrange
     const transaction = await client.grantWritePermission({
-      granteePublicKey: granteeKeyPair.getPublicKey(),
+      granteePublicKey: granteeKeyPair.publicKey,
       keys: [key],
-      publicKey: granterKeyPair.getPublicKey(),
-      signer: granterAccount,
+      signerAccountId: granterAccount.accountId,
+      signerPublicKey: granterKeyPair.publicKey,
     });
 
     await signAndSendTransaction({
@@ -169,9 +167,8 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
 
     // act
     const result = await client.isWritePermissionGranted({
-      granteePublicKey: granteeKeyPair.getPublicKey(),
+      granteePublicKey: granteeKeyPair.publicKey,
       key,
-      rpcURL: networkRPCs.localnet,
     });
 
     // assert

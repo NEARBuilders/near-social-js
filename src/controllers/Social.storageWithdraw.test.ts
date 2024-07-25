@@ -1,6 +1,8 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
-//import { randomBytes } from 'node:crypto';
 import { ViewMethodEnum } from '@app/enums';
+
+// constants
+import { networkRPCs } from '@app/constants';
 
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
@@ -31,6 +33,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
+      network: networkRPCs.localnet,
     });
     let resultBefore: Record<string, unknown>;
     let resultAfter: Record<string, unknown>;
@@ -47,10 +50,10 @@ describe(`${Social.name}#storageWithdraw`, () => {
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
+      signerAccountId: signer.accountId,
+      signerPublicKey: keyPair.publicKey,
     });
 
     // assert
@@ -87,9 +90,9 @@ describe(`${Social.name}#storageWithdraw`, () => {
     transaction = await client.storageWithdraw({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       amount: withdraw_amount,
+      signerAccountId: signer.accountId,
+      signerPublicKey: keyPair.publicKey,
     });
 
     // assert
@@ -147,10 +150,10 @@ describe(`${Social.name}#storageWithdraw`, () => {
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
+      signerAccountId: signer.accountId,
+      signerPublicKey: keyPair.publicKey,
     });
 
     // assert
@@ -186,8 +189,8 @@ describe(`${Social.name}#storageWithdraw`, () => {
     transaction = await client.storageWithdraw({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      publicKey: keyPair.publicKey,
-      signer,
+      signerAccountId: signer.accountId,
+      signerPublicKey: keyPair.publicKey,
     });
 
     // assert
