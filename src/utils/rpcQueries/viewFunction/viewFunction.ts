@@ -26,14 +26,11 @@ function base64Encode(str: string): string {
 }
 
 export default async function viewFunction({
+  args = {},
   contractId,
   method,
-  rpcURL,
-  args = {},
+  provider,
 }: IOptions): Promise<ViewFunctionResult> {
-  const url = rpcURL || `https://rpc.mainnet.near.org`;
-  const provider = new providers.JsonRpcProvider({ url });
-
   const res = await provider.query({
     request_type: 'call_function',
     account_id: contractId,

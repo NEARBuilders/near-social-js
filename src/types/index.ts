@@ -1,14 +1,12 @@
 export type { default as IDefaultChangeOptions } from './IDefaultChangeOptions';
-export type { default as IDefaultOptions } from './IDefaultOptions';
-export type { default as IDefaultViewOptions } from './IDefaultViewOptions';
 export type { default as IGetOptions } from './IGetOptions';
 export type { default as NetworkIds } from './NetworkIds';
 export type { default as IGrantWritePermissionWithAccountIdOptions } from './IGrantWritePermissionWithAccountIdOptions';
 export type { default as IGrantWritePermissionWithPublicKeyOptions } from './IGrantWritePermissionWithPublicKeyOptions';
 export type { default as IIsWritePermissionGrantedWithAccountIdOptions } from './IIsWritePermissionGrantedWithAccountIdOptions';
 export type { default as IIsWritePermissionGrantedWithPublicKeyOptions } from './IIsWritePermissionGrantedWithPublicKeyOptions';
-export type { default as IGetVersionOptions } from './IGetVersionOptions';
 export type { default as INewSocialOptions } from './INewSocialOptions';
+export type { default as IRPCOptions } from './IRPCOptions';
 export type { default as ISetOptions } from './ISetOptions';
 export type { default as IStorageDepositOptions } from './IStorageDepositOptions';
 export type { default as IStorageWithdrawOptions } from './IStorageWithdrawOptions';
@@ -25,4 +23,3 @@ export type { default as ISocialDBContractStorageBalanceOfArgs } from './ISocial
 export type { default as ISocialDBContractStorageDepositArgs } from './ISocialDBContractStorageDepositArgs';
 export type { default as ISocialDBContractStorageWithdrawArgs } from './ISocialDBContractStorageWithdrawArgs';
 export type { default as ISocialDBContractStorageTracker } from './ISocialDBContractStorageTracker';
-export type { default as IStorageBalanceOfOptions } from './IStorageBalanceOfOptions';

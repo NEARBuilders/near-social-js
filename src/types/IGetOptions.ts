@@ -1,7 +1,4 @@
-// types
-import type IDefaultViewOptions from './IDefaultViewOptions';
-
-interface IGetOptions extends IDefaultViewOptions {
+interface IGetOptions {
   keys: string[];
   returnDeleted?: boolean;
   withBlockHeight?: boolean;

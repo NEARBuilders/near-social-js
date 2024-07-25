@@ -1,12 +1,10 @@
 import { utils } from 'near-api-js';
 
-// types
-import type IDefaultOptions from './IDefaultOptions';
-
-interface IDefaultChangeOptions extends IDefaultOptions {
+interface IDefaultChangeOptions {
   blockHash?: string;
   nonce?: bigint;
-  publicKey: utils.PublicKey | string;
+  signerPublicKey: utils.PublicKey | string;
+  signerAccountId: string;
 }
 
 export default IDefaultChangeOptions;
