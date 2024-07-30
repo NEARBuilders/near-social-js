@@ -1,3 +1,10 @@
+# [1.1.0-beta.3](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2024-07-30)
+
+
+### Bug Fixes
+
+* required deposit fix when available storage is higher than needed ([#40](https://github.com/NEARBuilders/near-social-js/issues/40)) ([99f9e8d](https://github.com/NEARBuilders/near-social-js/commit/99f9e8de55d5410ff34f553348d978fe075e6fbf))
+
 # [1.1.0-beta.2](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2024-07-25)
 
 
