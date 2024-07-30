@@ -109,12 +109,12 @@ describe('calculateRequiredDeposit()', () => {
         data,
         storageBalance: {
           available: BigInt(storageCostOfData.plus('1').toFixed()),
-          total: BigInt(storageCostOfData.minus('1').toFixed()),
+          total: BigInt(storageCostOfData.plus('10').toFixed()),
         },
       });
 
       // assert
-      expect(result.toFixed()).toBe('1');
+      expect(result.toFixed()).toBe('0');
     });
   });
 });
