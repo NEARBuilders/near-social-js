@@ -48,5 +48,5 @@ export default function calculateRequiredDeposit({
   // if the storage deposit available is less than the cost of storage, use the difference as the required deposit
   return storageDepositAvailable.lt(storageCostOfData)
     ? storageCostOfData.minus(storageDepositAvailable)
-    : new BigNumber(ONE_YOCTO);
+    : new BigNumber('0');
 }
