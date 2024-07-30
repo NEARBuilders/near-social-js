@@ -1,5 +1,4 @@
 import { Account, providers, transactions, utils } from 'near-api-js';
-//import { randomBytes } from 'node:crypto';
 import { ViewMethodEnum } from '@app/enums';
 
 // credentials
@@ -7,6 +6,9 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 
 // controllers
 import Social from './Social';
+
+// enums
+import { NetworkIDEnum } from '@app/enums';
 
 // helpers
 import accountAccessKey, {
@@ -31,6 +33,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
+      network: NetworkIDEnum.Localnet,
     });
     let resultBefore: Record<string, unknown>;
     let resultAfter: Record<string, unknown>;
@@ -45,10 +48,12 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //2N deposit
     let deposit = '2000000000000000000000000';
     transaction = await client.storageDeposit({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
     });
@@ -85,11 +90,13 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //1N withdraw
     let withdraw_amount = '1000000000000000000000000';
     transaction = await client.storageWithdraw({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
+      amount: withdraw_amount,
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      publicKey: keyPair.publicKey,
-      signer,
-      amount: withdraw_amount,
     });
 
     // assert
@@ -145,10 +152,12 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //2N deposit
     let deposit = '2000000000000000000000000';
     transaction = await client.storageDeposit({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
     });
@@ -184,10 +193,12 @@ describe(`${Social.name}#storageWithdraw`, () => {
 
     //No withdrawal amount specified
     transaction = await client.storageWithdraw({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      publicKey: keyPair.publicKey,
-      signer,
     });
 
     // assert

@@ -72,13 +72,13 @@ To initialize the SDK, simply instantiate the [`Social`](../api-reference/social
 
 :::note
 
-By default, the Social SDK is initialized for mainnet's social contract at account ID: [`social.near`](https://nearblocks.io/address/social.near).
+By default, the Social SDK is initialized for the mainnet social contract ([`social.near`](https://nearblocks.io/address/social.near)) and the mainnet RPC provider (https://rpc.mainnet.near.org).
 
 :::
 
 :::note
 
-See [`INewSocialOptions`](../../api-reference/types#inewsocialoptions) for more information on what options are supported.
+See [`INewSocialOptions`](../api-reference/types#inewsocialoptions) for more information on what options are supported.
 
 :::
 
@@ -99,7 +99,7 @@ You can initialize the SDK with a different social contract account by specifyin
     const { Social } = require('@builddao/near-social-js');
 
     const social = new Social({
-      contractId: 'v1.social08.testnet',
+      contractId: 'mysocialcontract.near',
     });
     ```
 
@@ -108,7 +108,7 @@ You can initialize the SDK with a different social contract account by specifyin
 
     ```js
     var social = new NEARSocialSDK({
-      contractId: 'v1.social08.testnet',
+      contractId: 'mysocialcontract.near',
     });
     ```
 
@@ -119,7 +119,119 @@ You can initialize the SDK with a different social contract account by specifyin
     import { Social } from '@builddao/near-social-js';
 
     const social = new Social({
+      contractId: 'mysocialcontract.near',
+    });
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Initialization with a different network ID
+
+You can use a specific network by initializing the SDK with a known network ID. See [networks](../api-reference/networks) on the supported networks and the RPC URLs they point to.
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social({
       contractId: 'v1.social08.testnet',
+      network: 'testnet',
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK({
+      contractId: 'v1.social08.testnet',
+      network: 'testnet'
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { NetworkIDEnum, Social } from '@builddao/near-social-js';
+
+    const social = new Social({
+      contractId: 'v1.social08.testnet',
+      network: NetworkIDEnum.Testnet,
+    });
+    ```
+
+  </TabItem>
+</Tabs>
+
+:::caution
+
+If using the network ID, make sure you provide the correct social contract for that network.
+
+:::
+
+:::note
+
+An [`UnknownNetworkError`](../api-reference/errors#unkownnetworkerror) will be thrown if the supplied network ID is not known.
+
+:::
+
+## Initialization with a custom RPC provider
+
+If you want to use your own RPC provider, you can initialize the SDK by specifying it in the options:
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social({
+      network: {
+        apiKey: 'some key',
+        url: 'https://custom-rpc.near.org',
+      },
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK({
+      network: {
+        apiKey: 'some key',
+        url: 'https://custom-rpc.near.org'
+      }
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social({
+      network: {
+        apiKey: 'some key',
+        url: 'https://custom-rpc.near.org',
+      },
     });
     ```
 

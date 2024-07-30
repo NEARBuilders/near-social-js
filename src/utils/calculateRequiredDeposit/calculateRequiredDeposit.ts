@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 // constants
 import {
   MINIMUM_STORAGE_IN_BYTES,
-  ONE_YOCTO,
   STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
 } from '@app/constants';
 import { EXTRA_STORAGE_BALANCE } from './constants';
@@ -48,5 +47,5 @@ export default function calculateRequiredDeposit({
   // if the storage deposit available is less than the cost of storage, use the difference as the required deposit
   return storageDepositAvailable.lt(storageCostOfData)
     ? storageCostOfData.minus(storageDepositAvailable)
-    : new BigNumber(ONE_YOCTO);
+    : new BigNumber('0');
 }

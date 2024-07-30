@@ -1,7 +1,4 @@
-// types
-import type IDefaultViewOptionsApiServer from './IDefaultViewOptionsApiServer';
-
-interface IGetOptions extends IDefaultViewOptionsApiServer {
+interface IGetOptions {
   keys: string[];
   blockHeight?: bigint;
   returnDeleted?: boolean;

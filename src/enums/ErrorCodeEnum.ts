@@ -5,6 +5,9 @@ enum ErrorCodeEnum {
 
   // keys
   KeyNotAllowedError = 3000,
+
+  // network
+  UnknownNetworkError = 4000,
 }
 
 export default ErrorCodeEnum;
