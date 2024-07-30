@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 // constants
 import {
   MINIMUM_STORAGE_IN_BYTES,
-  ONE_YOCTO,
   STORAGE_COST_PER_BYTES_IN_ATOMIC_UNITS,
 } from '@app/constants';
 import { EXTRA_STORAGE_BALANCE } from './constants';
