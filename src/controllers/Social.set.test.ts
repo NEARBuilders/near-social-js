@@ -23,7 +23,9 @@ import accountAccessKey, {
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 // utils
+import calculateRequiredDeposit from '@app/utils/calculateRequiredDeposit';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
+import BigNumber from 'bignumber.js';
 
 async function sendTransaction(
   transaction: transactions.Transaction,
@@ -157,5 +159,37 @@ describe(`${Social.name}#set`, () => {
     });
 
     expect(result).toEqual(data);
+  });
+
+  it('should add the supplied deposit if it exceeds the minimum storage amount', async () => {
+    // arrange
+    const data: Record<string, Record<string, unknown>> = {
+      [signer.accountId]: {
+        profile: {
+          name: randomBytes(16).toString('hex'),
+        },
+      },
+    };
+    const requiredDeposit = calculateRequiredDeposit({
+      data,
+      storageBalance: null,
+    });
+    const deposit = new BigNumber(String(requiredDeposit)).multipliedBy(2);
+    let transaction: transactions.Transaction;
+
+    // act
+    transaction = await client.set({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
+      data,
+      deposit: deposit.toFixed(),
+    });
+
+    // assert
+    expect(transaction.actions[0].functionCall?.deposit.toString()).toBe(
+      deposit.toFixed()
+    );
   });
 });

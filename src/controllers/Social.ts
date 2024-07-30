@@ -424,14 +424,16 @@ export default class Social {
     account,
     blockHash,
     data,
+    deposit,
     nonce,
     refundUnusedDeposit,
   }: ISetOptions): Promise<transactions.Transaction> {
     const keys = parseKeysFromData(data);
     let _blockHash = blockHash || null;
+    let _deposit: BigNumber = new BigNumber(deposit || ONE_YOCTO);
     let _nonce = nonce || null;
     let accessKeyView: AccessKeyView | null;
-    let deposit: BigNumber = new BigNumber('1');
+    let requiredDeposit: BigNumber;
     let storageBalance: ISocialDBContractStorageBalance | null;
 
     if (!_blockHash) {
@@ -474,11 +476,12 @@ export default class Social {
       )
     ) {
       storageBalance = await this._storageBalanceOf(account.accountID);
-
-      deposit = calculateRequiredDeposit({
+      requiredDeposit = calculateRequiredDeposit({
         data,
         storageBalance,
       });
+      _deposit =
+        _deposit > requiredDeposit ? new BigNumber(_deposit) : requiredDeposit;
     }
 
     return transactions.createTransaction(
@@ -498,7 +501,7 @@ export default class Social {
             }),
           } as ISocialDBContractSetArgs,
           BigInt(GAS_FEE_IN_ATOMIC_UNITS),
-          BigInt(deposit.toFixed())
+          BigInt(_deposit.toFixed())
         ),
       ],
       utils.serialize.base_decode(_blockHash)
