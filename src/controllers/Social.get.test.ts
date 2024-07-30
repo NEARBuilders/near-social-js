@@ -17,7 +17,6 @@ describe(`${Social.name}#get`, () => {
     // act
     const result = await client.get({
       keys: ['unknown.test.near/profile/name'],
-      signer,
       useApiServer: false,
     });
 
@@ -26,11 +25,11 @@ describe(`${Social.name}#get`, () => {
   });
 
   it('should return the object from mainnet api server', async () => {
-    //This test could use some improvement. Maybe we create a test account on mainnet for this.
-    //Or atleast information here that these tests are not meant for local tests.
-    // arrange
+    //api server is only available for mainnet so we can't test this with the local test.
+    //Hence for now, I have written a mainnet test.
     const client = new Social({
       contractId: socialContractAccountId,
+      network: NetworkIDEnum.Mainnet,
     });
     // act
     const result = await client.get({

@@ -1,7 +1,7 @@
 export type { default as IAccount } from './IAccount';
 export type { default as IDefaultChangeOptions } from './IDefaultChangeOptions';
-export type { default as IDefaultViewOptionsApiServer } from './IDefaultViewOptionsApiServer';
 export type { default as IGetOptions } from './IGetOptions';
+export type { default as IKeysOptions } from './IKeysOptions';
 export type { default as NetworkIds } from './NetworkIds';
 export type { default as IGrantWritePermissionWithAccountIdOptions } from './IGrantWritePermissionWithAccountIdOptions';
 export type { default as IGrantWritePermissionWithPublicKeyOptions } from './IGrantWritePermissionWithPublicKeyOptions';

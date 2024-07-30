@@ -58,12 +58,12 @@ export default class Social {
   // private variables
   private readonly _contractId: string;
   private readonly _provider: providers.JsonRpcProvider;
-  private apiServer: string;
+  private readonly _apiServer?: string;
 
   constructor(options?: INewSocialOptions) {
     this._contractId = options?.contractId || 'social.near';
     this._provider = Social._initializeProvider(options?.network);
-    this.apiServer = options?.apiServer || 'https://api.near.social';
+    this._apiServer = options?.apiServer || 'https://api.near.social';
   }
 
   /**
@@ -214,7 +214,7 @@ export default class Social {
   }: IGetOptions): Promise<Record<string, unknown>> {
     if (useApiServer) {
       return await (
-        await fetch(this.apiServer + '/get', {
+        await fetch(this._apiServer + '/get', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -260,7 +260,6 @@ export default class Social {
    * @returns {Promise<Record<string, unknown>>} a promise that resolves to the given data.
    */
   public async keys({
-    signer,
     keys,
     blockHeight,
     returnDeleted,
@@ -270,7 +269,7 @@ export default class Social {
   }: IKeysOptions): Promise<Record<string, unknown>> {
     if (useApiServer) {
       return await (
-        await fetch(this.apiServer + '/keys', {
+        await fetch(this._apiServer + '/keys', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -289,20 +288,23 @@ export default class Social {
         })
       ).json();
     } else {
-      return await signer?.viewFunction({
-        contractId: this.contractId,
-        methodName: ViewMethodEnum.Keys,
-        args: {
-          keys,
-          ...((returnDeleted || returnType || valuesOnly) && {
-            options: {
-              return_deleted: returnDeleted,
-              return_type: returnType,
-              values_only: valuesOnly,
-            },
-          }),
-        } as ISocialDBContractKeysArgs,
-      });
+      const args: ISocialDBContractKeysArgs = {
+        keys,
+        ...((returnDeleted || returnType || valuesOnly) && {
+          options: {
+            return_deleted: returnDeleted,
+            return_type: returnType,
+            values_only: valuesOnly,
+          },
+        }),
+      };
+
+      return (await viewFunction({
+        args,
+        contractId: this._contractId,
+        method: ViewMethodEnum.Keys,
+        provider: this._provider,
+      })) as Record<string, unknown>;
     }
   }
 

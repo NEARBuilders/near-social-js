@@ -1,7 +1,4 @@
-// types
-import type IDefaultViewOptionsApiServer from './IDefaultViewOptionsApiServer';
-
-interface IGetOptions extends IDefaultViewOptionsApiServer {
+interface IKeyOptions {
   keys: string[];
   blockHeight?: bigint;
   returnDeleted?: boolean;
@@ -10,4 +7,4 @@ interface IGetOptions extends IDefaultViewOptionsApiServer {
   useApiServer?: boolean;
 }
 
-export default IGetOptions;
+export default IKeyOptions;
