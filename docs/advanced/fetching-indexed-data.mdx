@@ -1,0 +1,156 @@
+# Fetching Indexed Data
+
+## Overview
+
+The `index` function in the Social SDK allows you to retrieve indexed values based on specified criteria from the Social API server. This function is crucial for efficient lookups of social interactions or custom indexed data, supporting various filtering, ordering, and pagination options.
+
+:::note
+
+The `index` function is only available through the API server and does not have an RPC version.
+
+:::
+
+## Function Signature
+
+```typescript
+public async index({
+  action,
+  key,
+  accountId,
+  order,
+  limit,
+  from,
+}: IIndexOptions): Promise<Record<string, unknown>>
+```
+
+### Parameters
+
+- `action`: The index_type from the standard (e.g., 'like' in the path 'index/like').
+- `key`: Can be either a string or an object:
+    - If string: The inner indexed value from the standard.
+    - If object: Can include properties like type, path, and blockHeight.
+- `accountId` (optional): A string or array of account IDs to filter values.
+- `order` (optional): The order of results. Either 'asc' or 'desc'. Default is 'asc'.
+- `limit` (optional): The number of values to return. Default is 100.
+- `from` (optional): The starting point for fetching results. Defaults to 0 or Max depending on order.
+
+### Return Value
+
+A promise that resolves to an array of matched indexed values, ordered by blockHeight.
+
+## Usage Examples
+
+### Basic Usage
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social();
+    const result = await social.index({
+      action: 'like',
+      key: 'post-123',
+    });
+
+    console.log(result);
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.index({
+      action: 'like',
+      key: 'post-123',
+    }).then((result) => {
+      console.log(result);
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social();
+    const result = await social.index({
+      action: 'like',
+      key: 'post-123',
+    });
+
+    console.log(result);
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Advanced Usage
+
+You can use additional options to customize the behavior of the `index` function:
+
+```typescript
+const result = await social.index({
+  action: 'follow',
+  key: 'alice.near',
+  accountId: ['bob.near', 'charlie.near'],
+  order: 'desc',
+  limit: '50',
+  from: 100,
+});
+```
+
+This example retrieves the last 50 'follow' actions for 'alice.near', starting from the 100th most recent entry, and only includes actions by 'bob.near' and 'charlie.near'.
+
+## Use Cases
+
+The `index` function is particularly useful for:
+
+1. Fetching all 'like' actions for a specific post:
+   ```typescript
+   const likes = await social.index({
+     action: 'like',
+     key: {
+       type: 'social',
+       path: 'efiz.near/post/main',
+       blockHeight: 124692995,//blockHeight of the post
+     },
+   });
+   ```
+
+2. Retrieving recent 'follow' actions for a user:
+   ```typescript
+   const result = await social.index({
+     action: 'graph',
+     key: 'follow',
+     order: 'desc',
+     accountId: 'alice.near',
+     limit: '10',
+   });
+   ```
+
+3. Querying custom indexed data based on application-specific schemas:
+   ```typescript
+   const customData = await social.index({
+     action: 'custom-action',
+     key: 'app-specific-key',
+   });
+   ```
+
+By leveraging the `index` function, you can build efficient and scalable features in your NEAR Social applications, such as activity feeds, trending content algorithms, or custom data aggregations.
+
+:::tip
+
+Combine the `index` function with `get` and `keys` for comprehensive data retrieval strategies in your application.
+
+:::
