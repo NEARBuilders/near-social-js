@@ -121,6 +121,7 @@ describe(`${Social.name}#set`, () => {
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
+      useApiServer: false,
     });
 
     expect(result).toEqual(data);
@@ -154,6 +155,7 @@ describe(`${Social.name}#set`, () => {
 
     result = await client.get({
       keys: [`${signer.accountId}/profile/name`],
+      useApiServer: false,
     });
 
     expect(result).toEqual(data);

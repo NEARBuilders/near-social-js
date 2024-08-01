@@ -34,20 +34,10 @@ async function sendTransaction(
   }
 }
 
-describe(`${Social.name}#get`, () => {
+describe(`${Social.name}#keys`, () => {
   const client = new Social({
     contractId: socialContractAccountId,
     network: NetworkIDEnum.Localnet,
-  });
-  it('should return an empty object when the contract does not know the account', async () => {
-    // act
-    const result = await client.get({
-      keys: ['unknown.test.near/profile/name'],
-      useApiServer: false,
-    });
-
-    // assert
-    expect(result).toEqual({});
   });
 
   it('should return the expected value for a key as set in the test.', async () => {
@@ -67,7 +57,6 @@ describe(`${Social.name}#get`, () => {
         },
       },
     };
-    let getResult: Record<string, unknown>;
     let transaction: transactions.Transaction;
 
     // act
@@ -82,12 +71,16 @@ describe(`${Social.name}#get`, () => {
     // assert
     await sendTransaction(transaction, signer);
 
-    getResult = await client.get({
+    let keysResult: Record<string, unknown>;
+    keysResult = await client.keys({
       keys: [`${signer.accountId}/profile/name`],
       useApiServer: false,
     });
+    console.log(keysResult);
 
-    expect(getResult).toEqual(data);
+    expect(keysResult).toEqual({
+      [signer.accountId]: { profile: { name: true } },
+    });
   });
 
   it('should return the object from mainnet api server', async () => {
@@ -98,14 +91,14 @@ describe(`${Social.name}#get`, () => {
       network: NetworkIDEnum.Mainnet,
     });
     // act
-    const result = await client.get({
+    const result = await client.keys({
       keys: ['jass.near/profile/name/'],
     });
 
     expect(result).toEqual({
       'jass.near': {
         profile: {
-          name: 'Jaswinder Singh',
+          name: true,
         },
       },
     });

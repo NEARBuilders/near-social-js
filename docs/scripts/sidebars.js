@@ -16,6 +16,7 @@ const sidebars = {
     {
       items: [
         'advanced/reading-data',
+        'advanced/fetching-indexed-data',
         'advanced/storing-data',
         'advanced/granting-write-permission',
         'advanced/storage-deposit-withdraw',

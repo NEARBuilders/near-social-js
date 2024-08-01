@@ -19,9 +19,32 @@ import TOCInline from '@theme/TOCInline';
 | Name            | Type                                                                                     | Required | Default | Description                                                                                                                                                  |
 |-----------------|------------------------------------------------------------------------------------------|----------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | keys            | `string[]`                                                                               | yes      | -       | A set of key patterns to return. Each key is in the form of a pattern to return data from. For example `alice.near/profile/**` or `alice.near/profile/name`. |
+| useApiServer    | `boolean`                                                                                | no       | `true`  | If true, the data will be fetched from api server instead of network rpc node.                                                                               |                     |
 | returnDeleted   | `boolean`                                                                                | no       | `false` | If true, will include deleted keys with the value `null`.                                                                                                    |
 | withBlockHeight | `boolean`                                                                                | no       | `false` | If true, for every value and a node will add the block height of the data with the key `:block`.                                                             |
 | withNodeId      | `boolean`                                                                                | no       | `false` | If true, for every node will add the node index with the key `:node`.                                                                                        |
+
+### `IKeysOptions`
+
+| Name          | Type       | Required | Default | Description                                                                                           |
+|---------------|------------|----------|---------|-------------------------------------------------------------------------------------------------------|
+| keys          | `string[]` | yes      | -       | A set of key patterns to return. Each key is in the form of a pattern to return data from.            |
+| blockHeight   | `bigint`   | no       | -       | The block height to query from.                                                                        |
+| returnDeleted | `boolean`  | no       | `false` | If true, will include deleted keys with the value `null`.                                              |
+| returnType    | `boolean`  | no       | `false` | If true, will return the type of the value (e.g., 'string', 'object') along with the value.            |
+| valuesOnly    | `boolean`  | no       | `false` | If true, returns only values without keys.                                                             |
+| useApiServer  | `boolean`  | no       | `true`  | If true, the data will be fetched from the API server instead of the network RPC node.                 |
+
+### `IIndexOptions`
+
+| Name      | Type                                                           | Required | Default | Description                                                                                                |
+|-----------|----------------------------------------------------------------|----------|---------|------------------------------------------------------------------------------------------------------------|
+| action    | `string`                                                       | yes      | -       | The index_type from the standard (e.g., 'like', 'follow').                                                 |
+| key       | `string \| { type?: string; path?: string; blockHeight?: number }` | yes      | -       | The inner indexed value. Can be a string or an object with optional type, path, and blockHeight properties. |
+| accountId | `string \| string[]`                                           | no       | -       | A string or array of account IDs to filter values.                                                         |
+| order     | `'asc' \| 'desc'`                                              | no       | `'asc'` | The order of results. Either 'asc' or 'desc'.                                                              |
+| limit     | `number`                                                       | no       | `100`   | The number of values to return.                                                                            |
+| from      | `number \| string`                                             | no       | `0`     | The starting point for fetching results. Can be a number or string, depending on the context.             |
 
 ### `IGrantWritePermissionOptions`
 

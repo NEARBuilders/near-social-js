@@ -33,13 +33,19 @@ import type {
   IStorageDepositOptions,
   IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
+  ISocialApiServerGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
   ISocialDBContractStorageDepositArgs,
+  IKeysOptions,
+  ISocialApiServerKeysArgs,
+  ISocialDBContractKeysArgs,
   IAccount,
+  IIndexOptions,
+  ISocialApiServerIndexArgs,
 } from '@app/types';
 
 // utils
@@ -54,10 +60,12 @@ export default class Social {
   // private variables
   private readonly _contractId: string;
   private readonly _provider: providers.JsonRpcProvider;
+  private readonly _apiServer?: string;
 
   constructor(options?: INewSocialOptions) {
     this._contractId = options?.contractId || 'social.near';
     this._provider = Social._initializeProvider(options?.network);
+    this._apiServer = options?.apiServer || 'https://api.near.social';
   }
 
   /**
@@ -199,27 +207,164 @@ export default class Social {
    */
   public async get({
     keys,
+    blockHeight,
     returnDeleted,
     withBlockHeight,
     withNodeId,
+    withTimestamp,
+    useApiServer = true,
   }: IGetOptions): Promise<Record<string, unknown>> {
-    const args: ISocialDBContractGetArgs = {
-      keys,
-      ...((returnDeleted || withBlockHeight || withNodeId) && {
-        options: {
-          with_block_height: withBlockHeight,
-          with_node_id: withNodeId,
-          return_deleted: returnDeleted,
-        },
-      }),
-    };
+    if (useApiServer) {
+      return await (
+        await fetch(this._apiServer + '/get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            keys,
+            blockHeight,
+            ...((returnDeleted || withBlockHeight || withTimestamp) && {
+              options: {
+                with_block_height: withBlockHeight,
+                return_deleted: returnDeleted,
+                with_timestamp: withTimestamp,
+              },
+            }),
+          } as ISocialApiServerGetArgs),
+        })
+      ).json();
+    } else {
+      const args: ISocialDBContractGetArgs = {
+        keys,
+        ...((returnDeleted || withBlockHeight || withNodeId) && {
+          options: {
+            with_block_height: withBlockHeight,
+            with_node_id: withNodeId,
+            return_deleted: returnDeleted,
+          },
+        }),
+      };
 
-    return (await viewFunction({
-      args,
-      contractId: this._contractId,
-      method: ViewMethodEnum.Get,
-      provider: this._provider,
-    })) as Record<string, unknown>;
+      return (await viewFunction({
+        args,
+        contractId: this._contractId,
+        method: ViewMethodEnum.Get,
+        provider: this._provider,
+      })) as Record<string, unknown>;
+    }
+  }
+
+  /**
+   * Retrieves a list of keys that match the specified path pattern.
+   * This method is useful for querying data structure without reading actual values.
+   * @param {IKeysOptions} options - The options for querying keys.
+   * @param {string[]} options.keys - The set of key patterns to match.
+   * @param {number} [options.blockHeight] - The block height to query from (optional).
+   * @param {boolean} [options.returnDeleted] - Whether to include deleted keys in the result (optional).
+   * @param {string} [options.returnType] - Specifies the type of data to return (optional).
+   * @param {boolean} [options.valuesOnly] - If true, returns only values without keys (optional).
+   * @param {boolean} [options.useApiServer=true] - Whether to use the API server or view function using RPC (default: true).
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to the matching keys and their metadata.
+   */
+  public async keys({
+    keys,
+    blockHeight,
+    returnDeleted,
+    returnType,
+    valuesOnly,
+    useApiServer = true,
+  }: IKeysOptions): Promise<Record<string, unknown>> {
+    if (useApiServer) {
+      return await (
+        await fetch(this._apiServer + '/keys', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            keys,
+            blockHeight,
+            ...((returnDeleted || returnType || valuesOnly) && {
+              options: {
+                return_deleted: returnDeleted,
+                return_type: returnType, //Server supports additional "History" type.
+                values_only: valuesOnly,
+              },
+            }),
+          } as ISocialApiServerKeysArgs),
+        })
+      ).json();
+    } else {
+      const args: ISocialDBContractKeysArgs = {
+        keys,
+        ...((returnDeleted || returnType || valuesOnly) && {
+          options: {
+            return_deleted: returnDeleted,
+            return_type: returnType,
+            values_only: valuesOnly,
+          },
+        }),
+      };
+
+      return (await viewFunction({
+        args,
+        contractId: this._contractId,
+        method: ViewMethodEnum.Keys,
+        provider: this._provider,
+      })) as Record<string, unknown>;
+    }
+  }
+
+  /**
+   * Retrieves indexed values based on specified criteria from the Social API server.
+   * This function allows querying of indexed data, which can be used
+   * for efficient lookups of social interactions or custom indexed data. It supports
+   * filtering by action type (e.g., likes, follows), specific keys, and optionally by
+   * account IDs. The results can be ordered and paginated for flexible data retrieval.
+   *
+   * Use cases include:
+   * - Fetching all 'like' actions for a specific post
+   * - Retrieving recent 'follow' actions for a user
+   * - Querying custom indexed data based on application-specific schemas
+   *
+   * @param {IIndexOptions} options - The options for querying indexed values.
+   * @param {string} options.action - The index_type from the standard (e.g., 'like' in the path 'index/like').
+   * @param {string} options.key - The inner indexed value from the standard.
+   * @param {string|string[]} [options.accountId] - Optional. A string or array of account IDs to filter values.
+   * @param {'asc'|'desc'} [options.order='asc'] - Optional. The order of results. Either 'asc' or 'desc'.
+   * @param {number} [options.limit=100] - Optional. The number of values to return.
+   * @param {number} [options.from] - Optional. The starting point for fetching results. Defaults to 0 or Max depending on order.
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to an array of matched indexed values, ordered by blockHeight.
+   */
+  public async index({
+    action,
+    key,
+    accountId,
+    order,
+    limit,
+    from,
+  }: IIndexOptions): Promise<Record<string, unknown>> {
+    return await (
+      await fetch(this._apiServer + '/index', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action,
+          key,
+          ...((accountId || order || limit || from) && {
+            options: {
+              accountId: accountId,
+              order: order,
+              limit: limit,
+              from: from,
+            },
+          }),
+        } as ISocialApiServerIndexArgs),
+      })
+    ).json();
   }
 
   /**

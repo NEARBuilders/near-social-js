@@ -41,13 +41,49 @@ import TOCInline from '@theme/TOCInline';
 
 | Name    | Type                               | Required | Default | Description                                         |
 |---------|------------------------------------|----------|---------|-----------------------------------------------------|
-| options | [`IGetOptions`](types#igetoptions) | yes      | -       | Options that include the rpc url and a set of keys. |
+| options | [`IGetOptions`](types#igetoptions) | yes      | -       | Options that include the set of keys. |
 
 #### Returns
 
 | Type              | Description                                                                                                                                                   |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Promise<object>` | A promise that resolves to an object with the top-level properties referencing the keys and the nested properties/objects referencing the corresponding path. |
+
+### `keys(options)`
+> Retrieves a list of keys that match specified criteria.
+> This function is useful for querying the data structure without necessarily reading all the associated values.
+> For example:
+> * `alice.near/profile/**` - will match all keys under the profile of account `alice.near`.
+> * `*/post/*` - will match all post keys for all accounts.
+> * `bob.near/widget/***` - will match all widget keys and their nested keys for account `bob.near`.
+
+#### Parameters
+| Name    | Type                                 | Required | Default | Description                                         |
+|---------|--------------------------------------|----------|---------|-----------------------------------------------------|
+| options | [`IKeysOptions`](types#ikeysoptions) | yes      | -       | Options that specify the criteria for key retrieval. |
+
+#### Returns
+| Type              | Description                                                                                                   |
+|-------------------|---------------------------------------------------------------------------------------------------------------|
+| `Promise<object>` | A promise that resolves to an object containing the matching keys and their metadata, ordered by block height. |
+
+### `index(options)`
+> Retrieves indexed values based on specified criteria from the Social API server.
+> This function is crucial for efficient lookups of social interactions or custom indexed data.
+> For example:
+> * Fetching all 'like' actions for a specific post.
+> * Retrieving recent 'follow' actions for a user.
+> * Querying custom indexed data based on application-specific schemas.
+
+#### Parameters
+| Name    | Type                                   | Required | Default | Description                                         |
+|---------|----------------------------------------|----------|---------|-----------------------------------------------------|
+| options | [`IIndexOptions`](types#iindexoptions) | yes      | -       | Options that specify the criteria for index retrieval. |
+
+#### Returns
+| Type              | Description                                                                                                   |
+|-------------------|---------------------------------------------------------------------------------------------------------------|
+| `Promise<object>` | A promise that resolves to an array of matched indexed values, ordered by block height. |
 
 ### `getVersion()`
 

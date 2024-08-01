@@ -4,14 +4,18 @@ import TOCInline from '@theme/TOCInline';
 
 # Reading Data
 
+The Social SDK provides two main functions for reading data: `get` and `keys`. Both functions now support API server requests for improved performance on mainnet, as well as direct contract calls.
+
 <TOCInline
   maxHeadingLevel={4}
   toc={toc}
 />
 
+# Get Function
+
 ## Overview
 
-Reading data is referenced by a set of key paths, where each path corresponds to the object to return.
+The get function in the Social SDK allows you to read data referenced by a set of key paths, where each path corresponds to the object to return. This function now supports both direct contract calls and API server requests for improved performance on mainnet.
 
 :::note
 
@@ -257,3 +261,136 @@ The [`get`](../api-reference/social#getoptions) function also supports wildcard 
 
   </TabItem>
 </Tabs>
+
+## Using API Server (Default)
+By default, the get function uses the API server for improved performance on mainnet. You don't need to specify any additional parameters for this behavior.
+This is only for mainnet.
+
+
+## Using Direct Contract Calls
+If you want to make direct contract calls instead of using the API server, you can set useApiServer to false:
+```typescript
+const result = await social.get({
+  keys: ['alice.near/profile/**'],
+  useApiServer: false,
+});
+```
+Note that when using direct contract calls, you can use the withNodeId option, which is not available when using the API server.
+
+
+# Keys Function
+
+## Overview
+
+The `keys` function allows you to retrieve a list of keys that match specified criteria. This is useful for querying the data structure without necessarily reading all the associated values.
+
+## Usage Examples
+
+### Basic Usage
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social();
+    const result = await social.keys({
+      keys: [
+        'alice.near/profile/**',
+        'bob.near/post/**',
+      ],
+    });
+
+    console.log(result);
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.keys({
+      keys: [
+        'alice.near/profile/**',
+        'bob.near/post/**',
+      ],
+    }).then((result) => {
+      console.log(result);
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social();
+    const result = await social.keys({
+      keys: [
+        'alice.near/profile/**',
+        'bob.near/post/**',
+      ],
+    });
+
+    console.log(result);
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Using API Server (Default)
+
+By default, the `keys` function uses the API server for improved performance on mainnet. You don't need to specify any additional parameters for this behavior.
+
+### Using Direct Contract Calls
+
+If you want to make direct contract calls instead of using the API server, you can set `useApiServer` to `false`:
+
+```typescript
+const result = await social.keys({
+  keys: ['alice.near/profile/**'],
+  useApiServer: false,
+});
+```
+
+### Additional Options
+
+You can use additional options to customize the behavior of the `keys` function:
+
+```typescript
+const result = await social.keys({
+  keys: ['alice.near/profile/**'],
+  blockHeight: 12345678,
+  returnDeleted: true,
+  returnType: 'History',
+  valuesOnly: true,
+});
+```
+
+This example retrieves keys at a specific block height, includes deleted keys, returns historical data, and only includes values in the response.
+
+:::note
+
+The `returnType` option with value "History" is only supported when using the API server (`useApiServer: true`).
+
+:::
+
+## Use Cases
+
+The `keys` function is particularly useful for:
+
+1. Discovering available data structures without fetching all the associated values.
+2. Checking for the existence of certain keys or patterns in the data.
+3. Retrieving metadata about keys, such as when they were last updated or deleted.
+4. Efficiently querying large data sets by first fetching keys and then selectively retrieving values.
+
+By combining the `get` and `keys` functions, you can build powerful and efficient data retrieval strategies for your NEAR Social applications.
