@@ -1,3 +1,10 @@
+# [1.1.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2024-08-01)
+
+
+### Features
+
+* adding api server support for read methods ([#33](https://github.com/NEARBuilders/near-social-js/issues/33)) ([dc53b30](https://github.com/NEARBuilders/near-social-js/commit/dc53b30af3ade611a4e8d29316dfc56f77dc8791))
+
 # [1.1.0-beta.3](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2024-07-30)
 
 
