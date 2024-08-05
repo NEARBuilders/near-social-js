@@ -1,3 +1,10 @@
+# [1.1.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2024-08-05)
+
+
+### Features
+
+* aded transformActions utility and exposed all utils ([#42](https://github.com/NEARBuilders/near-social-js/issues/42)) ([bfc9072](https://github.com/NEARBuilders/near-social-js/commit/bfc90720035d9e686469e95bf25ef0cc17c79c4b))
+
 # [1.1.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2024-08-01)
 
 
