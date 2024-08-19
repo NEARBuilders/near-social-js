@@ -1,14 +1,13 @@
 import type { AccessKeyView } from '@near-js/types';
 import BigNumber from 'bignumber.js';
-import {
-  type Account,
-  type Connection,
-  transactions,
-  utils,
-} from 'near-api-js';
+import { providers, transactions, utils } from 'near-api-js';
 
 // constants
-import { GAS_FEE_IN_ATOMIC_UNITS, ONE_YOCTO } from '@app/constants';
+import {
+  GAS_FEE_IN_ATOMIC_UNITS,
+  networkRPCs,
+  ONE_YOCTO,
+} from '@app/constants';
 
 // enums
 import { ChangeMethodEnum, ViewMethodEnum } from '@app/enums';
@@ -18,40 +17,101 @@ import {
   AccountNotFoundError,
   InvalidAccountIdError,
   KeyNotAllowedError,
+  UnknownNetworkError,
 } from '@app/errors';
 
 // types
 import type {
   IGetOptions,
-  IGetVersionOptions,
   IGrantWritePermissionWithAccountIdOptions,
   IGrantWritePermissionWithPublicKeyOptions,
   IIsWritePermissionGrantedWithAccountIdOptions,
   IIsWritePermissionGrantedWithPublicKeyOptions,
   INewSocialOptions,
+  IRPCOptions,
   ISetOptions,
   IStorageDepositOptions,
   IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
+  ISocialApiServerGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
   ISocialDBContractStorageBalance,
-  IStorageBalanceOfOptions,
   ISocialDBContractIsWritePermissionGrantedArgs,
   ISocialDBContractStorageWithdrawArgs,
   ISocialDBContractStorageDepositArgs,
+  IKeysOptions,
+  ISocialApiServerKeysArgs,
+  ISocialDBContractKeysArgs,
+  IAccount,
+  IIndexOptions,
+  ISocialApiServerIndexArgs,
 } from '@app/types';
 
 // utils
 import calculateRequiredDeposit from '@app/utils/calculateRequiredDeposit';
 import parseKeysFromData from '@app/utils/parseKeysFromData';
+import rpcURLFromNetworkID from '@app/utils/rpcURLFromNetworkID';
 import validateAccountId from '@app/utils/validateAccountId';
+import viewAccessKeyList from '@app/utils/rpcQueries/viewAccessKeyList';
+import viewFunction from '@app/utils/rpcQueries/viewFunction';
 
 export default class Social {
-  private contractId: string;
+  // private variables
+  private readonly _contractId: string;
+  private readonly _provider: providers.JsonRpcProvider;
+  private readonly _apiServer?: string;
 
   constructor(options?: INewSocialOptions) {
-    this.contractId = options?.contractId || 'social.near';
+    this._contractId = options?.contractId || 'social.near';
+    this._provider = Social._initializeProvider(options?.network);
+    this._apiServer = options?.apiServer || 'https://api.near.social';
+  }
+
+  /**
+   * private static methods
+   */
+
+  /**
+   * Initializes the provider with the supplied network options. If the network options are empty, the default mainnet
+   * is used.
+   * @param {string | IRPCOptions} networkIDOrRPCOptions - [optional] a network ID or the RPC options to initialize a
+   * provider.
+   * @returns {providers.JsonRpcProvider} an initialized provider to query the network with.
+   * @throws {UnknownNetworkError} if a network ID is supplied, but is not known.
+   * @private
+   * @static
+   */
+  private static _initializeProvider(
+    networkIDOrRPCOptions?: string | IRPCOptions
+  ): providers.JsonRpcProvider {
+    let url: string | null;
+
+    // if there is no network id/rpc details, default to mainnet
+    if (!networkIDOrRPCOptions) {
+      return new providers.JsonRpcProvider({ url: networkRPCs.mainnet });
+    }
+
+    // if there is a network id, attempt to get the rpc url
+    if (typeof networkIDOrRPCOptions === 'string') {
+      url = rpcURLFromNetworkID(networkIDOrRPCOptions);
+
+      if (!url) {
+        throw new UnknownNetworkError(networkIDOrRPCOptions);
+      }
+
+      return new providers.JsonRpcProvider({ url });
+    }
+
+    // otherwise, use the rpc details
+    return new providers.JsonRpcProvider({
+      url: networkIDOrRPCOptions.url,
+      ...(networkIDOrRPCOptions.apiKey && {
+        headers: {
+          ['X-Api-Key']: networkIDOrRPCOptions.apiKey,
+        },
+      }),
+    });
   }
 
   /**
@@ -60,17 +120,19 @@ export default class Social {
 
   /**
    * Gets the access key view.
-   * @param {Account} account - an initialized account.
-   * @param {string | utils.PublicKey} publicKey - the public key of the access key to query.
+   * @param {IAccount} account - the account ID and public key of the account.
    * @returns {Promise<AccessKeyView | null>} a promise that resolves to the access key view or null if the access key
    * for the given public key does not exist.
    * @private
    */
-  private async _accessKeyView(
-    account: Account,
-    publicKey: string | utils.PublicKey
-  ): Promise<AccessKeyView | null> {
-    const accessKeys = await account.getAccessKeys();
+  private async _accessKeyView({
+    accountID,
+    publicKey,
+  }: IAccount): Promise<AccessKeyView | null> {
+    const accessKeys = await viewAccessKeyList({
+      accountID,
+      provider: this._provider,
+    });
 
     return (
       accessKeys.find((value) => value.public_key === publicKey.toString())
@@ -80,27 +142,47 @@ export default class Social {
 
   /**
    * Queries the node to get the latest block hash.
-   * @param {Connection} connection - an initialized NEAR connection.
    * @returns {Promise<string>} a promise that resolves to the latest block hash. The hash will be a base58 encoded string.
    * @private
    */
-  private async _latestBlockHash(connection: Connection): Promise<string> {
-    const { sync_info } = await connection.provider.status();
+  private async _latestBlockHash(): Promise<string> {
+    const { sync_info } = await this._provider.status();
 
     return sync_info.latest_block_hash;
   }
 
-  private async _storageBalanceOf({
-    accountId,
-    signer,
-  }: IStorageBalanceOfOptions): Promise<ISocialDBContractStorageBalance | null> {
-    return await signer.viewFunction({
+  private async _storageBalanceOf(
+    accountID: string
+  ): Promise<ISocialDBContractStorageBalance | null> {
+    const result = await viewFunction({
       args: {
-        account_id: accountId,
+        account_id: accountID,
       },
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+      contractId: this._contractId,
+      method: ViewMethodEnum.StorageBalanceOf,
+      provider: this._provider,
     });
+
+    if (this._isStorageBalance(result)) {
+      return result;
+    } else if (result === null) {
+      return null;
+    } else {
+      throw new Error('Unexpected response format from storage_balance_of');
+    }
+  }
+
+  private _isStorageBalance(
+    data: unknown
+  ): data is ISocialDBContractStorageBalance {
+    return (
+      typeof data === 'object' &&
+      data !== null &&
+      'total' in data &&
+      'available' in data &&
+      typeof (data as ISocialDBContractStorageBalance).total === 'string' &&
+      typeof (data as ISocialDBContractStorageBalance).available === 'string'
+    );
   }
 
   private _uniqueAccountIdsFromKeys(keys: string[]): string[] {
@@ -119,20 +201,41 @@ export default class Social {
 
   /**
    * Reads the data for given set of keys.
-   * @param {IGetOptions} options - the signer and a set of keys to read.
+   * @param {IGetOptions} options - the set of keys to read and other options.
    * @returns {Promise<Record<string, unknown>>} a promise that resolves to the given data.
+   * @public
    */
   public async get({
-    signer,
     keys,
+    blockHeight,
     returnDeleted,
     withBlockHeight,
     withNodeId,
+    withTimestamp,
+    useApiServer = true,
   }: IGetOptions): Promise<Record<string, unknown>> {
-    return await signer.viewFunction({
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.Get,
-      args: {
+    if (useApiServer) {
+      return await (
+        await fetch(this._apiServer + '/get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            keys,
+            blockHeight,
+            ...((returnDeleted || withBlockHeight || withTimestamp) && {
+              options: {
+                with_block_height: withBlockHeight,
+                return_deleted: returnDeleted,
+                with_timestamp: withTimestamp,
+              },
+            }),
+          } as ISocialApiServerGetArgs),
+        })
+      ).json();
+    } else {
+      const args: ISocialDBContractGetArgs = {
         keys,
         ...((returnDeleted || withBlockHeight || withNodeId) && {
           options: {
@@ -141,19 +244,147 @@ export default class Social {
             return_deleted: returnDeleted,
           },
         }),
-      } as ISocialDBContractGetArgs,
-    });
+      };
+
+      return (await viewFunction({
+        args,
+        contractId: this._contractId,
+        method: ViewMethodEnum.Get,
+        provider: this._provider,
+      })) as Record<string, unknown>;
+    }
+  }
+
+  /**
+   * Retrieves a list of keys that match the specified path pattern.
+   * This method is useful for querying data structure without reading actual values.
+   * @param {IKeysOptions} options - The options for querying keys.
+   * @param {string[]} options.keys - The set of key patterns to match.
+   * @param {number} [options.blockHeight] - The block height to query from (optional).
+   * @param {boolean} [options.returnDeleted] - Whether to include deleted keys in the result (optional).
+   * @param {string} [options.returnType] - Specifies the type of data to return (optional).
+   * @param {boolean} [options.valuesOnly] - If true, returns only values without keys (optional).
+   * @param {boolean} [options.useApiServer=true] - Whether to use the API server or view function using RPC (default: true).
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to the matching keys and their metadata.
+   */
+  public async keys({
+    keys,
+    blockHeight,
+    returnDeleted,
+    returnType,
+    valuesOnly,
+    useApiServer = true,
+  }: IKeysOptions): Promise<Record<string, unknown>> {
+    if (useApiServer) {
+      return await (
+        await fetch(this._apiServer + '/keys', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            keys,
+            blockHeight,
+            ...((returnDeleted || returnType || valuesOnly) && {
+              options: {
+                return_deleted: returnDeleted,
+                return_type: returnType, //Server supports additional "History" type.
+                values_only: valuesOnly,
+              },
+            }),
+          } as ISocialApiServerKeysArgs),
+        })
+      ).json();
+    } else {
+      const args: ISocialDBContractKeysArgs = {
+        keys,
+        ...((returnDeleted || returnType || valuesOnly) && {
+          options: {
+            return_deleted: returnDeleted,
+            return_type: returnType,
+            values_only: valuesOnly,
+          },
+        }),
+      };
+
+      return (await viewFunction({
+        args,
+        contractId: this._contractId,
+        method: ViewMethodEnum.Keys,
+        provider: this._provider,
+      })) as Record<string, unknown>;
+    }
+  }
+
+  /**
+   * Retrieves indexed values based on specified criteria from the Social API server.
+   * This function allows querying of indexed data, which can be used
+   * for efficient lookups of social interactions or custom indexed data. It supports
+   * filtering by action type (e.g., likes, follows), specific keys, and optionally by
+   * account IDs. The results can be ordered and paginated for flexible data retrieval.
+   *
+   * Use cases include:
+   * - Fetching all 'like' actions for a specific post
+   * - Retrieving recent 'follow' actions for a user
+   * - Querying custom indexed data based on application-specific schemas
+   *
+   * @param {IIndexOptions} options - The options for querying indexed values.
+   * @param {string} options.action - The index_type from the standard (e.g., 'like' in the path 'index/like').
+   * @param {string} options.key - The inner indexed value from the standard.
+   * @param {string|string[]} [options.accountId] - Optional. A string or array of account IDs to filter values.
+   * @param {'asc'|'desc'} [options.order='asc'] - Optional. The order of results. Either 'asc' or 'desc'.
+   * @param {number} [options.limit=100] - Optional. The number of values to return.
+   * @param {number} [options.from] - Optional. The starting point for fetching results. Defaults to 0 or Max depending on order.
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to an array of matched indexed values, ordered by blockHeight.
+   */
+  public async index({
+    action,
+    key,
+    accountId,
+    order,
+    limit,
+    from,
+  }: IIndexOptions): Promise<Record<string, unknown>> {
+    return await (
+      await fetch(this._apiServer + '/index', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action,
+          key,
+          ...((accountId || order || limit || from) && {
+            options: {
+              accountId: accountId,
+              order: order,
+              limit: limit,
+              from: from,
+            },
+          }),
+        } as ISocialApiServerIndexArgs),
+      })
+    ).json();
   }
 
   /**
    * Gets the current version of the social contract.
    * @returns {Promise<string>} a promise that resolves to the current version of the contract.
+   * @public
    */
-  public async getVersion({ signer }: IGetVersionOptions): Promise<string> {
-    return await signer.viewFunction({
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.GetVersion,
+  public async getVersion(): Promise<string> {
+    const version = await viewFunction({
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetVersion,
+      provider: this._provider,
     });
+
+    if (typeof version !== 'string') {
+      throw new Error(
+        `Unexpected response format from get_version: ${JSON.stringify(version)}`
+      );
+    }
+    return version;
   }
 
   /**
@@ -164,13 +395,14 @@ export default class Social {
    * and sent to the network.
    * @throws {InvalidAccountIdError} if the grantee account ID or the account ID specified in the keys is invalid.
    * @throws {KeyNotAllowedError} if account IDs specified in the keys does not match the signer (granter) account ID.
+   * @public
    */
   public async grantWritePermission(
     options:
       | IGrantWritePermissionWithAccountIdOptions
       | IGrantWritePermissionWithPublicKeyOptions
   ): Promise<transactions.Transaction> {
-    const { blockHash, keys, nonce, publicKey, signer } = options;
+    const { account, blockHash, keys, nonce } = options;
     let accessKeyView: AccessKeyView | null;
     let _blockHash: string | null = blockHash || null;
     let _nonce: bigint | null = nonce || null;
@@ -196,25 +428,25 @@ export default class Social {
       }
 
       // if the key does not belong to the signer (granter) it cannot give grant permission
-      if (accountId !== signer.accountId) {
+      if (accountId !== account.accountID) {
         throw new KeyNotAllowedError(
           value,
-          `key "${value}" does not belong to granter "${signer.accountId}"`
+          `key "${value}" does not belong to granter "${account.accountID}"`
         );
       }
     });
 
     if (!_blockHash) {
-      _blockHash = await this._latestBlockHash(signer.connection);
+      _blockHash = await this._latestBlockHash();
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(signer, publicKey);
+      accessKeyView = await this._accessKeyView(account);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signer.accountId,
-          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+          account.accountID,
+          `failed to get nonce for access key for "${account.accountID}" with public key "${account.publicKey.toString()}"`
         );
       }
 
@@ -222,9 +454,9 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signer.accountId,
-      utils.PublicKey.fromString(publicKey.toString()),
-      this.contractId,
+      account.accountID,
+      utils.PublicKey.fromString(account.publicKey.toString()),
+      this._contractId,
       _nonce,
       [
         transactions.functionCall(
@@ -259,13 +491,14 @@ export default class Social {
    * @returns {Promise<boolean>} a promise that resolves to true, if the grantee account ID has write access for the
    * given key, or false.
    * @throws {InvalidAccountIdError} if the grantee account ID is not a valid account ID.
+   * @public
    */
   public async isWritePermissionGranted(
     options:
       | IIsWritePermissionGrantedWithAccountIdOptions
       | IIsWritePermissionGrantedWithPublicKeyOptions
   ): Promise<boolean> {
-    const { key, signer } = options;
+    const { key } = options;
 
     if (
       (options as IIsWritePermissionGrantedWithAccountIdOptions)
@@ -294,9 +527,7 @@ export default class Social {
       }
     }
 
-    return await signer.viewFunction({
-      contractId: this.contractId,
-      methodName: ViewMethodEnum.IsWritePermissionGranted,
+    const result = await viewFunction({
       args: {
         key,
         ...((options as IIsWritePermissionGrantedWithAccountIdOptions)
@@ -312,7 +543,18 @@ export default class Social {
           ).granteePublicKey.toString(),
         }),
       } as ISocialDBContractIsWritePermissionGrantedArgs,
+      contractId: this._contractId,
+      method: ViewMethodEnum.IsWritePermissionGranted,
+      provider: this._provider,
     });
+
+    if (typeof result !== 'boolean') {
+      throw new Error(
+        `Unexpected response format from isWritePermissionGranted: ${JSON.stringify(result)}`
+      );
+    }
+
+    return result;
   }
 
   /**
@@ -321,33 +563,33 @@ export default class Social {
    * @param {ISetOptions} options - the necessary options to set some data.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
+   * @public
    */
   public async set({
+    account,
     blockHash,
     data,
     nonce,
-    publicKey,
     refundUnusedDeposit,
-    signer,
   }: ISetOptions): Promise<transactions.Transaction> {
     const keys = parseKeysFromData(data);
-    let _blockHash: string | null = blockHash || null;
-    let _nonce: bigint | null = nonce || null;
+    let _blockHash = blockHash || null;
+    let _nonce = nonce || null;
     let accessKeyView: AccessKeyView | null;
     let deposit: BigNumber = new BigNumber('1');
     let storageBalance: ISocialDBContractStorageBalance | null;
 
     if (!_blockHash) {
-      _blockHash = await this._latestBlockHash(signer.connection);
+      _blockHash = await this._latestBlockHash();
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(signer, publicKey);
+      accessKeyView = await this._accessKeyView(account);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signer.accountId,
-          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+          account.accountID,
+          `failed to get nonce for access key for "${account.accountID}" with public key "${account.publicKey.toString()}"`
         );
       }
 
@@ -357,11 +599,10 @@ export default class Social {
     // for each key, check if the signer has been granted write permission for the key
     for (let i = 0; i < keys.length; i++) {
       if (
-        (keys[i].split('/')[0] || '') !== signer.accountId &&
+        (keys[i].split('/')[0] || '') !== account.accountID &&
         !(await this.isWritePermissionGranted({
-          granteePublicKey: publicKey,
+          granteePublicKey: account.publicKey,
           key: keys[i],
-          signer,
         }))
       ) {
         throw new KeyNotAllowedError(
@@ -374,13 +615,10 @@ export default class Social {
     // if the signer is updating their own data, calculate storage deposit
     if (
       this._uniqueAccountIdsFromKeys(keys).find(
-        (value) => value === signer.accountId
+        (value) => value === account.accountID
       )
     ) {
-      storageBalance = await this._storageBalanceOf({
-        accountId: signer.accountId,
-        signer,
-      });
+      storageBalance = await this._storageBalanceOf(account.accountID);
 
       deposit = calculateRequiredDeposit({
         data,
@@ -389,9 +627,9 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signer.accountId,
-      utils.PublicKey.fromString(publicKey.toString()),
-      this.contractId,
+      account.accountID,
+      utils.PublicKey.fromString(account.publicKey.toString()),
+      this._contractId,
       _nonce,
       [
         transactions.functionCall(
@@ -418,12 +656,12 @@ export default class Social {
    * @param {IStorageDepositOptions} options - the necessary options to deposit NEAR for covering storage for the account_id or the signer.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
+   * @public
    */
   public async storageDeposit({
+    account,
     blockHash,
     nonce,
-    publicKey,
-    signer,
     registrationOnly,
     accountId,
     deposit,
@@ -448,16 +686,16 @@ export default class Social {
     let accessKeyView: AccessKeyView | null;
 
     if (!_blockHash) {
-      _blockHash = await this._latestBlockHash(signer.connection);
+      _blockHash = await this._latestBlockHash();
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(signer, publicKey);
+      accessKeyView = await this._accessKeyView(account);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signer.accountId,
-          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+          account.accountID,
+          `failed to get nonce for access key for "${account.accountID}" with public key "${account.publicKey.toString()}"`
         );
       }
 
@@ -465,9 +703,9 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signer.accountId,
-      utils.PublicKey.fromString(publicKey.toString()),
-      this.contractId,
+      account.accountID,
+      utils.PublicKey.fromString(account.publicKey.toString()),
+      this._contractId,
       _nonce,
       actions,
       utils.serialize.base_decode(_blockHash)
@@ -479,13 +717,13 @@ export default class Social {
    * @param {IStorageWithdrawOptions} options - define the amount to be withdrawn.
    * @returns {Promise<transactions.Transaction>} a promise that resolves to a transaction that is ready to be signed
    * and sent to the network.
+   * @public
    */
   public async storageWithdraw({
+    account,
     blockHash,
     amount,
     nonce,
-    publicKey,
-    signer,
   }: IStorageWithdrawOptions): Promise<transactions.Transaction> {
     const actions: transactions.Action[] = [];
 
@@ -506,16 +744,16 @@ export default class Social {
     let accessKeyView: AccessKeyView | null;
 
     if (!_blockHash) {
-      _blockHash = await this._latestBlockHash(signer.connection);
+      _blockHash = await this._latestBlockHash();
     }
 
     if (!_nonce) {
-      accessKeyView = await this._accessKeyView(signer, publicKey);
+      accessKeyView = await this._accessKeyView(account);
 
       if (!accessKeyView) {
         throw new AccountNotFoundError(
-          signer.accountId,
-          `failed to get nonce for access key for "${signer.accountId}" with public key "${publicKey.toString()}"`
+          account.accountID,
+          `failed to get nonce for access key for "${account.accountID}" with public key "${account.publicKey.toString()}"`
         );
       }
 
@@ -523,19 +761,12 @@ export default class Social {
     }
 
     return transactions.createTransaction(
-      signer.accountId,
-      utils.PublicKey.fromString(publicKey.toString()),
-      this.contractId,
+      account.accountID,
+      utils.PublicKey.fromString(account.publicKey.toString()),
+      this._contractId,
       _nonce,
       actions,
       utils.serialize.base_decode(_blockHash)
     );
-  }
-  /**
-   * Sets the new social contract ID.
-   * @param {string} contractId - the account of the new social contract ID.
-   */
-  public setContractId(contractId: string): void {
-    this.contractId = contractId;
   }
 }

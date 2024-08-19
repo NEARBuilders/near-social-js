@@ -5,8 +5,8 @@ import TOCInline from '@theme/TOCInline';
 # Depositing NEAR for Storage
 
 <TOCInline
-maxHeadingLevel={4}
-toc={toc}
+  maxHeadingLevel={4}
+  toc={toc}
 />
 
 ## Overview
@@ -16,167 +16,132 @@ When depositing NEAR to the social DB contract, you can cover the storage cost f
 The signer account MUST have sufficient NEAR balance to cover the deposit.
 
 <Tabs
-defaultValue="javascript-via-package-manager"
-values={[
-{ label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
-{ label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
-{ label: 'TypeScript', value: 'typescript' },
-]}>
-
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
   <TabItem value="javascript-via-package-manager">
-  ```js
-const { Social } = require('@builddao/near-social-js');
 
-const signer = await nearConnection.account('alice.near');
-const accessKeys = await signer.getAccessKeys();
-const social = new Social();
-const transaction = await social.storageDeposit({
-  blockHash: accessKeys[0].block_hash,
-  nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-  publicKey: accessKeys[0].public_key,
-  signer,
-  registration_only: true, // set to true if you want to pay only the bare minimum deposit
-  account_id: 'bob.near', // optional, defaults to the signer account
-  deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
-});
-// ...sign the returned transaction and post to the network
-```
-  </TabItem>
+    ```js
+    const { Social } = require('@builddao/near-social-js');
 
-  <TabItem value="javascript-via-cdn">
-```js
-var accessKeys;
-var signer;
-var social;
-
-nearConnection.account('alice.near')
-  .then((_signer) => {
-    signer = _signer;
-
-    return signer.getAccessKeys();
-  })
-  .then((_accessKeys) => {
-    accessKeys = _accessKeys;
-    social = new NEARSocialSDK();
-
-    return social.storageDeposit({
-      blockHash: accessKeys[0].block_hash,
-      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-      publicKey: accessKeys[0].public_key,
-      signer,
+    const social = new Social();
+    const transaction = await social.storageDeposit({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       registration_only: true, // set to true if you want to pay only the bare minimum deposit
       account_id: 'bob.near', // optional, defaults to the signer account
       deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
     });
-  })
-  .then((transaction) => {
     // ...sign the returned transaction and post to the network
-  });
-```
+    ```
+
+  </TabItem>
+
+  <TabItem value="javascript-via-cdn">
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.storageDeposit({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      account_id: 'bob.near', // optional, defaults to the signer account
+      deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
+      registration_only: true // set to true if you want to pay only the bare minimum deposit
+    })
+    .then((transaction) => {
+      // ...sign the returned transaction and post to the network
+    });
+    ```
   </TabItem>
 
   <TabItem value="typescript">
-```typescript
-import { Social } from '@builddao/near-social-js';
+  ```typescript
+  import { Social } from '@builddao/near-social-js';
 
-const signer = await nearConnection.account('alice.near');
-const accessKeys = await signer.getAccessKeys();
-const social = new Social();
-const transaction = await social.storageDeposit({
-  blockHash: accessKeys[0].block_hash,
-  nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-  publicKey: accessKeys[0].public_key,
-  signer,
-  registration_only: true, // set to true if you want to pay only the bare minimum deposit
-  account_id: 'bob.near', // optional, defaults to the signer account
-  deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
-});
-// ...sign the returned transaction and post to the network
-```
+  const social = new Social();
+  const transaction = await social.storageDeposit({
+    account: {
+      accountID: 'alice.near',
+      publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+    },
+    account_id: 'bob.near', // optional, defaults to the signer account
+    deposit: '10000000000000000000000', // the amount to deposit in yoctoNEAR
+    registration_only: true, // set to true if you want to pay only the bare minimum deposit
+  });
+  // ...sign the returned transaction and post to the network
+  ```
   </TabItem>
 </Tabs>
 
 # Withdrawing NEAR from Storage
 
-<TOCInline
-maxHeadingLevel={4}
-toc={toc}
-/>
-
 ## Overview
+
 When withdrawing NEAR from the social DB contract, you can specify the amount to withdraw. If no amount is specified, all available NEAR is withdrawn.
 
 The signer account MUST have sufficient NEAR balance available for withdrawal.
 
 <Tabs
-defaultValue="javascript-via-package-manager"
-values={[
-{ label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
-{ label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
-{ label: 'TypeScript', value: 'typescript' },
-]}>
-<TabItem value="javascript-via-package-manager">
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
 
-```js
-const { Social } = require('@builddao/near-social-js');
+    ```js
+    const { Social } = require('@builddao/near-social-js');
 
-const signer = await nearConnection.account('alice.near');
-const accessKeys = await signer.getAccessKeys();
-const social = new Social();
-const transaction = await social.storageWithdraw({
-  blockHash: accessKeys[0].block_hash,
-  nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-  publicKey: accessKeys[0].public_key,
-  signer,
-  amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
-});
-// ...sign the returned transaction and post to the network
-```
-  </TabItem>
-  <TabItem value="javascript-via-cdn">
-```js
-var accessKeys;
-var signer;
-var social;
-
-nearConnection.account('alice.near')
-  .then((_signer) => {
-    signer = _signer;
-
-    return signer.getAccessKeys();
-  })
-  .then((_accessKeys) => {
-    accessKeys = _accessKeys;
-    social = new NEARSocialSDK();
-
-    return social.storageWithdraw({
-      blockHash: accessKeys[0].block_hash,
-      nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-      publicKey: accessKeys[0].public_key,
-      signer,
+    const social = new Social();
+    const transaction = await social.storageWithdraw({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
       amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
     });
-  })
-  .then((transaction) => {
     // ...sign the returned transaction and post to the network
-  });
-```
+    ```
   </TabItem>
-  <TabItem value="typescript">
-```typescript
-import { Social } from '@builddao/near-social-js';
 
-const signer = await nearConnection.account('alice.near');
-const accessKeys = await signer.getAccessKeys();
-const social = new Social();
-const transaction = await social.storageWithdraw({
-  blockHash: accessKeys[0].block_hash,
-  nonce: BigInt(accessKeys[0].nonce + 1), // the nonce to be used for the transaction, must be greater than the access key nonce
-  publicKey: accessKeys[0].public_key,
-  signer,
-  amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
-});
-// ...sign the returned transaction and post to the network
-```
+  <TabItem value="javascript-via-cdn">
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.storageWithdraw({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      amount: '5000000000000000000000' // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
+    })
+    .then((transaction) => {
+      // ...sign the returned transaction and post to the network
+    });
+    ```
+  </TabItem>
+
+  <TabItem value="typescript">
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social();
+    const transaction = await social.storageWithdraw({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      amount: '5000000000000000000000', // the amount to withdraw in yoctoNEAR, optional, defaults to all available balance
+    });
+    // ...sign the returned transaction and post to the network
+    ```
   </TabItem>
 </Tabs>

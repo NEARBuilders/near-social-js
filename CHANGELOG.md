@@ -1,3 +1,38 @@
+# [1.1.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2024-08-05)
+
+
+### Features
+
+* aded transformActions utility and exposed all utils ([#42](https://github.com/NEARBuilders/near-social-js/issues/42)) ([bfc9072](https://github.com/NEARBuilders/near-social-js/commit/bfc90720035d9e686469e95bf25ef0cc17c79c4b))
+
+# [1.1.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2024-08-01)
+
+
+### Features
+
+* adding api server support for read methods ([#33](https://github.com/NEARBuilders/near-social-js/issues/33)) ([dc53b30](https://github.com/NEARBuilders/near-social-js/commit/dc53b30af3ade611a4e8d29316dfc56f77dc8791))
+
+# [1.1.0-beta.3](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2024-07-30)
+
+
+### Bug Fixes
+
+* required deposit fix when available storage is higher than needed ([#40](https://github.com/NEARBuilders/near-social-js/issues/40)) ([99f9e8d](https://github.com/NEARBuilders/near-social-js/commit/99f9e8de55d5410ff34f553348d978fe075e6fbf))
+
+# [1.1.0-beta.2](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2024-07-25)
+
+
+### Features
+
+* remove near-api-js account object dependency from change functions ([#38](https://github.com/NEARBuilders/near-social-js/issues/38)) ([134e463](https://github.com/NEARBuilders/near-social-js/commit/134e4638341febdaf945fe8412479172421332d3))
+
+# [1.1.0-beta.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.1...v1.1.0-beta.1) (2024-07-24)
+
+
+### Features
+
+* **wip:** removed signer from viewMethods by dropping NAJ account.ViewFunction ([#35](https://github.com/NEARBuilders/near-social-js/issues/35)) ([a57edc4](https://github.com/NEARBuilders/near-social-js/commit/a57edc42bee279abc1f3925acd130cba29cd239a))
+
 ## [1.0.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0...v1.0.1) (2024-07-05)
 
 
