@@ -33,6 +33,8 @@ import type {
   IStorageDepositOptions,
   IStorageWithdrawOptions,
   ISocialDBContractGetArgs,
+  ISocialDBContractGetAccountsArgs,
+  ISocialDBContractGetAccountArgs,
   ISocialApiServerGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractSetArgs,
@@ -46,6 +48,8 @@ import type {
   IAccount,
   IIndexOptions,
   ISocialApiServerIndexArgs,
+  IGetAccountsOptions,
+  IGetAccountOptions,
 } from '@app/types';
 
 // utils
@@ -385,6 +389,71 @@ export default class Social {
       );
     }
     return version;
+  }
+
+  /**
+   * Retrieves account information based on the provided options.
+   * @param {IGetAccountOptions} options - The options for retrieving accounts.
+   * @param {string} [accountId] - AccountId for which you want to fetch Near Social Account
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to the retrieved account data.
+   * @public
+   */
+  public async getAccount({
+    accountId,
+  }: IGetAccountOptions): Promise<Record<string, unknown>> {
+    const args: ISocialDBContractGetAccountArgs = { account_id: accountId };
+
+    return (await viewFunction({
+      args,
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetAccount,
+      provider: this._provider,
+    })) as Record<string, unknown>;
+  }
+
+  /**
+   * Retrieves account information based on the provided options.
+   * @param {IGetAccountsOptions} options - The options for retrieving accounts.
+   * @param {number} [options.fromIndex] - The starting index for pagination (optional).
+   * @param {number} [options.limit] - The maximum number of accounts to retrieve (optional).
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to the retrieved account data.
+   * @public
+   */
+  public async getAccounts({
+    fromIndex,
+    limit,
+  }: IGetAccountsOptions): Promise<Record<string, unknown>> {
+    const args: ISocialDBContractGetAccountsArgs = {
+      ...(fromIndex !== undefined && { from_index: fromIndex }),
+      ...(limit !== undefined && { limit }),
+    };
+
+    return (await viewFunction({
+      args,
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetAccounts,
+      provider: this._provider,
+    })) as Record<string, unknown>;
+  }
+
+  /**
+   * Gets the current Account count on the social contract.
+   * @returns {Promise<string>} a promise that resolves to the current number of accounts.
+   * @public
+   */
+  public async getAccountCount(): Promise<number> {
+    const accountCount = await viewFunction({
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetAccountCount,
+      provider: this._provider,
+    });
+
+    if (typeof accountCount !== 'number') {
+      throw new Error(
+        `Unexpected response format from get_account_count: ${JSON.stringify(accountCount)}`
+      );
+    }
+    return accountCount;
   }
 
   /**

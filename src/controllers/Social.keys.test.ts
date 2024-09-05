@@ -76,7 +76,6 @@ describe(`${Social.name}#keys`, () => {
       keys: [`${signer.accountId}/profile/name`],
       useApiServer: false,
     });
-    console.log(keysResult);
 
     expect(keysResult).toEqual({
       [signer.accountId]: { profile: { name: true } },
