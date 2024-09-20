@@ -46,6 +46,10 @@ import type {
   IAccount,
   IIndexOptions,
   ISocialApiServerIndexArgs,
+  IGetNodeOptions,
+  IGetNodesOptions,
+  ISocialDBContractGetNodeArgs,
+  ISocialDBContractGetNodesArgs,
 } from '@app/types';
 
 // utils
@@ -385,6 +389,77 @@ export default class Social {
       );
     }
     return version;
+  }
+
+  /**
+   * Retrieves node information based on the provided options.
+   * @param {IGetNodeOptions} options - The options for retrieving nodes.
+   * @param {string} [accountId] - nodeId for which you want to fetch Near Social node
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to the retrieved node data.
+   * @public
+   */
+  public async getNode({
+    nodeId,
+    fromIndex,
+    limit,
+  }: IGetNodeOptions): Promise<Record<string, unknown>> {
+    const args: ISocialDBContractGetNodeArgs = {
+      node_id: nodeId,
+      ...(fromIndex !== undefined && { from_index: fromIndex }),
+      ...(limit !== undefined && { limit }),
+    };
+
+    return (await viewFunction({
+      args,
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetNode,
+      provider: this._provider,
+    })) as Record<string, unknown>;
+  }
+
+  /**
+   * Retrieves account information based on the provided options.
+   * @param {IGetNodesOptions} options - The options for retrieving nodes.
+   * @param {number} [options.fromIndex] - The starting index for pagination (optional).
+   * @param {number} [options.limit] - The maximum number of nodes to retrieve (optional).
+   * @returns {Promise<Record<string, unknown>>} A promise that resolves to the retrieved node data.
+   * @public
+   */
+  public async getNodes({
+    fromIndex,
+    limit,
+  }: IGetNodesOptions): Promise<Record<string, unknown>> {
+    const args: ISocialDBContractGetNodesArgs = {
+      ...(fromIndex !== undefined && { from_index: fromIndex }),
+      ...(limit !== undefined && { limit }),
+    };
+
+    return (await viewFunction({
+      args,
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetNodes,
+      provider: this._provider,
+    })) as Record<string, unknown>;
+  }
+
+  /**
+   * Gets the current Account count on the social contract.
+   * @returns {Promise<string>} a promise that resolves to the current number of accounts.
+   * @public
+   */
+  public async getNodeCount(): Promise<number> {
+    const nodeCount = await viewFunction({
+      contractId: this._contractId,
+      method: ViewMethodEnum.GetNodeCount,
+      provider: this._provider,
+    });
+
+    if (typeof nodeCount !== 'number') {
+      throw new Error(
+        `Unexpected response format from get_node_count: ${JSON.stringify(nodeCount)}`
+      );
+    }
+    return nodeCount;
   }
 
   /**
