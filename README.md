@@ -1,102 +1,71 @@
-<h1 align="center">
-  NEAR Social SDK
-</h1>
+<!-- markdownlint-disable MD014 -->
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD029 -->
 
-<p align="center">
-  <a href="https://github.com/NEARBuilders/near-social-js/releases/latest">
-    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/NEARBuilders/near-social-js?&logo=github">
-  </a>
-  <a href="https://github.com/NEARBuilders/near-social-js/releases/latest">
-    <img alt="GitHub Release Date - Published At" src="https://img.shields.io/github/release-date/NEARBuilders/near-social-js?logo=github">
-  </a>
-</p>
+<div align="center">
 
-<p align="center">
-  <a href="https://github.com/NEARBuilders/near-social-js/releases">
-    <img alt="GitHub Pre-release" src="https://img.shields.io/github/v/release/NEARBuilders/near-social-js?include_prereleases&label=pre-release&logo=github">
-  </a>
-  <a href="https://github.com/NEARBuilders/near-social-js/releases">
-    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/NEARBuilders/near-social-js?label=pre-release%20date&logo=github">
-  </a>
-</p>
+<h1 style="font-size: 2.5rem; font-weight: bold;">near-social-js</h1>
 
-<p align="center">
-  <a href="https://github.com/NEARBuilders/near-social-js/blob/main/LICENSE">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/NEARBuilders/near-social-js">
-  </a>
-</p>
+  <p>
+    <strong>Typescript SDK for interacting with the social contract (social.near)</strong>
+  </p>
 
-<p align="center">
-  <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
-    <img src="https://img.shields.io/npm/v/%40builddao%2Fnear-social-js?logo=npm" alt="npm" />
-  </a>
-  <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
-    <img src="https://img.shields.io/npm/dw/%40builddao%2Fnear-social-js?logo=npm&label=weekly%20downloads" alt="weekly npm downloads" />
-  </a>
-</p>
+</div>
 
-<p align="center">
-  A JavaScript SDK for interacting with the social contract (social.near) with helper functions for typical social features.
-</p>
+<details>
+  <summary>Table of Contents</summary>
 
-### Table of contents
+- [Getting Started](#getting-started)
+  - [Installing dependencies](#installing-dependencies)
+  - [Running the app](#running-the-app)
+  - [Building for production](#building-for-production)
+  - [Running tests](#running-tests)
+- [Contributing](#contributing)
 
-* [1. Overview](#-1-overview)
-* [2. Documentation](#-2-documentation)
-* [3. Development](#-3-development)
-  * [3.1. Requirements](#31-requirements)
-  * [3.2. Setup](#32-setup)
-  * [3.3. Build](#33-build)
-* [4. Appendix](#-4-appendix)
-  * [4.1. Useful Commands](#41-useful-commands)
-  * [4.2. Social Contract](#42-social-contract)
-* [5. How To Contribute](#-5-how-to-contribute)
-* [6. License](#-6-license)
+</details>
 
-## 🔭 1. Overview
+## Getting Started
 
-TBC...
+### Installing dependencies
 
-<sup>[Back to top ^][table-of-contents]</sup>
-
-## 📚 2. Documentation
-
-For full documentation, please see [here][documentation].
-
-<sup>[Back to top ^][table-of-contents]</sup>
-
-## 🛠 3. Development
-
-### 3.1. Requirements
-
-* Install [Node v18.20.2+][node]
-* Install [Yarn v1.22.5+][yarn]
-
-<sup>[Back to top ^][table-of-contents]</sup>
-
-### 3.2. Setup
-
-1. Install the dependencies:
 ```bash
-$ yarn install
+yarn install
 ```
 
-<sup>[Back to top ^][table-of-contents]</sup>
+### Running the app
 
-### 3.3. Build
+First, run the development server:
 
-* To build simply run:
 ```bash
-$ yarn build
+yarn run dev
 ```
 
-The above command will compile the Typescript source code into a `dist/` directory.
+### Building for production
 
-<sup>[Back to top ^][table-of-contents]</sup>
+```bash
+yarn run build
+```
 
-## 📑 4. Appendix
+### Running tests
 
-### 4.1. Useful Commands
+```bash
+yarn run test
+```
+
+See the full [testing guide](./playwright-tests/README.md).
+
+## Appendix
+
+### Social Contract
+
+| Network | Account ID            | Link                                                                                                                   |
+|---------|-----------------------|------------------------------------------------------------------------------------------------------------------------|
+| Mainnet | `social.near`         | [https://nearblocks.io/address/social.near](https://nearblocks.io/address/social.near)                                 |
+| Testnet | `v1.social08.testnet` | [https://testnet.nearblocks.io/address/v1.social08.testnet](https://testnet.nearblocks.io/address/v1.social08.testnet) |
+
+
+### Useful Commands
 
 | Command           | Description                                                                        |
 |-------------------|------------------------------------------------------------------------------------|
@@ -107,31 +76,8 @@ The above command will compile the Typescript source code into a `dist/` directo
 | `yarn lint`       | Runs the linter on `.js` and `.ts` files.                                          |
 | `yarn node:start` | Starts up a NEAR development node in a background process.                         |
 | `yarn node:start` | Stops the NEAR development node that was started in `yarn node:start`.             |
-| `yarn prettier`   | Runs the prettier on `.js` and `.ts` files.                                        |
+| `yarn fmt`   | Runs prettier on `.js` and `.ts` files.                                        |
 | `yarn test`       | Starts a NEAR development node and runs the tests.                                 |
-
-<sup>[Back to top ^][table-of-contents]</sup>
-
-### 4.2. Social Contract
-
-| Network | Account ID            | Link                                                                                                                   |
-|---------|-----------------------|------------------------------------------------------------------------------------------------------------------------|
-| Mainnet | `social.near`         | [https://nearblocks.io/address/social.near](https://nearblocks.io/address/social.near)                                 |
-| Testnet | `v1.social08.testnet` | [https://testnet.nearblocks.io/address/v1.social08.testnet](https://testnet.nearblocks.io/address/v1.social08.testnet) |
-
-<sup>[Back to top ^][table-of-contents]</sup>
-
-## 👏 5. How To Contribute
-
-Please read the [**Contributing Guide**][contribute] to learn about the development process.
-
-<sup>[Back to top ^][table-of-contents]</sup>
-
-## 📄 6. License
-
-Please refer to the [LICENSE][license] file.
-
-<sup>[Back to top ^][table-of-contents]</sup>
 
 <!-- Links -->
 [contribute]: ./CONTRIBUTING.md
@@ -140,3 +86,20 @@ Please refer to the [LICENSE][license] file.
 [node]: https://nodejs.org/en/
 [table-of-contents]: #table-of-contents
 [yarn]: https://yarnpkg.com/
+
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you're interested in contributing to this project, please read the [contribution guide](./CONTRIBUTING).
+
+<div align="right">
+<a href="https://nearbuilders.org" target="_blank">
+<img
+  src="https://builders.mypinata.cloud/ipfs/QmWt1Nm47rypXFEamgeuadkvZendaUvAkcgJ3vtYf1rBFj"
+  alt="Near Builders"
+  height="40"
+/>
+</a>
+</div>

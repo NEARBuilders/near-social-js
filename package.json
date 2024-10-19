@@ -46,7 +46,8 @@
     "node:start": "./scripts/start_node.sh",
     "node:stop": "./scripts/stop_node.sh",
     "prepare": "husky",
-    "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "test": "./scripts/test.sh"
   },
   "devDependencies": {
