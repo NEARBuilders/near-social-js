@@ -6,6 +6,14 @@
 <div align="center">
 
 <h1 style="font-size: 2.5rem; font-weight: bold;">near-social-js</h1>
+<p align="center">
+  <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
+    <img src="https://img.shields.io/npm/v/%40builddao%2Fnear-social-js?logo=npm" alt="npm" />
+  </a>
+  <a href="https://npmjs.com/package/@builddao/near-social-js" target="_blank">
+    <img src="https://img.shields.io/npm/dw/%40builddao%2Fnear-social-js?logo=npm&label=weekly%20downloads" alt="weekly npm downloads" />
+  </a>
+</p>
 
   <p>
     <strong>Typescript SDK for interacting with the social contract (social.near)</strong>

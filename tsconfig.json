@@ -4,14 +4,15 @@
     "allowUnreachableCode": false,
     "alwaysStrict": true,
     "baseUrl": "./",
-    "composite": true,
+    // "composite": true,
     "declaration": true,
     "declarationMap": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true,
+    "incremental": false,
+    // "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "lib": ["DOM", "ESNext"],
     "module": "ES2022",
     "moduleResolution": "node",
@@ -39,5 +40,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "target": "ES2022"
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["docs", "node_modules", "src/**/*.test.ts"]
 }
