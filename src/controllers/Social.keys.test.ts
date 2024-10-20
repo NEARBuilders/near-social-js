@@ -1,4 +1,7 @@
-import { Account, providers, transactions, utils } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { KeyPairEd25519 } from '@near-js/crypto';
+import { signTransaction, Transaction } from '@near-js/transactions';
+import type { FinalExecutionStatus } from '@near-js/types';
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
@@ -16,10 +19,10 @@ import { randomBytes } from 'node:crypto';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 
 async function sendTransaction(
-  transaction: transactions.Transaction,
+  transaction: Transaction,
   signer: Account
 ): Promise<void> {
-  const [_, signedTransaction] = await transactions.signTransaction(
+  const [_, signedTransaction] = await signTransaction(
     transaction,
     signer.connection.signer,
     signer.accountId,
@@ -27,7 +30,7 @@ async function sendTransaction(
   );
   const { status } =
     await signer.connection.provider.sendTransaction(signedTransaction);
-  const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+  const failure = (status as FinalExecutionStatus)?.Failure || null;
 
   if (failure) {
     throw new Error(JSON.stringify(failure));
@@ -41,7 +44,7 @@ describe(`${Social.name}#keys`, () => {
   });
 
   it('should return the expected value for a key as set in the test.', async () => {
-    let keyPair: utils.KeyPairEd25519;
+    let keyPair: KeyPairEd25519;
     let signer: Account;
     const result = await createEphemeralAccount(convertNEARToYoctoNEAR('100'));
 
@@ -57,7 +60,7 @@ describe(`${Social.name}#keys`, () => {
         },
       },
     };
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     // act
     transaction = await client.set({

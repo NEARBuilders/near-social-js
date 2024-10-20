@@ -1,5 +1,8 @@
-import { Account, providers, transactions, utils } from 'near-api-js';
 import { ViewMethodEnum } from '@app/enums';
+import { Account } from '@near-js/accounts';
+import { KeyPairEd25519 } from '@near-js/crypto';
+import { signTransaction, Transaction } from '@near-js/transactions';
+import type { FinalExecutionStatus } from '@near-js/types';
 
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
@@ -11,14 +14,14 @@ import Social from './Social';
 import { NetworkIDEnum } from '@app/enums';
 
 // helpers
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import accountAccessKey, {
   IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
-import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
 describe(`${Social.name}#storageWithdraw`, () => {
-  let keyPair: utils.KeyPairEd25519;
+  let keyPair: KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
 
@@ -37,7 +40,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     });
     let resultBefore: Record<string, unknown>;
     let resultAfter: Record<string, unknown>;
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
@@ -62,7 +65,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    let [_, signedTransaction] = await transactions.signTransaction(
+    let [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -70,7 +73,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    let failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    let failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -103,7 +106,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_withdraw`
     expect(transaction.actions).toHaveLength(1);
 
-    [_, signedTransaction] = await transactions.signTransaction(
+    [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -111,8 +114,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let status1 =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    failure =
-      (status1.status as providers.FinalExecutionStatus)?.Failure || null;
+    failure = (status1.status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -141,7 +143,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     });
     let resultBefore: Record<string, unknown>;
     let resultAfter: Record<string, unknown>;
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
 
@@ -166,7 +168,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    let [_, signedTransaction] = await transactions.signTransaction(
+    let [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -174,7 +176,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    let failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    let failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -205,7 +207,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_withdraw`
     expect(transaction.actions).toHaveLength(1);
 
-    [_, signedTransaction] = await transactions.signTransaction(
+    [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -213,8 +215,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let status1 =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    failure =
-      (status1.status as providers.FinalExecutionStatus)?.Failure || null;
+    failure = (status1.status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);

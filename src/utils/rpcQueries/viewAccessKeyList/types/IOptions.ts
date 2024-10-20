@@ -1,8 +1,8 @@
-import { providers } from 'near-api-js';
+import { JsonRpcProvider } from '@near-js/providers';
 
 interface IOptions {
   accountID: string;
-  provider: providers.JsonRpcProvider;
+  provider: JsonRpcProvider;
 }
 
 export default IOptions;

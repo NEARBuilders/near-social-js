@@ -1,10 +1,10 @@
-import { providers } from 'near-api-js';
+import { JsonRpcProvider } from '@near-js/providers';
 
 interface IOptions {
   args?: unknown;
   contractId: string;
   method: string;
-  provider: providers.JsonRpcProvider;
+  provider: JsonRpcProvider;
 }
 
 export default IOptions;

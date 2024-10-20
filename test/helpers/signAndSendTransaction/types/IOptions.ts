@@ -1,8 +1,9 @@
-import { Account, transactions } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { Transaction } from '@near-js/transactions';
 
 interface IOptions {
   signerAccount: Account;
-  transaction: transactions.Transaction;
+  transaction: Transaction;
 }
 
 export default IOptions;
