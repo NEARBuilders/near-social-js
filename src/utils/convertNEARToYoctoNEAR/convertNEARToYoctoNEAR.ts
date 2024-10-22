@@ -1,5 +1,6 @@
-import { NEAR_NOMINATION_EXP } from '@near-js/utils';
 import BigNumber from 'bignumber.js';
+
+const NEAR_NOMINATION_EXP = '24';
 
 /**
  * Convenience function that converts a NEAR amount (standard unit) to the yoctoNEAR amount (atomic unit).

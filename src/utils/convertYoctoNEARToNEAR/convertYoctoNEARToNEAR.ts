@@ -1,4 +1,4 @@
-import { NEAR_NOMINATION_EXP } from '@near-js/utils';
+import { NEAR_NOMINATION_EXP } from '@app/constants';
 import BigNumber from 'bignumber.js';
 
 /**
