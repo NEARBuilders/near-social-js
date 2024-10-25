@@ -1,3 +1,10 @@
+# [1.1.0-beta.6](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2024-10-25)
+
+
+### Features
+
+* converts to ESM package ([#52](https://github.com/NEARBuilders/near-social-js/issues/52)) ([741193b](https://github.com/NEARBuilders/near-social-js/commit/741193b6123918fd1ebcc640d8b4b72317580df8))
+
 # [1.1.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2024-08-05)
 
 
