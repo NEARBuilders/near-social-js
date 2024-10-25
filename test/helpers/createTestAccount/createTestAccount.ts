@@ -1,5 +1,4 @@
-import type { Account } from 'near-api-js';
-
+import { Account } from '@near-js/accounts';
 // types
 import type { IOptions } from './types';
 

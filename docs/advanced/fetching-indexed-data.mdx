@@ -46,58 +46,17 @@ A promise that resolves to an array of matched indexed values, ordered by blockH
 
 ### Basic Usage
 
-<Tabs
-  defaultValue="javascript-via-package-manager"
-  values={[
-    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
-    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
-    { label: 'TypeScript', value: 'typescript' },
-  ]}>
-  <TabItem value="javascript-via-package-manager">
+```typescript
+import { Social } from '@builddao/near-social-js';
 
-    ```js
-    const { Social } = require('@builddao/near-social-js');
+const social = new Social();
+const result = await social.index({
+  action: 'like',
+  key: 'post-123',
+});
 
-    const social = new Social();
-    const result = await social.index({
-      action: 'like',
-      key: 'post-123',
-    });
-
-    console.log(result);
-    ```
-
-  </TabItem>
-  <TabItem value="javascript-via-cdn">
-
-    ```js
-    var social = new NEARSocialSDK();
-
-    social.index({
-      action: 'like',
-      key: 'post-123',
-    }).then((result) => {
-      console.log(result);
-    });
-    ```
-
-  </TabItem>
-  <TabItem value="typescript">
-
-    ```typescript
-    import { Social } from '@builddao/near-social-js';
-
-    const social = new Social();
-    const result = await social.index({
-      action: 'like',
-      key: 'post-123',
-    });
-
-    console.log(result);
-    ```
-
-  </TabItem>
-</Tabs>
+console.log(result);
+```
 
 ### Advanced Usage
 

@@ -1,8 +1,8 @@
-import { utils } from 'near-api-js';
+import { PublicKey } from '@near-js/crypto';
 
 interface IAccount {
   accountID: string;
-  publicKey: string | utils.PublicKey;
+  publicKey: string | PublicKey;
 }
 
 export default IAccount;

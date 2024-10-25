@@ -1,5 +1,5 @@
+import { NEAR_NOMINATION_EXP } from '@app/constants';
 import BigNumber from 'bignumber.js';
-import { utils } from 'near-api-js';
 
 /**
  * Convenience function that converts a yoctoNEAR amount (atomic unit) to the NEAR amount (standard unit).
@@ -12,6 +12,6 @@ export default function convertYoctoNEARToNEAR(atomicAmount: string): string {
   });
 
   return new BigNumber(atomicAmount)
-    .dividedBy(new BigNumber(10).pow(utils.format.NEAR_NOMINATION_EXP))
+    .dividedBy(new BigNumber(10).pow(NEAR_NOMINATION_EXP))
     .toFixed();
 }
