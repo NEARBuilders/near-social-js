@@ -1,19 +1,22 @@
-import { Account, connect, keyStores, utils } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
+import { connect } from 'near-api-js';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cwd } from 'node:process';
-import { readFile } from 'node:fs/promises';
 
 // constants
 import { NETWORK_ID, NODE_URL } from './constants';
 
 // credentials
-import { account_id as genesisAccountId } from './credentials/localnet/test.near.json';
 import { account_id as socialContractAccountId } from './credentials/localnet/social.test.near.json';
+import { account_id as genesisAccountId } from './credentials/localnet/test.near.json';
 
 // helpers
 import createTestAccount from './helpers/createTestAccount';
 
 // utils
+import { PublicKey } from '@near-js/crypto';
 import convertNEARToYoctoNEAR from '../src/utils/convertNEARToYoctoNEAR';
 
 export default async function globalSetup() {
@@ -21,14 +24,14 @@ export default async function globalSetup() {
   const near = await connect({
     networkId: NETWORK_ID,
     nodeUrl: NODE_URL,
-    keyStore: new keyStores.UnencryptedFileSystemKeyStore(
+    keyStore: new UnencryptedFileSystemKeyStore(
       resolve(cwd(), 'test', 'credentials')
     ),
   });
   const contract = await readFile(
     resolve(cwd(), 'test', 'contracts', 'social_db.wasm')
   );
-  let contractAccountPublicKey: utils.PublicKey;
+  let contractAccountPublicKey: PublicKey;
   let contractAccount: Account;
   let genesisAccount: Account;
 
@@ -48,7 +51,7 @@ export default async function globalSetup() {
   });
 
   // deploy the account
-  await contractAccount.deployContract(contract);
+  await contractAccount.deployContract(new Uint8Array(contract));
 
   try {
     // initialize the contract

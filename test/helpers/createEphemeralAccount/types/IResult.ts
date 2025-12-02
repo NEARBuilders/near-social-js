@@ -1,8 +1,9 @@
-import { Account, utils } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { KeyPairEd25519 } from '@near-js/crypto';
 
 interface IResult {
   account: Account;
-  keyPair: utils.KeyPairEd25519;
+  keyPair: KeyPairEd25519;
 }
 
 export default IResult;

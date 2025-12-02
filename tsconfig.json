@@ -4,17 +4,16 @@
     "allowUnreachableCode": false,
     "alwaysStrict": true,
     "baseUrl": "./",
-    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true,
+    "incremental": false,
     "lib": ["DOM", "ESNext"],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "ES2022",
+    "moduleResolution": "node",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -38,6 +37,8 @@
     "strictBindCallApply": false,
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
-    "target": "ES5"
-  }
+    "target": "ES2022"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["docs", "node_modules", "src/**/*.test.ts"]
 }

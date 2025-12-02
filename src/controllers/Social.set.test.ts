@@ -1,4 +1,7 @@
-import { Account, providers, transactions, utils } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { KeyPairEd25519 } from '@near-js/crypto';
+import { signTransaction, Transaction } from '@near-js/transactions';
+import type { FinalExecutionStatus } from '@near-js/types';
 import { randomBytes } from 'node:crypto';
 
 // constants
@@ -26,10 +29,10 @@ import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 
 async function sendTransaction(
-  transaction: transactions.Transaction,
+  transaction: Transaction,
   signer: Account
 ): Promise<void> {
-  const [_, signedTransaction] = await transactions.signTransaction(
+  const [_, signedTransaction] = await signTransaction(
     transaction,
     signer.connection.signer,
     signer.accountId,
@@ -37,7 +40,7 @@ async function sendTransaction(
   );
   const { status } =
     await signer.connection.provider.sendTransaction(signedTransaction);
-  const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+  const failure = (status as FinalExecutionStatus)?.Failure || null;
 
   if (failure) {
     throw new Error(JSON.stringify(failure));
@@ -46,7 +49,7 @@ async function sendTransaction(
 
 describe(`${Social.name}#set`, () => {
   let client: Social;
-  let keyPair: utils.KeyPairEd25519;
+  let keyPair: KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
   let signerNonce: number;
@@ -105,7 +108,7 @@ describe(`${Social.name}#set`, () => {
       },
     };
     let result: Record<string, unknown>;
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     // act
     transaction = await client.set({
@@ -139,7 +142,7 @@ describe(`${Social.name}#set`, () => {
       },
     };
     let result: Record<string, unknown>;
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     // act
     transaction = await client.set({

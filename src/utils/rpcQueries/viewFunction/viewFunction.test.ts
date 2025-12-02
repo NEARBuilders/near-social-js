@@ -1,14 +1,12 @@
-import { providers } from 'near-api-js';
+import { JsonRpcProvider } from '@near-js/providers';
 import type { IOptions } from './types';
 import viewFunction from './viewFunction'; // Adjust the import path as needed
 
 // Mock the near-api-js providers
-jest.mock('near-api-js', () => ({
-  providers: {
-    JsonRpcProvider: jest.fn().mockImplementation(() => ({
-      query: jest.fn(),
-    })),
-  },
+jest.mock('@near-js/providers', () => ({
+  JsonRpcProvider: jest.fn().mockImplementation(() => ({
+    query: jest.fn(),
+  })),
 }));
 
 describe('viewFunction', () => {
@@ -17,14 +15,14 @@ describe('viewFunction', () => {
 
   beforeEach(() => {
     mockQuery = jest.fn();
-    (providers.JsonRpcProvider as jest.Mock).mockImplementation(() => ({
+    (JsonRpcProvider as jest.Mock).mockImplementation(() => ({
       query: mockQuery,
     }));
 
     defaultOptions = {
       contractId: 'test.near',
       method: 'get_value',
-      provider: new providers.JsonRpcProvider({
+      provider: new JsonRpcProvider({
         url: 'https://a.query.to.nowhere',
       }),
     };

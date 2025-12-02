@@ -1,5 +1,5 @@
-import { Account, providers, transactions, utils } from 'near-api-js';
-import { ViewMethodEnum } from '@app/enums';
+import BigNumber from 'bignumber.js';
+import { type Account, providers, transactions, utils } from 'near-api-js';
 
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
@@ -11,14 +11,20 @@ import Social from './Social';
 import { NetworkIDEnum } from '@app/enums';
 
 // helpers
-import accountAccessKey, {
-  IAccessKeyResponse,
-} from '@test/helpers/accountAccessKey';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
+import accountAccessKey, {
+  type IAccessKeyResponse,
+} from '@test/helpers/accountAccessKey';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 
+// types
+import type { IStorageBalanceOfResult } from '@app/types';
+
+// utils
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
+
 describe(`${Social.name}#storageWithdraw`, () => {
-  let keyPair: utils.KeyPairEd25519;
+  let keyPair: KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
 
@@ -35,8 +41,8 @@ describe(`${Social.name}#storageWithdraw`, () => {
       contractId: socialContractAccountId,
       network: NetworkIDEnum.Localnet,
     });
-    let resultBefore: Record<string, unknown>;
-    let resultAfter: Record<string, unknown>;
+    let resultBefore: IStorageBalanceOfResult | null;
+    let resultAfter: IStorageBalanceOfResult | null;
     let transaction: transactions.Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
@@ -46,7 +52,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
 
     //Make deposit to the account
     //2N deposit
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       account: {
         accountID: signer.accountId,
@@ -62,7 +68,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    let [_, signedTransaction] = await transactions.signTransaction(
+    let [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -70,25 +76,22 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    let failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    let failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    resultBefore = await signer.viewFunction({
-      args: {
-        account_id: signer.accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    resultBefore = await client.storageBalanceOf({
+      accountId: signer.accountId,
+      signer,
     });
 
     // Test if the deposit was successful
-    expect(resultBefore.total).toEqual(deposit);
+    expect(resultBefore?.total).toEqual(deposit);
 
     //1N withdraw
-    let withdraw_amount = '1000000000000000000000000';
+    let withdraw_amount = convertNEARToYoctoNEAR('1');
     transaction = await client.storageWithdraw({
       account: {
         accountID: signer.accountId,
@@ -103,7 +106,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_withdraw`
     expect(transaction.actions).toHaveLength(1);
 
-    [_, signedTransaction] = await transactions.signTransaction(
+    [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -111,26 +114,24 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let status1 =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    failure =
-      (status1.status as providers.FinalExecutionStatus)?.Failure || null;
+    failure = (status1.status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    resultAfter = await signer.viewFunction({
-      args: {
-        account_id: signer.accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    resultAfter = await client.storageBalanceOf({
+      accountId: signer.accountId,
+      signer,
     });
 
     // expect(BigInt(resultAfter?.total)).toEqual(
     //   BigInt(resultBefore?.total) - BigInt(withdraw_amount)
     // );
-    expect(BigInt(resultAfter?.total as string)).toEqual(
-      BigInt(resultBefore?.total as string) - BigInt(withdraw_amount)
+    expect(resultAfter?.total).toBe(
+      new BigNumber(resultBefore?.total || '0')
+        .minus(new BigNumber(withdraw_amount))
+        .toFixed()
     );
   });
 
@@ -139,8 +140,8 @@ describe(`${Social.name}#storageWithdraw`, () => {
     const client = new Social({
       contractId: socialContractAccountId,
     });
-    let resultBefore: Record<string, unknown>;
-    let resultAfter: Record<string, unknown>;
+    let resultBefore: IStorageBalanceOfResult | null;
+    let resultAfter: IStorageBalanceOfResult | null;
     let transaction: transactions.Transaction;
 
     signerAccessKeyResponse = await accountAccessKey(signer, keyPair.publicKey);
@@ -150,7 +151,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
 
     //Make deposit to the account
     //2N deposit
-    let deposit = '2000000000000000000000000';
+    let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
       account: {
         accountID: signer.accountId,
@@ -166,7 +167,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    let [_, signedTransaction] = await transactions.signTransaction(
+    let [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -174,22 +175,19 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    let failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    let failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    resultBefore = await signer.viewFunction({
-      args: {
-        account_id: signer.accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    resultBefore = await client.storageBalanceOf({
+      accountId: signer.accountId,
+      signer,
     });
 
     // Test if the deposit was successful
-    expect(resultBefore.total).toEqual(deposit);
+    expect(resultBefore?.total).toEqual(deposit);
 
     //No withdrawal amount specified
     transaction = await client.storageWithdraw({
@@ -205,7 +203,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_withdraw`
     expect(transaction.actions).toHaveLength(1);
 
-    [_, signedTransaction] = await transactions.signTransaction(
+    [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -213,21 +211,17 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let status1 =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    failure =
-      (status1.status as providers.FinalExecutionStatus)?.Failure || null;
+    failure = (status1.status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
     }
 
-    resultAfter = await signer.viewFunction({
-      args: {
-        account_id: signer.accountId,
-      },
-      contractId: socialContractAccountId,
-      methodName: ViewMethodEnum.StorageBalanceOf,
+    resultAfter = await client.storageBalanceOf({
+      accountId: signer.accountId,
+      signer,
     });
 
-    expect(resultAfter.available).toEqual('0');
+    expect(resultAfter?.available).toBe('0');
   });
 });

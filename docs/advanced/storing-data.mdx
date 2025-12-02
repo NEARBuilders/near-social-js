@@ -27,15 +27,10 @@ The signer account automatically has write permissions for their own account.
 
 ## Storing data for an account
 
-<Tabs
-  defaultValue="javascript-via-package-manager"
-  values={[
-    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
-    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
-    { label: 'TypeScript', value: 'typescript' },
-  ]}>
-  <TabItem value="javascript-via-package-manager">
+```typescript
+import { Social } from '@builddao/near-social-js';
 
+<<<<<<< HEAD
     ```js
     const { Social } = require('@builddao/near-social-js');
 
@@ -107,4 +102,23 @@ The signer account automatically has write permissions for their own account.
 
   </TabItem>
 </Tabs>
+=======
+const social = new Social();
+const transaction = await social.set({
+  account: {
+    accountID: 'alice.near',
+    publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+  },
+  data: {
+    ['alice.near']: {
+      profile: {
+        name: 'Alice',
+      },
+    },
+  },
+});
+
+// ...sign the returned transaction and post to the network
+```
+>>>>>>> beta
 
