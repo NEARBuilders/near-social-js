@@ -19,6 +19,7 @@ export type { default as ISocialApiServerGetArgs } from './ISocialApiServerGetAr
 export type { default as ISocialApiServerIndexArgs } from './ISocialApiServerIndexArgs';
 export type { default as ISocialApiServerKeysArgs } from './ISocialApiServerKeysArgs';
 export type { default as ISocialDBContractGetAccountArgs } from './ISocialDBContractGetAccountArgs';
+export type { default as ISocialDBContractGetAccountsArgs } from './ISocialDBContractGetAccountsArgs';
 export type { default as ISocialDBContractGrantWritePermissionArgs } from './ISocialDBContractGrantWritePermissionArgs';
 export type { default as ISocialDBContractIsWritePermissionGrantedArgs } from './ISocialDBContractIsWritePermissionGrantedArgs';
 export type { default as ISocialDBContractSetArgs } from './ISocialDBContractSetArgs';

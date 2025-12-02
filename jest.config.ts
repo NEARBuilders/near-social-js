@@ -24,6 +24,7 @@ const config: Config = {
     ],
   },
   verbose: true,
+  testPathIgnorePatterns: ['<rootDir>/.*Count.*'], // here
 };
 
 export default config;

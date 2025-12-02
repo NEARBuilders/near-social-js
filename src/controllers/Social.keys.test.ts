@@ -1,7 +1,4 @@
-import { Account } from '@near-js/accounts';
-import { KeyPairEd25519 } from '@near-js/crypto';
-import { signTransaction, Transaction } from '@near-js/transactions';
-import type { FinalExecutionStatus } from '@near-js/types';
+import { Account, providers, transactions, utils } from 'near-api-js';
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 

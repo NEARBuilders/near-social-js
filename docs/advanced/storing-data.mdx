@@ -30,6 +30,79 @@ The signer account automatically has write permissions for their own account.
 ```typescript
 import { Social } from '@builddao/near-social-js';
 
+<<<<<<< HEAD
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social();
+    const transaction = await social.set({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      data: {
+        ['alice.near']: {
+          profile: {
+            name: 'Alice',
+          },
+        },
+      },
+    });
+
+    // ...sign the returned transaction and post to the network
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK();
+
+    social.set({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      data: {
+        ['alice.near']: {
+          profile: {
+            name: 'Alice'
+          }
+        }
+      }
+    })
+    .then((transaction) => {
+      // ...sign the returned transaction and post to the network
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social();
+    const transaction = await social.set({
+      account: {
+        accountID: 'alice.near',
+        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+      },
+      data: {
+        ['alice.near']: {
+          profile: {
+            name: 'Alice',
+          },
+        },
+      },
+    });
+
+    // ...sign the returned transaction and post to the network
+    ```
+
+  </TabItem>
+</Tabs>
+=======
 const social = new Social();
 const transaction = await social.set({
   account: {
@@ -47,4 +120,5 @@ const transaction = await social.set({
 
 // ...sign the returned transaction and post to the network
 ```
+>>>>>>> beta
 
