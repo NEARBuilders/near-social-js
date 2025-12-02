@@ -7,6 +7,9 @@ enum ViewMethodEnum {
   GetNode = 'get_node',
   GetNodes = 'get_nodes',
   GetNodeCount = 'get_node_count',
+  GetAccounts = 'get_accounts',
+  GetAccount = 'get_account',
+  GetAccountCount = 'get_account_count',
 }
 
 export default ViewMethodEnum;

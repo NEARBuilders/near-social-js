@@ -1,4 +1,6 @@
-import { Account, transactions, utils } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { KeyPairEd25519 } from '@near-js/crypto';
+import { Transaction } from '@near-js/transactions';
 import { randomBytes } from 'node:crypto';
 
 // credentials
@@ -26,9 +28,9 @@ import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 describe(`${Social.name}#isWritePermissionGranted`, () => {
   let client: Social;
   let granteeAccount: Account;
-  let granteeKeyPair: utils.KeyPairEd25519;
+  let granteeKeyPair: KeyPairEd25519;
   let granterAccount: Account;
-  let granterKeyPair: utils.KeyPairEd25519;
+  let granterKeyPair: KeyPairEd25519;
   let granterKeyResponse: IAccessKeyResponse;
   let granterNonce: number;
   let key: string;
@@ -40,7 +42,7 @@ describe(`${Social.name}#isWritePermissionGranted`, () => {
     const granterAccountResult = await createEphemeralAccount(
       convertNEARToYoctoNEAR('100')
     );
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     granteeAccount = granteeAccountResult.account;
     granteeKeyPair = granteeAccountResult.keyPair;

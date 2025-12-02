@@ -1,4 +1,4 @@
-import { utils } from 'near-api-js';
+import { PublicKey } from '@near-js/crypto';
 
 // types
 import type IDefaultChangeOptions from './IDefaultChangeOptions';
@@ -9,7 +9,7 @@ import type IDefaultChangeOptions from './IDefaultChangeOptions';
  */
 interface IGrantWritePermissionWithAccountIdOptions
   extends IDefaultChangeOptions {
-  granteePublicKey: utils.PublicKey | string;
+  granteePublicKey: PublicKey | string;
   keys: string[];
 }
 

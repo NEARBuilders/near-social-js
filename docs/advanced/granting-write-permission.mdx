@@ -20,82 +20,25 @@ Accounts can grant write permission to other accounts for a set of keys.
 
 ## Granting an account write permission
 
-<Tabs
-  defaultValue="javascript-via-package-manager"
-  values={[
-    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
-    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
-    { label: 'TypeScript', value: 'typescript' },
-  ]}>
-  <TabItem value="javascript-via-package-manager">
+```typescript
+import { Social } from '@builddao/near-social-js';
 
-    ```js
-    const { Social } = require('@builddao/near-social-js');
+const social = new Social();
+const transaction = await social.grantWritePermission({
+  account: {
+    accountID: 'bob.near',
+    publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
+  },
+  granteeAccountId: 'alice.near',
+  keys: [
+    'alice.near/profile/name',
+    'alice.near/profile/image/url',
+  ],
+});
 
-    const social = new Social();
-    const transaction = await social.grantWritePermission({
-      account: {
-        accountID: 'bob.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
-      },
-      granteeAccountId: 'alice.near',
-      keys: [
-        'alice.near/profile/name',
-        'alice.near/profile/image/url',
-      ],
-    });
-
-    // ...sign the returned transaction and post to the network
-    */
-    ```
-
-  </TabItem>
-  <TabItem value="javascript-via-cdn">
-
-    ```js
-    var social = new NEARSocialSDK();
-
-    social.grantWritePermission({
-      account: {
-        accountID: 'bob.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
-      },
-      granteeAccountId: 'alice.near',
-      keys: [
-        'alice.near/profile/name',
-        'alice.near/profile/image/url'
-      ]
-    })
-    .then((transaction) => {
-      // ...sign the returned transaction and post to the network
-    });
-    ```
-
-  </TabItem>
-  <TabItem value="typescript">
-
-    ```typescript
-    import { Social } from '@builddao/near-social-js';
-
-    const social = new Social();
-    const transaction = await social.grantWritePermission({
-      account: {
-        accountID: 'bob.near',
-        publicKey: 'ed25519:H9k5eiU4xXS3M4z8HzKJSLaZdqGdGwBG49o7orNC4eZW',
-      },
-      granteeAccountId: 'alice.near',
-      keys: [
-        'alice.near/profile/name',
-        'alice.near/profile/image/url',
-      ],
-    });
-
-    // ...sign the returned transaction and post to the network
-    */
-    ```
-
-  </TabItem>
-</Tabs>
+// ...sign the returned transaction and post to the network
+*/
+```
 
 :::caution
 

@@ -41,12 +41,11 @@ To initialize the SDK, simply instantiate the [`Social`](../api-reference/social
   values={[
     { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
     { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
-    { label: 'TypeScript', value: 'typescript' },
   ]}>
   <TabItem value="javascript-via-package-manager">
 
     ```js
-    const { Social } = require('@builddao/near-social-js');
+    import { Social } from ('@builddao/near-social-js');
 
     const social = new Social();
     ```
@@ -62,7 +61,7 @@ To initialize the SDK, simply instantiate the [`Social`](../api-reference/social
   <TabItem value="typescript">
 
     ```typescript
-    import { Social } from '@builddao/near-social-js';
+    import { Social } from '<script src="https://github.com/NEARBuilders/near-social-js/releases/latest/download/near-social-js.min.js"></script>';
 
     const social = new Social();
     ```
@@ -86,6 +85,18 @@ See [`INewSocialOptions`](../api-reference/types#inewsocialoptions) for more inf
 
 You can initialize the SDK with a different social contract account by specifying it in the options:
 
+```typescript
+import { Social } from ('@builddao/near-social-js');
+
+const social = new Social({
+  contractId: 'mysocialcontract.near',
+});
+```
+
+## Initialization with a different network ID
+
+You can use a specific network by initializing the SDK with a known network ID. See [networks](../api-reference/networks) on the supported networks and the RPC URLs they point to.
+
 <Tabs
   defaultValue="javascript-via-package-manager"
   values={[
@@ -96,7 +107,7 @@ You can initialize the SDK with a different social contract account by specifyin
   <TabItem value="javascript-via-package-manager">
 
     ```js
-    const { Social } = require('@builddao/near-social-js');
+    import { Social } from ('@builddao/near-social-js');
 
     const social = new Social({
       contractId: 'mysocialcontract.near',
@@ -199,7 +210,7 @@ If you want to use your own RPC provider, you can initialize the SDK by specifyi
   <TabItem value="javascript-via-package-manager">
 
     ```js
-    const { Social } = require('@builddao/near-social-js');
+    import { Social } from ('@builddao/near-social-js');
 
     const social = new Social({
       network: {

@@ -13,8 +13,6 @@ export type { default as IIsWritePermissionGrantedWithPublicKeyOptions } from '.
 export type { default as INewSocialOptions } from './INewSocialOptions';
 export type { default as IRPCOptions } from './IRPCOptions';
 export type { default as ISetOptions } from './ISetOptions';
-export type { default as IStorageDepositOptions } from './IStorageDepositOptions';
-export type { default as IStorageWithdrawOptions } from './IStorageWithdrawOptions';
 export type { default as ISocialDBContractAccount } from './ISocialDBContractAccount';
 export type { default as ISocialDBContractAccountSharedStorage } from './ISocialDBContractAccountSharedStorage';
 export type { default as ISocialDBContractGetArgs } from './ISocialDBContractGetArgs';
@@ -25,6 +23,7 @@ export type { default as ISocialApiServerGetArgs } from './ISocialApiServerGetAr
 export type { default as ISocialApiServerIndexArgs } from './ISocialApiServerIndexArgs';
 export type { default as ISocialApiServerKeysArgs } from './ISocialApiServerKeysArgs';
 export type { default as ISocialDBContractGetAccountArgs } from './ISocialDBContractGetAccountArgs';
+export type { default as ISocialDBContractGetAccountsArgs } from './ISocialDBContractGetAccountsArgs';
 export type { default as ISocialDBContractGrantWritePermissionArgs } from './ISocialDBContractGrantWritePermissionArgs';
 export type { default as ISocialDBContractIsWritePermissionGrantedArgs } from './ISocialDBContractIsWritePermissionGrantedArgs';
 export type { default as ISocialDBContractSetArgs } from './ISocialDBContractSetArgs';

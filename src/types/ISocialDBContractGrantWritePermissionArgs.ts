@@ -1,4 +1,4 @@
-import { utils } from 'near-api-js';
+import { PublicKey } from '@near-js/crypto';
 
 type ISocialDBContractGrantWritePermissionArgs =
   | {
@@ -7,7 +7,7 @@ type ISocialDBContractGrantWritePermissionArgs =
     }
   | {
       keys: string[];
-      public_key: utils.PublicKey;
+      public_key: PublicKey;
     };
 
 export default ISocialDBContractGrantWritePermissionArgs;

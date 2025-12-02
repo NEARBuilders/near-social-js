@@ -1,9 +1,11 @@
-# [1.1.0](https://github.com/NEARBuilders/near-social-js/compare/v1.0.1...v1.1.0) (2024-08-19)
+
+# [1.1.0-beta.6](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2024-10-25)
 
 
 ### Features
 
 * wallet support for frontend apps and API server methods ([#43](https://github.com/NEARBuilders/near-social-js/issues/43)) ([83bb3a6](https://github.com/NEARBuilders/near-social-js/commit/83bb3a6c4610a28bb4599a5be1ce2278a82ca989)), closes [#35](https://github.com/NEARBuilders/near-social-js/issues/35) [#35](https://github.com/NEARBuilders/near-social-js/issues/35) [#38](https://github.com/NEARBuilders/near-social-js/issues/38) [#38](https://github.com/NEARBuilders/near-social-js/issues/38) [#40](https://github.com/NEARBuilders/near-social-js/issues/40) [#40](https://github.com/NEARBuilders/near-social-js/issues/40) [#33](https://github.com/NEARBuilders/near-social-js/issues/33) [#33](https://github.com/NEARBuilders/near-social-js/issues/33) [#42](https://github.com/NEARBuilders/near-social-js/issues/42) [#42](https://github.com/NEARBuilders/near-social-js/issues/42)
+* converts to ESM package ([#52](https://github.com/NEARBuilders/near-social-js/issues/52)) ([741193b](https://github.com/NEARBuilders/near-social-js/commit/741193b6123918fd1ebcc640d8b4b72317580df8))
 
 # [1.1.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2024-08-05)
 

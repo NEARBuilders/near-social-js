@@ -1,4 +1,6 @@
-import { Account, transactions, utils } from 'near-api-js';
+import { Account } from '@near-js/accounts';
+import { KeyPairEd25519 } from '@near-js/crypto';
+import { Transaction } from '@near-js/transactions';
 import { randomBytes } from 'node:crypto';
 
 // credentials
@@ -14,19 +16,19 @@ import { ErrorCodeEnum, NetworkIDEnum } from '@app/enums';
 import { InvalidAccountIdError, KeyNotAllowedError } from '@app/errors';
 
 // helpers
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import accountAccessKey, {
   IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
-import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
 import signAndSendTransaction from '@test/helpers/signAndSendTransaction';
 
 describe(`${Social.name}#grantWritePermission`, () => {
   let client: Social;
   let granteeAccount: Account;
-  let granteeKeyPair: utils.KeyPairEd25519;
+  let granteeKeyPair: KeyPairEd25519;
   let granterAccount: Account;
-  let granterKeyPair: utils.KeyPairEd25519;
+  let granterKeyPair: KeyPairEd25519;
   let granterKeyResponse: IAccessKeyResponse;
   let granterNonce: number;
   let key: string;
@@ -38,7 +40,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
     const granterAccountResult = await createEphemeralAccount(
       convertNEARToYoctoNEAR('100')
     );
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     granteeAccount = granteeAccountResult.account;
     granteeKeyPair = granteeAccountResult.keyPair;
@@ -161,7 +163,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
   it('should set the write permission for a given account id', async () => {
     // arrange
     let result: boolean;
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     // act
     transaction = await client.grantWritePermission({
@@ -192,7 +194,7 @@ describe(`${Social.name}#grantWritePermission`, () => {
   it('should set the write permission for a given public key', async () => {
     // arrange
     let result: boolean;
-    let transaction: transactions.Transaction;
+    let transaction: Transaction;
 
     // act
     transaction = await client.grantWritePermission({
