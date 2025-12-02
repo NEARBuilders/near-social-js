@@ -110,6 +110,50 @@ You can use a specific network by initializing the SDK with a known network ID. 
     import { Social } from ('@builddao/near-social-js');
 
     const social = new Social({
+      contractId: 'mysocialcontract.near',
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="javascript-via-cdn">
+
+    ```js
+    var social = new NEARSocialSDK({
+      contractId: 'mysocialcontract.near',
+    });
+    ```
+
+  </TabItem>
+  <TabItem value="typescript">
+
+    ```typescript
+    import { Social } from '@builddao/near-social-js';
+
+    const social = new Social({
+      contractId: 'mysocialcontract.near',
+    });
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Initialization with a different network ID
+
+You can use a specific network by initializing the SDK with a known network ID. See [networks](../api-reference/networks) on the supported networks and the RPC URLs they point to.
+
+<Tabs
+  defaultValue="javascript-via-package-manager"
+  values={[
+    { label: 'JavaScript (via package manager)', value: 'javascript-via-package-manager' },
+    { label: 'JavaScript (via CDN)', value: 'javascript-via-cdn' },
+    { label: 'TypeScript', value: 'typescript' },
+  ]}>
+  <TabItem value="javascript-via-package-manager">
+
+    ```js
+    const { Social } = require('@builddao/near-social-js');
+
+    const social = new Social({
       contractId: 'v1.social08.testnet',
       network: 'testnet',
     });

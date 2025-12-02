@@ -16,6 +16,14 @@ function parseJsonFromRawResponse(response: Uint8Array): ViewFunctionResult {
   return JSON.parse(new TextDecoder().decode(response));
 }
 
+function base64Encode(str: string): string {
+  try {
+    return btoa(str);
+  } catch (err) {
+    return Buffer.from(str).toString('base64');
+  }
+}
+
 export default async function viewFunction({
   args = {},
   contractId,
@@ -26,7 +34,7 @@ export default async function viewFunction({
     request_type: 'call_function',
     account_id: contractId,
     method_name: method,
-    args_base64: btoa(JSON.stringify(args)),
+    args_base64: base64Encode(JSON.stringify(args)),
     finality: 'optimistic',
   });
 

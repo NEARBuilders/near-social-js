@@ -1,3 +1,4 @@
+
 # [1.1.0-beta.6](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2024-10-25)
 
 
