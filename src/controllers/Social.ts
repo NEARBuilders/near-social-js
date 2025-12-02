@@ -41,9 +41,6 @@ import type {
   INewSocialOptions,
   IRPCOptions,
   ISetOptions,
-  ISocialApiServerGetArgs,
-  ISocialApiServerIndexArgs,
-  ISocialApiServerKeysArgs,
   ISocialDBContractGetArgs,
   ISocialDBContractGrantWritePermissionArgs,
   ISocialDBContractIsWritePermissionGrantedArgs,
@@ -52,6 +49,8 @@ import type {
   ISocialDBContractStorageBalance,
   ISocialDBContractStorageDepositArgs,
   ISocialDBContractStorageWithdrawArgs,
+  IStorageBalanceOfOptions,
+  IStorageBalanceOfResult,
   IStorageDepositOptions,
   IStorageWithdrawOptions,
 } from '@app/types';
@@ -157,40 +156,6 @@ export default class Social {
     const { sync_info } = await this._provider.status();
 
     return sync_info.latest_block_hash;
-  }
-
-  private async _storageBalanceOf(
-    accountID: string
-  ): Promise<ISocialDBContractStorageBalance | null> {
-    const result = await viewFunction({
-      args: {
-        account_id: accountID,
-      },
-      contractId: this._contractId,
-      method: ViewMethodEnum.StorageBalanceOf,
-      provider: this._provider,
-    });
-
-    if (this._isStorageBalance(result)) {
-      return result;
-    } else if (result === null) {
-      return null;
-    } else {
-      throw new Error('Unexpected response format from storage_balance_of');
-    }
-  }
-
-  private _isStorageBalance(
-    data: unknown
-  ): data is ISocialDBContractStorageBalance {
-    return (
-      typeof data === 'object' &&
-      data !== null &&
-      'total' in data &&
-      'available' in data &&
-      typeof (data as ISocialDBContractStorageBalance).total === 'string' &&
-      typeof (data as ISocialDBContractStorageBalance).available === 'string'
-    );
   }
 
   private _uniqueAccountIdsFromKeys(keys: string[]): string[] {
@@ -607,10 +572,9 @@ export default class Social {
     // for each key, check if the signer has been granted write permission for the key
     for (let i = 0; i < keys.length; i++) {
       if (
-        (keys[i].split('/')[0] || '') !== account.accountID &&
-        !(await this.isWritePermissionGranted({
-          granteePublicKey: account.publicKey,
-          key: keys[i],
+        !(await this.storageBalanceOf({
+          accountId: uniqueAccountIds[i],
+          signer,
         }))
       ) {
         throw new KeyNotAllowedError(
@@ -656,6 +620,44 @@ export default class Social {
       ],
       baseDecode(_blockHash)
     );
+  }
+
+  /**
+   * Sets the new social contract ID.
+   * @param {string} contractId - the account of the new social contract ID.
+   */
+  public setContractId(contractId: string): void {
+    this.contractId = contractId;
+  }
+
+  /**
+   * Gets the storage balance for a given account ID.
+   * @param {IStorageBalanceOfOptions} options - the account ID to check and the signer that is used to call the view
+   * method.
+   * @returns {Promise<IStorageBalanceOfResult | null>} a promise that resolves the total & available balance or null
+   * if the account ID does not have a balance.
+   */
+  public async storageBalanceOf({
+    accountId,
+    signer,
+  }: IStorageBalanceOfOptions): Promise<IStorageBalanceOfResult | null> {
+    const result: ISocialDBContractStorageBalance | null =
+      await signer.viewFunction({
+        args: {
+          account_id: accountId,
+        },
+        contractId: this.contractId,
+        methodName: ViewMethodEnum.StorageBalanceOf,
+      });
+
+    if (!result) {
+      return null;
+    }
+
+    return {
+      available: String(result.available),
+      total: String(result.total),
+    };
   }
 
   /**
