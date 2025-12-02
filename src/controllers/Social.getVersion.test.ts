@@ -1,30 +1,21 @@
-import type { Account } from 'near-api-js';
-
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
 // controllers
 import Social from './Social';
 
-// helpers
-import createEphemeralAccount from '@test/helpers/createEphemeralAccount';
+// enums
+import { NetworkIDEnum } from '@app/enums';
 
 describe(`${Social.name}#getVersion`, () => {
-  let signer: Account;
-
-  beforeEach(async () => {
-    const result = await createEphemeralAccount();
-
-    signer = result.account;
-  });
-
   it('should return the version of the social contract', async () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
+      network: NetworkIDEnum.Localnet,
     });
     // act
-    const version = await client.getVersion({ signer });
+    const version = await client.getVersion();
 
     // assert
     expect(version).toMatchSnapshot();

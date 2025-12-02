@@ -16,6 +16,7 @@ const sidebars = {
     {
       items: [
         'advanced/reading-data',
+        'advanced/fetching-indexed-data',
         'advanced/storing-data',
         'advanced/granting-write-permission',
         'advanced/storage-deposit-withdraw',
@@ -32,6 +33,7 @@ const sidebars = {
         'api-reference/social',
         'api-reference/types',
         'api-reference/errors',
+        'api-reference/networks',
       ],
       label: 'API Reference',
       link: {

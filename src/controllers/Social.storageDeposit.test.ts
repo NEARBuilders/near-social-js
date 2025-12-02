@@ -3,10 +3,11 @@ import { type Account, providers, transactions, utils } from 'near-api-js';
 // credentials
 import { account_id as socialContractAccountId } from '@test/credentials/localnet/social.test.near.json';
 
-// controllers
-import Social from './Social';
+// enums
+import { NetworkIDEnum, ViewMethodEnum } from '@app/enums';
 
 // helpers
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import accountAccessKey, {
   type IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
@@ -19,7 +20,7 @@ import type { IStorageBalanceOfResult } from '@app/types';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 
 describe(`${Social.name}#storageDeposit`, () => {
-  let keyPair: utils.KeyPairEd25519;
+  let keyPair: KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
 
@@ -34,6 +35,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
+      network: NetworkIDEnum.Localnet,
     });
     let result: IStorageBalanceOfResult | null;
     let transaction: transactions.Transaction;
@@ -44,17 +46,19 @@ describe(`${Social.name}#storageDeposit`, () => {
     let deposit = convertNEARToYoctoNEAR('2');
     //testing optional blockhash and nonce too
     transaction = await client.storageDeposit({
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    const [_, signedTransaction] = await transactions.signTransaction(
+    const [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -62,7 +66,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     );
     const { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    const failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -90,16 +94,18 @@ describe(`${Social.name}#storageDeposit`, () => {
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       deposit,
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    const [_, signedTransaction] = await transactions.signTransaction(
+    const [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -107,7 +113,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     );
     const { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    const failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -136,17 +142,19 @@ describe(`${Social.name}#storageDeposit`, () => {
     transaction = await client.storageDeposit({
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
     });
 
     // assert
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    const [_, signedTransaction] = await transactions.signTransaction(
+    const [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -154,7 +162,7 @@ describe(`${Social.name}#storageDeposit`, () => {
     );
     const { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    const failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    const failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);

@@ -18,6 +18,8 @@ jobs:
   deploy:
     name: "Deploy"
     needs: install
+    permissions:
+      contents: write # to be able to push to the gh-pages branch
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"

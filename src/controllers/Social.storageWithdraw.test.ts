@@ -7,7 +7,11 @@ import { account_id as socialContractAccountId } from '@test/credentials/localne
 // controllers
 import Social from './Social';
 
+// enums
+import { NetworkIDEnum } from '@app/enums';
+
 // helpers
+import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 import accountAccessKey, {
   type IAccessKeyResponse,
 } from '@test/helpers/accountAccessKey';
@@ -20,7 +24,7 @@ import type { IStorageBalanceOfResult } from '@app/types';
 import convertNEARToYoctoNEAR from '@app/utils/convertNEARToYoctoNEAR';
 
 describe(`${Social.name}#storageWithdraw`, () => {
-  let keyPair: utils.KeyPairEd25519;
+  let keyPair: KeyPairEd25519;
   let signer: Account;
   let signerAccessKeyResponse: IAccessKeyResponse;
 
@@ -35,6 +39,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // arrange
     const client = new Social({
       contractId: socialContractAccountId,
+      network: NetworkIDEnum.Localnet,
     });
     let resultBefore: IStorageBalanceOfResult | null;
     let resultAfter: IStorageBalanceOfResult | null;
@@ -49,10 +54,12 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //2N deposit
     let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
     });
@@ -61,7 +68,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    let [_, signedTransaction] = await transactions.signTransaction(
+    let [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -69,7 +76,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    let failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    let failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -86,18 +93,20 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //1N withdraw
     let withdraw_amount = convertNEARToYoctoNEAR('1');
     transaction = await client.storageWithdraw({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
+      amount: withdraw_amount,
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      publicKey: keyPair.publicKey,
-      signer,
-      amount: withdraw_amount,
     });
 
     // assert
     // the transaction's actions should have `storage_withdraw`
     expect(transaction.actions).toHaveLength(1);
 
-    [_, signedTransaction] = await transactions.signTransaction(
+    [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -105,8 +114,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let status1 =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    failure =
-      (status1.status as providers.FinalExecutionStatus)?.Failure || null;
+    failure = (status1.status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -145,10 +153,12 @@ describe(`${Social.name}#storageWithdraw`, () => {
     //2N deposit
     let deposit = convertNEARToYoctoNEAR('2');
     transaction = await client.storageDeposit({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1),
-      publicKey: keyPair.publicKey,
-      signer,
       accountId,
       deposit,
     });
@@ -157,7 +167,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     // the transaction's actions should have `storage_deposit`
     expect(transaction.actions).toHaveLength(1);
 
-    let [_, signedTransaction] = await transactions.signTransaction(
+    let [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -165,7 +175,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let { status } =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    let failure = (status as providers.FinalExecutionStatus)?.Failure || null;
+    let failure = (status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
@@ -181,17 +191,19 @@ describe(`${Social.name}#storageWithdraw`, () => {
 
     //No withdrawal amount specified
     transaction = await client.storageWithdraw({
+      account: {
+        accountID: signer.accountId,
+        publicKey: keyPair.publicKey,
+      },
       blockHash: signerAccessKeyResponse.block_hash,
       nonce: BigInt(signerAccessKeyResponse.nonce + 1 + 1),
-      publicKey: keyPair.publicKey,
-      signer,
     });
 
     // assert
     // the transaction's actions should have `storage_withdraw`
     expect(transaction.actions).toHaveLength(1);
 
-    [_, signedTransaction] = await transactions.signTransaction(
+    [_, signedTransaction] = await signTransaction(
       transaction,
       signer.connection.signer,
       signer.accountId,
@@ -199,8 +211,7 @@ describe(`${Social.name}#storageWithdraw`, () => {
     );
     let status1 =
       await signer.connection.provider.sendTransaction(signedTransaction);
-    failure =
-      (status1.status as providers.FinalExecutionStatus)?.Failure || null;
+    failure = (status1.status as FinalExecutionStatus)?.Failure || null;
 
     if (failure) {
       throw new Error(`${failure.error_type}: ${failure.error_message}`);
