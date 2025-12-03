@@ -1,0 +1,21 @@
+name: "Use Bun Dependencies"
+
+description: "Sets up Bun and installs dependencies with caching."
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔧 Setup Bun"
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+    - name: "💾 Cache dependencies"
+      uses: actions/cache@v4
+      id: cache-dependencies
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+    - name: "📦 Install"
+      if: steps.cache-dependencies.outputs.cache-hit != 'true'
+      run: bun install --frozen-lockfile
+      shell: bash

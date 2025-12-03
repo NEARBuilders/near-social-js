@@ -26,7 +26,6 @@
 
 - [Getting Started](#getting-started)
   - [Installing dependencies](#installing-dependencies)
-  - [Running the app](#running-the-app)
   - [Building for production](#building-for-production)
   - [Running tests](#running-tests)
 - [Contributing](#contributing)
@@ -41,27 +40,17 @@
 yarn install
 ```
 
-### Running the app
-
-First, run the development server:
-
-```bash
-yarn run dev
-```
-
 ### Building for production
 
 ```bash
-yarn run build
+yarn build
 ```
 
 ### Running tests
 
 ```bash
-yarn run test
+yarn test
 ```
-
-See the full [testing guide](./playwright-tests/README.md).
 
 ## Appendix
 
@@ -78,14 +67,12 @@ See the full [testing guide](./playwright-tests/README.md).
 | Command           | Description                                                                        |
 |-------------------|------------------------------------------------------------------------------------|
 | `yarn build`      | Builds the source code into the `dist/` directory.                                 |
-| `yarn docs:build` | Builds the documentation into the `.docusaurus/` directory.                        |
-| `yarn docs:serve` | Serves the built documentation from the `.docusaurus/` directory.                  |
+| `yarn docs:build` | Builds the documentation into the `.docs/` directory.                              |
+| `yarn docs:serve` | Serves the built documentation from the `.docs/` directory.                        |
 | `yarn docs:start` | Builds and runs the documentation in a development environment with hot reloading. |
 | `yarn lint`       | Runs the linter on `.js` and `.ts` files.                                          |
-| `yarn node:start` | Starts up a NEAR development node in a background process.                         |
-| `yarn node:start` | Stops the NEAR development node that was started in `yarn node:start`.             |
-| `yarn fmt`   | Runs prettier on `.js` and `.ts` files.                                        |
-| `yarn test`       | Starts a NEAR development node and runs the tests.                                 |
+| `yarn fmt`        | Runs prettier on `.js` and `.ts` files.                                            |
+| `yarn test`       | Runs the tests using Vitest and near-kit Sandbox.                                                       |
 
 <!-- Links -->
 [contribute]: ./CONTRIBUTING.md

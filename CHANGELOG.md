@@ -1,3 +1,24 @@
+# [2.0.0](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.6...v2.0.0) (2025-12-02)
+
+### BREAKING CHANGES
+
+* **Renamed `Social` class to `Graph`**: The core low-level class for interacting with the social DB contract is now `Graph`. Import with `import { Graph } from 'near-social-js'`.
+* **New high-level `Social` class**: A new `Social` class extends `Graph` and provides convenience methods for common social features (`getProfile`, `setProfile`, `createPost`, `follow`, `like`, etc.).
+* **Renamed package**: Package name changed from `@builddao/near-social-js` to `near-social-js`.
+* **Renamed `SocialOptions` to `GraphOptions`**: Constructor options type renamed.
+
+### Features
+
+* **High-level Social API**: New `Social` class with `getProfile`, `setProfile`, `getPost`, `createPost`, `follow`, `unfollow`, `like`, `getLikes`, `getFollowers`, `getFollowing` methods.
+
+### Refactor
+
+* Migrated from `near-api-js` to `near-kit` for a simpler, more intuitive API
+* Simplified flat source structure (all core files in `src/`)
+* Switched from Jest to Vitest for faster ESM-native testing
+* Modernized TypeScript configuration with `moduleResolution: "bundler"`
+* Cleaned up package dependencies - removed unused packages
+
 
 # [1.1.0-beta.6](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2024-10-25)
 

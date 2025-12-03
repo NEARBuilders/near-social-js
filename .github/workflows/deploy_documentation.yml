@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
 
   deploy:
     name: "Deploy"
@@ -24,10 +24,10 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
       - name: "🏗️ Build"
-        run: npm run docs:build
+        run: bun run docs:build
       - name: "🚀 Deploy"
         uses: peaceiris/actions-gh-pages@v3
         with:
