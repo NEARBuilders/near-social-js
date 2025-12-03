@@ -85,14 +85,20 @@ export class Social extends Graph {
   }
 
   async getFollowers(accountId: string): Promise<unknown[]> {
-    return this.index({
-      action: 'graph',
-      key: 'follow',
-      options: {
-        accountId,
-        order: 'desc',
-      },
-    } as IndexOptions);
+    const result = await this.keys({
+      keys: [`*/graph/follow/${accountId}`],
+      returnType: 'BlockHeight',
+      valuesOnly: true,
+    });
+
+    const followers: unknown[] = [];
+    for (const followerId in result) {
+      if (followerId !== accountId) {
+        followers.push({ accountId: followerId });
+      }
+    }
+
+    return followers;
   }
 
   async getFollowing(accountId: string): Promise<Record<string, unknown>> {

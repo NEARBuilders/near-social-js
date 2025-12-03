@@ -6,7 +6,6 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "workspaces": ["demo"],
   "repository": {
     "type": "git",
     "url": "https://github.com/NEARBuilders/near-social-js"
