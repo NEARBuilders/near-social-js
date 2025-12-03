@@ -1,0 +1,93 @@
+{
+  "name": "near-social-js",
+  "version": "2.0.0",
+  "description": "A JavaScript SDK for interacting with the NEAR Social graph database contract with helper functions for typical social features.",
+  "homepage": "https://nearbuilders.github.io/near-social-js/",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "workspaces": ["demo"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NEARBuilders/near-social-js"
+  },
+  "contributors": [
+    {
+      "name": "Elliot Braem",
+      "url": "https://github.com/elliotBraem"
+    },
+    {
+      "name": "Jas",
+      "email": "jaswinder@harmonicguild.io",
+      "url": "https://github.com/jaswinder6991"
+    },
+    {
+      "name": "Kieran O'Neill",
+      "email": "hello@kieranoneill.com",
+      "url": "https://github.com/kieranroneill"
+    }
+  ],
+  "bugs": "https://github.com/NEARBuilders/near-social-js/issues/new?assignees=kieranroneill&labels=%F0%9F%90%9B+bug&projects=&template=bug_report_template.yml&title=%5BBug%5D%3A+",
+  "license": "MIT",
+  "keywords": [
+    "blockchain",
+    "near",
+    "nearprotocol",
+    "social"
+  ],
+  "private": false,
+  "engines": {
+    "node": ">=18.20.2"
+  },
+  "scripts": {
+    "build": "tsup",
+    "docs:build": "docusaurus build --out-dir .docs",
+    "docs:serve": "docusaurus serve --dir .docs --no-open",
+    "docs:start": "docusaurus start --no-open --port 8080",
+    "lint": "eslint",
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@docusaurus/babel": "^3.9.2",
+    "@docusaurus/core": "^3.9.2",
+    "@docusaurus/module-type-aliases": "^3.9.2",
+    "@docusaurus/plugin-rsdoctor": "^3.9.2",
+    "@docusaurus/preset-classic": "^3.9.2",
+    "@docusaurus/remark-plugin-npm2yarn": "^3.9.2",
+    "@docusaurus/tsconfig": "^3.9.2",
+    "@eslint/js": "^9.39.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^12.0.0",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^10.3.5",
+    "@semantic-release/npm": "^12.0.2",
+    "@semantic-release/release-notes-generator": "^13.0.0",
+    "@types/node": "^20.19.25",
+    "docusaurus-plugin-sass": "^0.2.6",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^9.1.2",
+    "globals": "^15.15.0",
+    "prettier": "^3.7.3",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sass": "^1.94.2",
+    "semantic-release": "^23.1.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.33.1",
+    "vitest": "^4.0.15"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.3.1",
+    "near-kit": "^0.5.2"
+  },
+  "resolutions": {
+    "braces": "^3.0.3",
+    "ws": "^8.17.1",
+    "base-x": "3.0.0"
+  }
+}

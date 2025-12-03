@@ -1,0 +1,120 @@
+# Getting Started
+
+## Installation
+
+```bash npm2yarn
+npm install near-social-js
+```
+
+## Basic Usage
+
+### Reading Data (No Wallet Required)
+
+```typescript
+import { Social } from 'near-social-js';
+
+const social = new Social();
+
+// Get a user's profile
+const profile = await social.getProfile('alice.near');
+console.log(profile?.name); // "Alice"
+
+// Get who someone is following
+const following = await social.getFollowing('alice.near');
+
+// Get likes on a post
+const likes = await social.getLikes({
+  type: 'social',
+  path: 'alice.near/post/main',
+  blockHeight: 12345678,
+});
+```
+
+### Writing Data (Requires Wallet)
+
+Writing data requires a signer. The SDK returns transaction builders that you can send:
+
+```typescript
+import { Social } from 'near-social-js';
+import { Near } from 'near-kit';
+
+// Initialize with your Near instance
+const near = new Near({ network: 'mainnet' });
+const social = new Social({ near });
+
+// Update profile
+const tx = await social.setProfile('alice.near', {
+  name: 'Alice',
+  description: 'Hello world!',
+});
+await tx.send();
+
+// Create a post
+const postTx = await social.createPost('alice.near', {
+  main: 'My first post!',
+});
+await postTx.send();
+
+// Follow someone
+const followTx = await social.follow('alice.near', 'bob.near');
+await followTx.send();
+```
+
+## Configuration
+
+### Default (Mainnet)
+
+```typescript
+const social = new Social();
+// Uses social.near contract on mainnet
+```
+
+### Testnet
+
+```typescript
+const social = new Social({
+  network: 'testnet',
+  contractId: 'v1.social08.testnet',
+});
+```
+
+### Custom Near Instance
+
+```typescript
+import { Near } from 'near-kit';
+
+const near = new Near({
+  network: 'mainnet',
+  privateKey: 'ed25519:...',
+});
+
+const social = new Social({ near });
+```
+
+## Using the Graph Class
+
+For low-level contract access, use `Graph` directly:
+
+```typescript
+import { Graph } from 'near-social-js';
+
+const graph = new Graph();
+
+// Read any data from the contract
+const data = await graph.get({
+  keys: ['alice.near/profile/**', 'bob.near/widget/*'],
+});
+
+// Store custom data
+const tx = await graph.set({
+  signerId: 'alice.near',
+  data: {
+    'alice.near': {
+      custom: {
+        myApp: { setting: 'value' },
+      },
+    },
+  },
+});
+await tx.send();
+```

@@ -1,0 +1,18 @@
+/**
+ * Gets the text color for a specific theme.
+ */
+@function text-color($theme) {
+  @if $theme != "light" {
+    @return var(--custom-text-color-dark);
+  }
+
+  @return var(--custom-text-color-light);
+}
+
+@function primary-color($theme) {
+  @if $theme != "light" {
+    @return var(--custom-primary-color-dark-500);
+  }
+
+  @return var(--custom-primary-color-light-500);
+}
