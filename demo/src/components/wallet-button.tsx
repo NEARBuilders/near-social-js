@@ -16,7 +16,7 @@ export function WalletButton() {
 
   if (accountId) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-white">
         <div className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-sm font-mono">
           {accountId.length > 20
             ? `${accountId.slice(0, 8)}...${accountId.slice(-8)}`

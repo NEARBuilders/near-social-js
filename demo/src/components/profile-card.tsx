@@ -1,5 +1,6 @@
 import type { Profile } from 'near-social-js'
 import { ProfileAvatar } from './profile-avatar'
+import { ProfileEditDialog } from './profile-edit-dialog'
 import { ExternalLink } from 'lucide-react'
 
 interface ProfileCardProps {
@@ -98,17 +99,11 @@ export function ProfileCard({
         <div className="mt-4">
           {isOwnProfile && onEditProfile ? (
             <div className="flex gap-2">
-              {/* Dynamic import to avoid circular dependencies */}
-              {(() => {
-                const { ProfileEditDialog } = require('./profile-edit-dialog')
-                return (
-                  <ProfileEditDialog
-                    profile={profile}
-                    onSave={onEditProfile}
-                    isLoading={isEditLoading}
-                  />
-                )
-              })()}
+              <ProfileEditDialog
+                profile={profile}
+                onSave={onEditProfile}
+                isLoading={isEditLoading}
+              />
             </div>
           ) : (
             !isOwnProfile &&

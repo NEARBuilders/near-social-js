@@ -68,7 +68,6 @@ export function ProfileEditDialog({ profile, onSave, isLoading }: ProfileEditDia
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
           className="cursor-pointer border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
         >
           <User className="h-4 w-4 mr-2" />
