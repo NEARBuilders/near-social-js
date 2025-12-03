@@ -9,6 +9,8 @@ interface ProfileCardProps {
   onFollow?: () => void
   onUnfollow?: () => void
   isFollowing?: boolean
+  onEditProfile?: (profile: Partial<Profile>) => Promise<void>
+  isEditLoading?: boolean
 }
 
 export function ProfileCard({
@@ -18,6 +20,8 @@ export function ProfileCard({
   onFollow,
   onUnfollow,
   isFollowing,
+  onEditProfile,
+  isEditLoading,
 }: ProfileCardProps) {
   const backgroundUrl = profile?.backgroundImage?.ipfs_cid
     ? `https://ipfs.near.social/ipfs/${profile.backgroundImage.ipfs_cid}`
@@ -91,25 +95,44 @@ export function ProfileCard({
           </div>
         )}
 
-        {!isOwnProfile && (onFollow || onUnfollow) && (
-          <div className="mt-4">
-            {isFollowing ? (
-              <button
-                onClick={onUnfollow}
-                className="px-4 py-2 rounded-lg border border-white/20 text-white/70 hover:bg-white/10 transition-colors text-sm"
-              >
-                Unfollow
-              </button>
-            ) : (
-              <button
-                onClick={onFollow}
-                className="px-4 py-2 rounded-lg bg-[#00EC97] text-black font-semibold hover:bg-[#00d084] transition-colors text-sm"
-              >
-                Follow
-              </button>
-            )}
-          </div>
-        )}
+        <div className="mt-4">
+          {isOwnProfile && onEditProfile ? (
+            <div className="flex gap-2">
+              {/* Dynamic import to avoid circular dependencies */}
+              {(() => {
+                const { ProfileEditDialog } = require('./profile-edit-dialog')
+                return (
+                  <ProfileEditDialog
+                    profile={profile}
+                    onSave={onEditProfile}
+                    isLoading={isEditLoading}
+                  />
+                )
+              })()}
+            </div>
+          ) : (
+            !isOwnProfile &&
+            (onFollow || onUnfollow) && (
+              <>
+                {isFollowing ? (
+                  <button
+                    onClick={onUnfollow}
+                    className="px-4 py-2 rounded-lg border border-white/20 text-white/70 hover:bg-white/10 transition-colors text-sm cursor-pointer"
+                  >
+                    Unfollow
+                  </button>
+                ) : (
+                  <button
+                    onClick={onFollow}
+                    className="px-4 py-2 rounded-lg bg-[#00EC97] text-black font-semibold hover:bg-[#00d084] transition-colors text-sm cursor-pointer"
+                  >
+                    Follow
+                  </button>
+                )}
+              </>
+            )
+          )}
+        </div>
       </div>
     </div>
   )

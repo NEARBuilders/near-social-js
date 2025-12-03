@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useMemo } from 'react'
-import { Graph } from 'near-social-js'
+import { useState } from 'react'
 import { useWallet } from '../../integrations/near-wallet'
+import { useGraphInstance, useGraphSet } from '../../integrations/near-graph'
 import { MethodCard } from '../../components/method-card'
 import { ResponsePanel } from '../../components/response-panel'
 
@@ -10,10 +10,10 @@ export const Route = createFileRoute('/_layout/graph')({
 })
 
 function GraphPage() {
-  const { accountId, social } = useWallet()
+  const { accountId } = useWallet()
   const [response, setResponse] = useState<unknown>(null)
-
-  const graph = useMemo(() => social ?? new Graph({ network: 'mainnet' }), [social])
+  const graph = useGraphInstance()
+  const graphSetMutation = useGraphSet()
 
   const methods = [
     {
@@ -180,22 +180,15 @@ function GraphPage() {
       ],
       requiresWallet: true,
       execute: async (params: Record<string, string>) => {
-        if (!accountId || !social) throw new Error('Wallet not connected')
-        const data = JSON.parse(params.data)
-        return social.set({ signerId: accountId, data })
+        if (!accountId) throw new Error('Wallet not connected')
+        const data = JSON.parse(params.data) as Record<string, Record<string, unknown>>
+        return graphSetMutation.mutateAsync(data)
       },
     },
   ]
 
   return (
-    <div
-      className="min-h-screen text-white"
-      style={{
-        background:
-          'radial-gradient(ellipse at top right, rgba(0, 236, 151, 0.15) 0%, rgba(10, 31, 28, 0.8) 50%, #0d1117 100%)',
-      }}
-    >
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 pb-[300px] md:pb-[250px] max-w-4xl text-white">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Graph Methods</h1>
           <p className="text-white/60">
@@ -219,11 +212,12 @@ function GraphPage() {
         </div>
 
         {response !== null && (
-          <div className="sticky bottom-4">
-            <ResponsePanel data={response} />
+          <div className="fixed bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/95 via-black/90 to-transparent pt-8 pb-4 px-4 md:px-8">
+            <div className="container mx-auto max-w-4xl">
+              <ResponsePanel data={response} variant="fixed" />
+            </div>
           </div>
         )}
-      </div>
     </div>
   )
 }

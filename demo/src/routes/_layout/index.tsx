@@ -18,14 +18,7 @@ function HomePage() {
   })
 
   return (
-    <div
-      className="min-h-screen text-white"
-      style={{
-        background:
-          'radial-gradient(ellipse at top right, rgba(0, 236, 151, 0.15) 0%, rgba(10, 31, 28, 0.8) 50%, #0d1117 100%)',
-      }}
-    >
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="container mx-auto px-4 py-12 max-w-4xl text-white">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">
             NEAR Social JS
@@ -130,7 +123,6 @@ function HomePage() {
             </a>
           </p>
         </div>
-      </div>
     </div>
   )
 }
