@@ -13,7 +13,7 @@ const stylesDir = path.resolve(docsDir, 'styles');
 // links
 const buildDAOLink = 'https://nearbuilders.org';
 const githubLink = 'https://github.com/NEARBuilders/near-social-js';
-const npmLink = 'https://npmjs.com/package/@builddao/near-social-js';
+const npmLink = 'https://npmjs.com/package/near-social-js';
 const url = 'https://nearbuilders.github.io';
 
 // header
