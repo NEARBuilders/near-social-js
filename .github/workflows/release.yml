@@ -35,5 +35,7 @@ jobs:
           GIT_COMMITTER_NAME: nearbuilder
           GIT_COMMITTER_EMAIL: tech@nearbuilders.org
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_READ_AND_WRITE_PACKAGES_TOKEN }}
         run: bun run semantic-release
+
+      - name: "📦 Publish to npm"
+        run: npm publish --provenance --access public
