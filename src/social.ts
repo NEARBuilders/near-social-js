@@ -38,6 +38,8 @@ export class Social extends Graph {
       keys: [`${accountId}/profile/**`],
     });
 
+    if (!result) return null;
+
     const accountData = result[accountId] as { profile?: Profile } | undefined;
     return accountData?.profile ?? null;
   }
@@ -58,6 +60,8 @@ export class Social extends Graph {
       keys: [`${accountId}/post/main`],
       blockHeight: BigInt(blockHeight),
     });
+
+    if (!result) return null;
 
     const accountData = result[accountId] as { post?: Post } | undefined;
     return accountData?.post ?? null;
@@ -91,6 +95,8 @@ export class Social extends Graph {
       valuesOnly: true,
     });
 
+    if (!result) return [];
+
     const followers: unknown[] = [];
     for (const followerId in result) {
       if (followerId !== accountId) {
@@ -101,10 +107,12 @@ export class Social extends Graph {
     return followers;
   }
 
-  async getFollowing(accountId: string): Promise<Record<string, unknown>> {
+  async getFollowing(accountId: string): Promise<Record<string, unknown> | null> {
     const result = await this.get({
       keys: [`${accountId}/graph/follow/**`],
     });
+
+    if (!result) return null;
 
     const accountData = result[accountId] as
       | { graph?: { follow?: Record<string, unknown> } }
