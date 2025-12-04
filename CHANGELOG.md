@@ -1,11 +1,19 @@
-# [1.1.0-beta.7](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.6...v1.1.0-beta.7) (2025-12-04)
+# [2.0.1](https://github.com/NEARBuilders/near-social-js/compare/v2.0.0...v2.0.1) (2025-12-04)
 
+### Features
+
+* add storageUnregister method for contract storage management ([#44](https://github.com/NEARBuilders/near-social-js/issues/44))
+* support null values in set() method to delete keys from social DB ([#41](https://github.com/NEARBuilders/near-social-js/issues/41))
+
+### Bug Fixes
+
+* ensure deposit is 0 (not 1 yocto) when account has sufficient storage for gas-only transactions ([#39](https://github.com/NEARBuilders/near-social-js/issues/39))
+
+# [2.0.0](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.6...v2.0.0) (2025-12-02)
 
 ### Features
 
 * expose storagebalanceof as public ([#26](https://github.com/NEARBuilders/near-social-js/issues/26)) ([3450670](https://github.com/NEARBuilders/near-social-js/commit/34506709196e1be3370c856841e3c7cda46293fe))
-
-# [2.0.0](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.6...v2.0.0) (2025-12-02)
 
 ### BREAKING CHANGES
 

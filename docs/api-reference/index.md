@@ -33,6 +33,7 @@ Low-level class for direct contract interaction. `Social` extends this class.
 - `storageBalanceOf(accountId)` — Check storage balance
 - `storageDeposit(options)` — Deposit for storage
 - `storageWithdraw(options)` — Withdraw storage balance
+- `storageUnregister(options)` — Unregister account from storage (requires 1 yoctoNEAR)
 
 ---
 

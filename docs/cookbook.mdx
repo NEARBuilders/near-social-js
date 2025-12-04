@@ -104,6 +104,84 @@ const likes = await social.getLikes(item);
 // Array of index entries
 ```
 
+## Deleting Data
+
+### Delete Keys with Null Values
+
+To delete a key from the social DB, set its value to `null`:
+
+```typescript
+const tx = await graph.set({
+  signerId: 'alice.near',
+  data: {
+    'alice.near': {
+      profile: {
+        bio: null, // This deletes the bio key
+      },
+    },
+  },
+});
+await tx.send();
+```
+
+### Delete Multiple Keys
+
+```typescript
+const tx = await graph.set({
+  signerId: 'alice.near',
+  data: {
+    'alice.near': {
+      profile: {
+        bio: null,
+        tags: null,
+      },
+    },
+  },
+});
+await tx.send();
+```
+
+## Storage Management
+
+### Check Storage Balance
+
+```typescript
+const balance = await graph.storageBalanceOf('alice.near');
+console.log(balance?.available); // Available storage in yoctoNEAR
+console.log(balance?.total); // Total storage deposited
+```
+
+### Deposit Storage
+
+```typescript
+const tx = await graph.storageDeposit({
+  signerId: 'alice.near',
+  deposit: '1000000000000000000000000', // 0.001 NEAR
+});
+await tx.send();
+```
+
+### Withdraw Storage
+
+```typescript
+const tx = await graph.storageWithdraw({
+  signerId: 'alice.near',
+  amount: '500000000000000000000000', // Optional: specific amount
+});
+await tx.send();
+```
+
+### Unregister from Storage
+
+```typescript
+// Note: The current contract implementation prevents unregistration
+const tx = await graph.storageUnregister({
+  signerId: 'alice.near',
+  force: false, // Optional: force unregister even with remaining data
+});
+await tx.send();
+```
+
 ## Low-Level Access
 
 Use `Graph` for direct contract access:

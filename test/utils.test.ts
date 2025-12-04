@@ -84,6 +84,33 @@ describe('parseKeysFromData', () => {
     const keys = parseKeysFromData(data);
     expect(keys).toEqual(['alice/graph/follow/bob']);
   });
+
+  it('should handle null values for deleting keys', () => {
+    const data = {
+      alice: {
+        profile: {
+          bio: null,
+        },
+      },
+    };
+    const keys = parseKeysFromData(data);
+    expect(keys).toEqual(['alice/profile/bio']);
+  });
+
+  it('should handle mixed null and string values', () => {
+    const data = {
+      alice: {
+        profile: {
+          name: 'Alice',
+          bio: null,
+        },
+      },
+    };
+    const keys = parseKeysFromData(data);
+    expect(keys).toContain('alice/profile/name');
+    expect(keys).toContain('alice/profile/bio');
+    expect(keys).toHaveLength(2);
+  });
 });
 
 describe('calculateSizeOfData', () => {

@@ -1,4 +1,4 @@
-import { Near, Amount, Network } from 'near-kit';
+import { Amount, Near, Network } from 'near-kit';
 import { DEFAULT_API_SERVER, DEFAULT_CONTRACT_ID } from './constants';
 import { InvalidAccountIdError, KeyNotAllowedError } from './errors';
 import type {
@@ -16,6 +16,7 @@ import type {
   StorageBalance,
   StorageBalanceResult,
   StorageDepositOptions,
+  StorageUnregisterOptions,
   StorageWithdrawOptions,
 } from './types';
 import {
@@ -65,7 +66,7 @@ export class Graph {
     withNodeId,
     withTimestamp,
     useApiServer,
-  }: GetOptions): Promise<Record<string, unknown>> {
+  }: GetOptions): Promise<Record<string, unknown> | null> {
     const shouldUseApi = useApiServer ?? this.defaultUseApiServer;
     if (shouldUseApi) {
       return this.fetchFromApi('/get', {
@@ -81,7 +82,7 @@ export class Graph {
       });
     }
 
-    return this.near.view<Record<string, unknown>>(this.contractId, 'get', {
+    const result = await this.near.view<Record<string, unknown>>(this.contractId, 'get', {
       keys,
       ...((returnDeleted || withBlockHeight || withNodeId) && {
         options: {
@@ -90,7 +91,8 @@ export class Graph {
           return_deleted: returnDeleted,
         },
       }),
-    });
+    }) as Record<string, unknown>;
+    return result ?? null;
   }
 
   async keys({
@@ -100,7 +102,7 @@ export class Graph {
     returnType,
     valuesOnly,
     useApiServer,
-  }: KeysOptions): Promise<Record<string, unknown>> {
+  }: KeysOptions): Promise<Record<string, unknown> | null> {
     const shouldUseApi = useApiServer ?? this.defaultUseApiServer;
     if (shouldUseApi) {
       return this.fetchFromApi('/keys', {
@@ -116,7 +118,7 @@ export class Graph {
       });
     }
 
-    return this.near.view(this.contractId, 'keys', {
+    const result = await this.near.view(this.contractId, 'keys', {
       keys,
       ...((returnDeleted || returnType || valuesOnly) && {
         options: {
@@ -125,7 +127,8 @@ export class Graph {
           values_only: valuesOnly,
         },
       }),
-    });
+    }) as  Record<string, unknown>;
+    return result ?? null;
   }
 
   async index({
@@ -162,18 +165,20 @@ export class Graph {
   async getAccount({
     accountId,
   }: GetAccountOptions): Promise<Record<string, unknown> | null> {
-    return this.near.view(this.contractId, 'get_account', {
+    const result = await this.near.view(this.contractId, 'get_account', {
       account_id: accountId,
-    });
+    }) as  Record<string, unknown>;
+    return result ?? null;
   }
 
   async getAccounts({ fromIndex, limit }: GetAccountsOptions = {}): Promise<
-    Record<string, unknown>
+    Record<string, unknown> | null
   > {
-    return this.near.view(this.contractId, 'get_accounts', {
+   const result = await this.near.view(this.contractId, 'get_accounts', {
       ...(fromIndex !== undefined && { from_index: fromIndex }),
       ...(limit !== undefined && { limit }),
-    });
+    }) as  Record<string, unknown>;
+    return result ?? null;
   }
 
   async getAccountCount(): Promise<number> {
@@ -195,20 +200,22 @@ export class Graph {
     fromIndex,
     limit,
   }: GetNodeOptions): Promise<Record<string, unknown> | null> {
-    return this.near.view(this.contractId, 'get_node', {
+    const result = await this.near.view(this.contractId, 'get_node', {
       node_id: nodeId,
       ...(fromIndex !== undefined && { from_index: fromIndex }),
       ...(limit !== undefined && { limit }),
-    });
+    }) as  Record<string, unknown>;
+    return result ?? null;
   }
 
   async getNodes({ fromIndex, limit }: GetNodesOptions = {}): Promise<
-    Record<string, unknown>
+    Record<string, unknown> | null
   > {
-    return this.near.view(this.contractId, 'get_nodes', {
+    const result = await this.near.view(this.contractId, 'get_nodes', {
       ...(fromIndex !== undefined && { from_index: fromIndex }),
       ...(limit !== undefined && { limit }),
-    });
+    }) as  Record<string, unknown>;
+    return result ?? null;
   }
 
   async getNodeCount(): Promise<number> {
@@ -302,11 +309,11 @@ export class Graph {
     } else {
       const accountIds = uniqueAccountIdsFromKeys(keys);
       if (accountIds.includes(signerId)) {
-        const storageBalance = await this.near.view<StorageBalance | null>(
+        const storageBalance = (await this.near.view<StorageBalance | null>(
           this.contractId,
           'storage_balance_of',
           { account_id: signerId }
-        );
+        )) ?? null;
         const calculatedDeposit = calculateRequiredDeposit({
           data,
           storageBalance,
@@ -399,6 +406,17 @@ export class Graph {
         this.contractId,
         'storage_withdraw',
         { ...(amount && { amount }) },
+        { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
+      );
+  }
+
+  async storageUnregister({ signerId, force }: StorageUnregisterOptions) {
+    return this.near
+      .transaction(signerId)
+      .functionCall(
+        this.contractId,
+        'storage_unregister',
+        { ...(force !== undefined && { force }) },
         { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
       );
   }

@@ -242,6 +242,100 @@ describe('Graph - Transaction Methods', () => {
       expect(typeof txBuilder.send).toBe('function');
     });
   });
+
+  describe('storageUnregister', () => {
+    it('should create a transaction builder for storage unregister', async () => {
+      const txBuilder = await graph.storageUnregister({
+        signerId: rootAccountId,
+      });
+
+      expect(txBuilder).toBeDefined();
+      expect(typeof txBuilder.send).toBe('function');
+    });
+
+    it('should support force parameter', async () => {
+      const txBuilder = await graph.storageUnregister({
+        signerId: rootAccountId,
+        force: true,
+      });
+
+      expect(txBuilder).toBeDefined();
+      expect(typeof txBuilder.send).toBe('function');
+    });
+  });
+
+  describe('set with null values', () => {
+    it('should handle null values to delete keys', async () => {
+      await graph
+        .storageDeposit({
+          signerId: rootAccountId,
+          deposit: '1000000000000000000000000',
+        })
+        .then((tx) => tx.send());
+
+      await graph
+        .set({
+          signerId: rootAccountId,
+          data: {
+            [rootAccountId]: {
+              test: {
+                deleteMe: 'value',
+              },
+            },
+          },
+        })
+        .then((tx) => tx.send());
+
+      const txBuilder = await graph.set({
+        signerId: rootAccountId,
+        data: {
+          [rootAccountId]: {
+            test: {
+              deleteMe: null,
+            },
+          },
+        },
+      });
+
+      expect(txBuilder).toBeDefined();
+      await txBuilder.send();
+
+      const result = await graph.get({
+        keys: [`${rootAccountId}/test/**`],
+        useApiServer: false,
+      });
+
+      const testData = result[rootAccountId] as {
+        test?: { deleteMe?: string };
+      };
+      expect(testData?.test?.deleteMe).toBeUndefined();
+    });
+  });
+
+  describe('set with sufficient storage', () => {
+    it('should use 0 deposit when storage balance covers the cost', async () => {
+      await graph
+        .storageDeposit({
+          signerId: rootAccountId,
+          deposit: '10000000000000000000000000',
+        })
+        .then((tx) => tx.send());
+
+      const txBuilder = await graph.set({
+        signerId: rootAccountId,
+        data: {
+          [rootAccountId]: {
+            profile: {
+              name: 'Test',
+            },
+          },
+        },
+      });
+
+      expect(txBuilder).toBeDefined();
+      expect(typeof txBuilder.send).toBe('function');
+    });
+  });
 });
 
 describe('Graph - Direct Contract Calls (useApiServer: false)', () => {
