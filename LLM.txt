@@ -1,0 +1,100 @@
+# near-social-js Cookbook
+
+JavaScript SDK for NEAR Social. Install: `npm install near-social-js`
+
+## Initialization
+
+```typescript
+import { Social } from 'near-social-js';
+const social = new Social(); // mainnet default
+const social = new Social({ network: 'testnet', contractId: 'v1.social08.testnet' });
+```
+
+## Profiles
+
+```typescript
+// Read profile
+const profile = await social.getProfile('alice.near');
+
+// Update profile (returns tx builder)
+const tx = await social.setProfile('alice.near', {
+  name: 'Alice',
+  description: 'Builder on NEAR',
+  image: { ipfs_cid: 'bafkrei...' },
+  backgroundImage: { url: 'https://...' },
+  linktree: { twitter: 'alice', github: 'alice' },
+  tags: { developer: '', rust: '' },
+});
+await tx.send();
+```
+
+## Posts
+
+```typescript
+// Create post
+const tx = await social.createPost('alice.near', { main: 'Hello world!' });
+await tx.send();
+
+// Get post at specific block
+const post = await social.getPost('alice.near', 12345678);
+```
+
+## Social Graph
+
+```typescript
+// Follow
+await (await social.follow('alice.near', 'bob.near')).send();
+
+// Unfollow
+await (await social.unfollow('alice.near', 'bob.near')).send();
+
+// Get following (accounts alice follows)
+const following = await social.getFollowing('alice.near');
+
+// Get followers (accounts that follow alice)
+const followers = await social.getFollowers('alice.near');
+```
+
+## Likes
+
+```typescript
+const item = { type: 'social', path: 'bob.near/post/main', blockHeight: 12345 };
+
+// Like
+await (await social.like('alice.near', item)).send();
+
+// Get likes
+const likes = await social.getLikes(item);
+```
+
+## Low-Level Access (Graph)
+
+```typescript
+import { Graph } from 'near-social-js';
+const graph = new Graph();
+
+// Read any data with wildcards
+const data = await graph.get({ keys: ['alice.near/profile/**'] });
+
+// Store custom data
+const tx = await graph.set({
+  signerId: 'alice.near',
+  data: { 'alice.near': { settings: { theme: 'dark' } } },
+});
+await tx.send();
+
+// Query index
+const posts = await graph.index({ action: 'post', key: 'main', limit: 10 });
+```
+
+## Data Patterns
+
+Key structure: `{accountId}/{category}/{key}`
+- Profiles: `alice.near/profile/name`
+- Posts: `alice.near/post/main`
+- Widgets: `alice.near/widget/MyWidget`
+- Graph: `alice.near/graph/follow/bob.near`
+
+Wildcards: `*` (one level), `**` (all nested)
+
+Index actions: `post`, `like`, `comment`, `graph`, `notify`
