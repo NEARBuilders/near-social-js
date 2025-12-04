@@ -13,6 +13,7 @@ export default eslintTypescript.config(
       'dist/*',
       'docusaurus.config.js',
       'node_modules/*',
+      'demo/*'
     ],
   },
   eslint.configs.recommended,

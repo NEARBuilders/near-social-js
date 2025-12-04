@@ -17,7 +17,7 @@ import type {
   StorageBalanceResult,
   StorageDepositOptions,
   StorageUnregisterOptions,
-  StorageWithdrawOptions
+  StorageWithdrawOptions,
 } from './types';
 import {
   calculateRequiredDeposit,
@@ -405,11 +405,13 @@ export class Graph {
   }
 
   async storageUnregister({ signerId, force }: StorageUnregisterOptions) {
-    return this.near.transaction(signerId).functionCall(
-      this.contractId,
-      'storage_unregister',
-      { ...(force !== undefined && { force }) },
-      { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
-    );
+    return this.near
+      .transaction(signerId)
+      .functionCall(
+        this.contractId,
+        'storage_unregister',
+        { ...(force !== undefined && { force }) },
+        { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
+      );
   }
 }

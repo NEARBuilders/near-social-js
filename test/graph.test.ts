@@ -305,7 +305,9 @@ describe('Graph - Transaction Methods', () => {
         useApiServer: false,
       });
 
-      const testData = result[rootAccountId] as { test?: { deleteMe?: string } };
+      const testData = result[rootAccountId] as {
+        test?: { deleteMe?: string };
+      };
       expect(testData?.test?.deleteMe).toBeUndefined();
     });
   });
