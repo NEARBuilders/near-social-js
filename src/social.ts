@@ -1,5 +1,5 @@
 import { Graph } from './graph';
-import type { GraphOptions, IndexOptions } from './types';
+import type { GraphOptions } from './types';
 
 export interface Profile {
   name?: string;
