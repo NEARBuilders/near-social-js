@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Database, Home, Menu, Users, X } from 'lucide-react';
+import { BookOpen, Database, Github, Home, Menu, Users, X } from 'lucide-react';
 import { Logo } from '../components/logo';
 import { WalletButton } from '../components/wallet-button';
 import { useWallet } from '../integrations/near-wallet';
@@ -68,6 +68,24 @@ function LayoutComponent() {
             </div>
 
             <div className="flex items-center gap-3">
+              <a
+                href="https://nearbuilders.github.io/near-social-js/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/70 hover:text-white"
+                aria-label="View Documentation"
+              >
+                <BookOpen size={20} />
+              </a>
+              <a
+                href="https://github.com/NEARBuilders/near-social-js"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/70 hover:text-white"
+                aria-label="View on GitHub"
+              >
+                <Github size={20} />
+              </a>
               <WalletButton />
               <button
                 onClick={() => setIsOpen(true)}
