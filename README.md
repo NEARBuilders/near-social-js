@@ -37,19 +37,19 @@
 ### Installing dependencies
 
 ```bash
-yarn install
+bun install
 ```
 
 ### Building for production
 
 ```bash
-yarn build
+bun run build
 ```
 
 ### Running tests
 
 ```bash
-yarn test
+bun run test
 ```
 
 ## Appendix
@@ -64,24 +64,21 @@ yarn test
 
 ### Useful Commands
 
-| Command           | Description                                                                        |
-|-------------------|------------------------------------------------------------------------------------|
-| `yarn build`      | Builds the source code into the `dist/` directory.                                 |
-| `yarn docs:build` | Builds the documentation into the `.docs/` directory.                              |
-| `yarn docs:serve` | Serves the built documentation from the `.docs/` directory.                        |
-| `yarn docs:start` | Builds and runs the documentation in a development environment with hot reloading. |
-| `yarn lint`       | Runs the linter on `.js` and `.ts` files.                                          |
-| `yarn fmt`        | Runs prettier on `.js` and `.ts` files.                                            |
-| `yarn test`       | Runs the tests using Vitest and near-kit Sandbox.                                                       |
+| Command              | Description                                                                        |
+|----------------------|------------------------------------------------------------------------------------|
+| `bun run build`      | Builds the source code into the `dist/` directory.                                 |
+| `bun run docs:build` | Builds the documentation into the `.docs/` directory.                              |
+| `bun run docs:serve` | Serves the built documentation from the `.docs/` directory.                        |
+| `bun run docs:start` | Builds and runs the documentation in a development environment with hot reloading. |
+| `bun run lint`       | Runs the linter on `.js` and `.ts` files.                                          |
+| `bun run fmt`        | Runs prettier on `.js` and `.ts` files.                                            |
+| `bun run test`       | Runs the tests using Vitest and near-kit Sandbox.                                  |
 
 <!-- Links -->
 [contribute]: ./CONTRIBUTING.md
 [documentation]: https://nearbuilders.github.io/near-social-js
 [license]: ./LICENSE
-[node]: https://nodejs.org/en/
 [table-of-contents]: #table-of-contents
-[yarn]: https://yarnpkg.com/
-
 
 ## Contributing
 
