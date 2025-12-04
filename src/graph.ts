@@ -82,16 +82,20 @@ export class Graph {
       });
     }
 
-    const result = await this.near.view<Record<string, unknown>>(this.contractId, 'get', {
-      keys,
-      ...((returnDeleted || withBlockHeight || withNodeId) && {
-        options: {
-          with_block_height: withBlockHeight,
-          with_node_id: withNodeId,
-          return_deleted: returnDeleted,
-        },
-      }),
-    }) as Record<string, unknown>;
+    const result = (await this.near.view<Record<string, unknown>>(
+      this.contractId,
+      'get',
+      {
+        keys,
+        ...((returnDeleted || withBlockHeight || withNodeId) && {
+          options: {
+            with_block_height: withBlockHeight,
+            with_node_id: withNodeId,
+            return_deleted: returnDeleted,
+          },
+        }),
+      }
+    )) as Record<string, unknown>;
     return result ?? null;
   }
 
@@ -118,7 +122,7 @@ export class Graph {
       });
     }
 
-    const result = await this.near.view(this.contractId, 'keys', {
+    const result = (await this.near.view(this.contractId, 'keys', {
       keys,
       ...((returnDeleted || returnType || valuesOnly) && {
         options: {
@@ -127,7 +131,7 @@ export class Graph {
           values_only: valuesOnly,
         },
       }),
-    }) as  Record<string, unknown>;
+    })) as Record<string, unknown>;
     return result ?? null;
   }
 
@@ -165,19 +169,20 @@ export class Graph {
   async getAccount({
     accountId,
   }: GetAccountOptions): Promise<Record<string, unknown> | null> {
-    const result = await this.near.view(this.contractId, 'get_account', {
+    const result = (await this.near.view(this.contractId, 'get_account', {
       account_id: accountId,
-    }) as  Record<string, unknown>;
+    })) as Record<string, unknown>;
     return result ?? null;
   }
 
-  async getAccounts({ fromIndex, limit }: GetAccountsOptions = {}): Promise<
-    Record<string, unknown> | null
-  > {
-   const result = await this.near.view(this.contractId, 'get_accounts', {
+  async getAccounts({
+    fromIndex,
+    limit,
+  }: GetAccountsOptions = {}): Promise<Record<string, unknown> | null> {
+    const result = (await this.near.view(this.contractId, 'get_accounts', {
       ...(fromIndex !== undefined && { from_index: fromIndex }),
       ...(limit !== undefined && { limit }),
-    }) as  Record<string, unknown>;
+    })) as Record<string, unknown>;
     return result ?? null;
   }
 
@@ -200,21 +205,22 @@ export class Graph {
     fromIndex,
     limit,
   }: GetNodeOptions): Promise<Record<string, unknown> | null> {
-    const result = await this.near.view(this.contractId, 'get_node', {
+    const result = (await this.near.view(this.contractId, 'get_node', {
       node_id: nodeId,
       ...(fromIndex !== undefined && { from_index: fromIndex }),
       ...(limit !== undefined && { limit }),
-    }) as  Record<string, unknown>;
+    })) as Record<string, unknown>;
     return result ?? null;
   }
 
-  async getNodes({ fromIndex, limit }: GetNodesOptions = {}): Promise<
-    Record<string, unknown> | null
-  > {
-    const result = await this.near.view(this.contractId, 'get_nodes', {
+  async getNodes({ fromIndex, limit }: GetNodesOptions = {}): Promise<Record<
+    string,
+    unknown
+  > | null> {
+    const result = (await this.near.view(this.contractId, 'get_nodes', {
       ...(fromIndex !== undefined && { from_index: fromIndex }),
       ...(limit !== undefined && { limit }),
-    }) as  Record<string, unknown>;
+    })) as Record<string, unknown>;
     return result ?? null;
   }
 
@@ -309,11 +315,12 @@ export class Graph {
     } else {
       const accountIds = uniqueAccountIdsFromKeys(keys);
       if (accountIds.includes(signerId)) {
-        const storageBalance = (await this.near.view<StorageBalance | null>(
-          this.contractId,
-          'storage_balance_of',
-          { account_id: signerId }
-        )) ?? null;
+        const storageBalance =
+          (await this.near.view<StorageBalance | null>(
+            this.contractId,
+            'storage_balance_of',
+            { account_id: signerId }
+          )) ?? null;
         const calculatedDeposit = calculateRequiredDeposit({
           data,
           storageBalance,

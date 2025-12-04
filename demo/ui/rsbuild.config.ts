@@ -2,6 +2,7 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
+import pkg from './package.json';
 
 export default defineConfig({
   plugins: [pluginReact()],
@@ -59,27 +60,27 @@ export default defineConfig({
             react: {
               singleton: true,
               eager: true,
-              requiredVersion: '^19.2.0',
+              requiredVersion: pkg.dependencies.react,
             },
             'react-dom': {
               singleton: true,
               eager: true,
-              requiredVersion: '^19.2.0',
+              requiredVersion: pkg.dependencies['react-dom'],
             },
             '@tanstack/react-query': {
               singleton: true,
               eager: true,
-              requiredVersion: '^5.66.5',
+              requiredVersion: pkg.dependencies['@tanstack/react-query'],
             },
             '@tanstack/react-router': {
               singleton: true,
               eager: true,
-              requiredVersion: '^1.132.0',
+              requiredVersion: pkg.dependencies['@tanstack/react-router'],
             },
             'near-kit': {
               singleton: true,
               eager: true,
-              requiredVersion: '^0.5.2',
+              requiredVersion: pkg.dependencies['near-kit'],
             },
           },
         }),

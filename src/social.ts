@@ -107,7 +107,9 @@ export class Social extends Graph {
     return followers;
   }
 
-  async getFollowing(accountId: string): Promise<Record<string, unknown> | null> {
+  async getFollowing(
+    accountId: string
+  ): Promise<Record<string, unknown> | null> {
     const result = await this.get({
       keys: [`${accountId}/graph/follow/**`],
     });

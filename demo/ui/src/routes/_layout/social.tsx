@@ -8,10 +8,14 @@ import {
   useFollow,
   useUnfollow,
   useSetProfile,
+  useSocialInstance,
+  useCreatePost,
+  useLike,
 } from '../../integrations/near-social';
 import { ProfileCard } from '../../components/profile-card';
 import { ProfileAvatar } from '../../components/profile-avatar';
 import { ResponsePanel } from '../../components/response-panel';
+import { MethodCard } from '../../components/method-card';
 import { Search, Loader2 } from 'lucide-react';
 
 export const Route = createFileRoute('/_layout/social')({
@@ -23,6 +27,7 @@ function SocialPage() {
   const [viewMode, setViewMode] = useState<'pretty' | 'json'>('pretty');
   const [lookupAccountId, setLookupAccountId] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [response, setResponse] = useState<unknown>(null);
 
   const profileQuery = useProfile(lookupAccountId);
   const followersQuery = useFollowers(lookupAccountId);
@@ -30,6 +35,9 @@ function SocialPage() {
   const followMutation = useFollow(lookupAccountId);
   const unfollowMutation = useUnfollow(lookupAccountId);
   const setProfileMutation = useSetProfile();
+  const social = useSocialInstance();
+  const createPostMutation = useCreatePost();
+  const likeMutation = useLike();
 
   const handleLookup = () => {
     if (!searchInput) return;
@@ -234,11 +242,182 @@ function SocialPage() {
       )}
 
       {!lookupProfile && !loading && (
-        <div className="rounded-xl bg-white/5 border border-white/10 p-12 text-center">
+        <div className="rounded-xl bg-white/5 border border-white/10 p-12 text-center mb-8">
           <Search className="h-12 w-12 mx-auto mb-4 text-white/20" />
           <p className="text-white/40">
             Enter an account ID above to lookup their profile
           </p>
+        </div>
+      )}
+
+      <div className="mb-8 pt-8 border-t border-white/10">
+        <h2 className="text-2xl font-bold mb-2">Additional Methods</h2>
+        <p className="text-white/60 mb-6">
+          Test individual social methods directly.
+        </p>
+
+        <div className="grid gap-4 pb-[300px] md:pb-[250px]">
+          <MethodCard
+            name="getPost"
+            description="Get a post by account ID and block height"
+            fields={[
+              {
+                name: 'accountId',
+                label: 'Account ID',
+                type: 'text' as const,
+                placeholder: 'alice.near',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getPost(
+                params.accountId,
+                parseInt(params.blockHeight)
+              );
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="createPost"
+            description="Create a new post (requires wallet)"
+            fields={[
+              {
+                name: 'content',
+                label: 'Post Content',
+                type: 'textarea' as const,
+                placeholder: 'Hello, NEAR!',
+                required: true,
+              },
+              {
+                name: 'imageUrl',
+                label: 'Image URL (optional)',
+                type: 'text' as const,
+                placeholder: 'https://example.com/image.png',
+                required: false,
+              },
+              {
+                name: 'imageCid',
+                label: 'Image IPFS CID (optional)',
+                type: 'text' as const,
+                placeholder: 'bafybei...',
+                required: false,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              const post: {
+                main: string;
+                image?: { ipfs_cid?: string; url?: string };
+              } = {
+                main: params.content,
+              };
+              if (params.imageUrl || params.imageCid) {
+                post.image = {
+                  ...(params.imageUrl && { url: params.imageUrl }),
+                  ...(params.imageCid && { ipfs_cid: params.imageCid }),
+                };
+              }
+              return createPostMutation.mutateAsync(post);
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="like"
+            description="Like a post or item (requires wallet)"
+            fields={[
+              {
+                name: 'type',
+                label: 'Type',
+                type: 'text' as const,
+                placeholder: 'post',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              return likeMutation.mutateAsync({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getLikes"
+            description="Get likes for a post or item"
+            fields={[
+              {
+                name: 'type',
+                label: 'Type',
+                type: 'text' as const,
+                placeholder: 'post',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getLikes({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+        </div>
+      </div>
+
+      {response !== null && (
+        <div className="fixed bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/95 via-black/90 to-transparent pt-8 pb-4 px-4 md:px-8">
+          <div className="container mx-auto max-w-4xl">
+            <ResponsePanel data={response} variant="fixed" />
+          </div>
         </div>
       )}
     </div>

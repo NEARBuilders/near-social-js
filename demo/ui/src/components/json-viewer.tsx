@@ -138,7 +138,7 @@ const JsonNode = memo(function JsonNode({
 
 export function JsonViewer({ data, name, defaultExpanded }: JsonViewerProps) {
   return (
-    <div className="font-mono text-sm overflow-auto max-h-[600px]">
+    <div className="font-mono text-sm">
       <JsonNode data={data} name={name} defaultExpanded={defaultExpanded} />
     </div>
   );

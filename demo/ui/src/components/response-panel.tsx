@@ -25,7 +25,15 @@ export function ResponsePanel({
     }
   }, [data]);
 
-  const jsonString = useMemo(() => JSON.stringify(data, null, 2), [data]);
+  const jsonString = useMemo(
+    () =>
+      JSON.stringify(
+        data,
+        (_, value) => (typeof value === 'bigint' ? value.toString() : value),
+        2
+      ),
+    [data]
+  );
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(jsonString);
@@ -37,7 +45,7 @@ export function ResponsePanel({
     return null;
   }
 
-  const maxHeightClass = variant === 'fixed' ? 'max-h-[60vh]' : 'max-h-[800px]';
+  const maxHeightClass = variant === 'fixed' ? 'max-h-[60vh]' : 'max-h-[400px]';
 
   return (
     <div

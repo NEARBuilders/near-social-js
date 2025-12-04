@@ -134,38 +134,6 @@ it('should create a post with proper structure', async () => {
 
 ---
 
-### 8. Documentation Revamp ✅
-**Description**: Simplify and update Docusaurus docs.
-
-**Acceptance Criteria**:
-- [x] Remove outdated `near-api-js` references
-- [x] Update `overview.mdx` with new architecture (Graph vs Social)
-- [x] Create simple "Cookbook" with common recipes
-- [x] Remove or update type references to match new `GraphOptions`
-- [x] Document both `Graph` and `Social` classes
-- [x] Add `LLM.txt` with project context for AI assistants
-
-**Completed**:
-- Deleted `docs/advanced/` folder (outdated content)
-- Deleted `docs/api-reference/social.mdx` and `types.mdx` (outdated)
-- Created `docs/cookbook.mdx` with recipes
-- Updated `docs/overview.mdx`
-- Updated `docs/usage/getting-started.mdx`
-- Updated `docs/api-reference/index.md`
-- Updated `docs/scripts/sidebars.js`
-
----
-
-### 9. Create `LLM.txt` ✅
-**Description**: Markdown file with project context for AI tools.
-
-**Acceptance Criteria**:
-- [x] File at `docs/static/LLM.txt` (served at `/LLM.txt`)
-- [x] Contains: installation, cookbook recipes, data patterns
-- [x] Linked from `docs/cookbook.mdx`
-
----
-
 ## Future Enhancements 🚀
 
 ### 10. Mention/Hashtag Extraction Utilities
@@ -177,27 +145,3 @@ it('should create a post with proper structure', async () => {
 - [ ] `buildNotifications(mentions, item)` → builds notification index data
 
 ---
-
-## Testing Commands
-
-```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npm test -- test/social.test.ts
-
-# Run tests in watch mode
-npm test -- --watch
-```
-
----
-
-## Definition of Done
-
-A task is complete when:
-1. Implementation code is written
-2. Tests pass
-3. TypeScript compiles without errors
-4. Documentation is updated (if applicable)
-5. Code reviewed and merged

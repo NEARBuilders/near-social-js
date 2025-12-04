@@ -1,7 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useWallet } from '../../integrations/near-wallet';
-import { useGraphInstance, useGraphSet } from '../../integrations/near-graph';
+import {
+  useGraphInstance,
+  useGraphSet,
+  useGraphGrantWritePermission,
+  useGraphStorageDeposit,
+  useGraphStorageWithdraw,
+  useGraphStorageUnregister,
+} from '../../integrations/near-graph';
 import { MethodCard } from '../../components/method-card';
 import { ResponsePanel } from '../../components/response-panel';
 
@@ -14,6 +21,10 @@ function GraphPage() {
   const [response, setResponse] = useState<unknown>(null);
   const graph = useGraphInstance();
   const graphSetMutation = useGraphSet();
+  const grantWritePermissionMutation = useGraphGrantWritePermission();
+  const storageDepositMutation = useGraphStorageDeposit();
+  const storageWithdrawMutation = useGraphStorageWithdraw();
+  const storageUnregisterMutation = useGraphStorageUnregister();
 
   const methods = [
     {
@@ -186,6 +197,223 @@ function GraphPage() {
           Record<string, unknown>
         >;
         return graphSetMutation.mutateAsync(data);
+      },
+    },
+    {
+      name: 'getAccounts',
+      description: 'Get paginated list of accounts',
+      fields: [
+        {
+          name: 'fromIndex',
+          label: 'From Index',
+          type: 'number' as const,
+          placeholder: '0',
+          required: false,
+        },
+        {
+          name: 'limit',
+          label: 'Limit',
+          type: 'number' as const,
+          placeholder: '10',
+          required: false,
+        },
+      ],
+      requiresWallet: false,
+      execute: async (params: Record<string, string>) => {
+        return graph.getAccounts({
+          fromIndex: params.fromIndex ? parseInt(params.fromIndex) : undefined,
+          limit: params.limit ? parseInt(params.limit) : undefined,
+        });
+      },
+    },
+    {
+      name: 'getNode',
+      description: 'Get node by ID with pagination',
+      fields: [
+        {
+          name: 'nodeId',
+          label: 'Node ID',
+          type: 'number' as const,
+          placeholder: '1',
+          required: true,
+        },
+        {
+          name: 'fromIndex',
+          label: 'From Index',
+          type: 'number' as const,
+          placeholder: '0',
+          required: false,
+        },
+        {
+          name: 'limit',
+          label: 'Limit',
+          type: 'number' as const,
+          placeholder: '10',
+          required: false,
+        },
+      ],
+      requiresWallet: false,
+      execute: async (params: Record<string, string>) => {
+        return graph.getNode({
+          nodeId: parseInt(params.nodeId),
+          fromIndex: params.fromIndex ? parseInt(params.fromIndex) : undefined,
+          limit: params.limit ? parseInt(params.limit) : undefined,
+        });
+      },
+    },
+    {
+      name: 'getNodes',
+      description: 'Get paginated list of nodes',
+      fields: [
+        {
+          name: 'fromIndex',
+          label: 'From Index',
+          type: 'number' as const,
+          placeholder: '0',
+          required: false,
+        },
+        {
+          name: 'limit',
+          label: 'Limit',
+          type: 'number' as const,
+          placeholder: '10',
+          required: false,
+        },
+      ],
+      requiresWallet: false,
+      execute: async (params: Record<string, string>) => {
+        return graph.getNodes({
+          fromIndex: params.fromIndex ? parseInt(params.fromIndex) : undefined,
+          limit: params.limit ? parseInt(params.limit) : undefined,
+        });
+      },
+    },
+    {
+      name: 'getNodeCount',
+      description: 'Get total node count',
+      fields: [],
+      requiresWallet: false,
+      execute: async () => {
+        return graph.getNodeCount();
+      },
+    },
+    {
+      name: 'grantWritePermission',
+      description: 'Grant write permission for keys (requires wallet)',
+      fields: [
+        {
+          name: 'keys',
+          label: 'Keys (comma-separated)',
+          type: 'text' as const,
+          placeholder: 'alice.near/profile/name, alice.near/profile/bio',
+          required: true,
+        },
+        {
+          name: 'granteeAccountId',
+          label: 'Grantee Account ID',
+          type: 'text' as const,
+          placeholder: 'bob.near',
+          required: false,
+        },
+        {
+          name: 'granteePublicKey',
+          label: 'Grantee Public Key',
+          type: 'text' as const,
+          placeholder: 'ed25519:...',
+          required: false,
+        },
+      ],
+      requiresWallet: true,
+      execute: async (params: Record<string, string>) => {
+        if (!accountId) throw new Error('Wallet not connected');
+        const keys = params.keys.split(',').map((k) => k.trim());
+        return grantWritePermissionMutation.mutateAsync({
+          keys,
+          granteeAccountId: params.granteeAccountId || undefined,
+          granteePublicKey: params.granteePublicKey || undefined,
+        });
+      },
+    },
+    {
+      name: 'storageDeposit',
+      description: 'Deposit storage for an account (requires wallet)',
+      fields: [
+        {
+          name: 'accountId',
+          label: 'Account ID (optional, defaults to signer)',
+          type: 'text' as const,
+          placeholder: 'alice.near',
+          required: false,
+        },
+        {
+          name: 'deposit',
+          label: 'Deposit Amount (in yoctoNEAR)',
+          type: 'text' as const,
+          placeholder: '10000000000000000000000',
+          required: true,
+        },
+        {
+          name: 'registrationOnly',
+          label: 'Registration Only',
+          type: 'text' as const,
+          placeholder: 'true or false',
+          required: false,
+        },
+      ],
+      requiresWallet: true,
+      execute: async (params: Record<string, string>) => {
+        if (!accountId) throw new Error('Wallet not connected');
+        return storageDepositMutation.mutateAsync({
+          accountId: params.accountId || undefined,
+          deposit: params.deposit,
+          registrationOnly:
+            params.registrationOnly === 'true' ? true : undefined,
+        });
+      },
+    },
+    {
+      name: 'storageWithdraw',
+      description: 'Withdraw available storage (requires wallet)',
+      fields: [
+        {
+          name: 'amount',
+          label: 'Amount (optional, defaults to all available)',
+          type: 'text' as const,
+          placeholder: '10000000000000000000000',
+          required: false,
+        },
+      ],
+      requiresWallet: true,
+      execute: async (params: Record<string, string>) => {
+        if (!accountId) throw new Error('Wallet not connected');
+        return storageWithdrawMutation.mutateAsync({
+          amount: params.amount || undefined,
+        });
+      },
+    },
+    {
+      name: 'storageUnregister',
+      description: 'Unregister storage (requires wallet)',
+      fields: [
+        {
+          name: 'force',
+          label: 'Force',
+          type: 'text' as const,
+          placeholder: 'true or false',
+          required: false,
+        },
+      ],
+      requiresWallet: true,
+      execute: async (params: Record<string, string>) => {
+        if (!accountId) throw new Error('Wallet not connected');
+        return storageUnregisterMutation.mutateAsync({
+          force:
+            params.force === 'true'
+              ? true
+              : params.force === 'false'
+                ? false
+                : undefined,
+        });
       },
     },
   ];

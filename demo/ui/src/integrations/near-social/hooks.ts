@@ -51,7 +51,7 @@ export function useFollowers(
 export function useFollowing(
   accountId: string,
   options?: Omit<
-    UseQueryOptions<Record<string, unknown>>,
+    UseQueryOptions<Record<string, unknown> | null>,
     'queryKey' | 'queryFn'
   >
 ) {
@@ -137,5 +137,84 @@ export function useSetProfile() {
         });
       }
     },
+  });
+}
+
+export function usePost(
+  accountId: string,
+  blockHeight: number,
+  options?: Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+
+  return useQuery({
+    queryKey: socialKeys.post(accountId, blockHeight),
+    queryFn: () => social.getPost(accountId, blockHeight),
+    enabled: !!accountId && !!blockHeight,
+    ...options,
+  });
+}
+
+export function useCreatePost() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async (post: {
+      main: string;
+      image?: { ipfs_cid?: string; url?: string };
+      [key: string]: unknown;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.createPost(accountId, post);
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
+  });
+}
+
+export function useLike() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async (item: {
+      type: string;
+      path: string;
+      blockHeight: number;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.like(accountId, item);
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
+  });
+}
+
+export function useLikes(
+  item: { type: string; path: string; blockHeight: number } | null,
+  options?: Omit<UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+
+  return useQuery({
+    queryKey: socialKeys.likes(
+      item?.type || '',
+      item?.path || '',
+      item?.blockHeight || 0
+    ),
+    queryFn: () => social.getLikes(item!),
+    enabled: !!item,
+    ...options,
   });
 }

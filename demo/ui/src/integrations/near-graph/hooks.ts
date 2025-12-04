@@ -134,6 +134,63 @@ export function useGraphWritePermission(
   });
 }
 
+export function useGraphAccounts(
+  fromIndex?: number,
+  limit?: number,
+  options?: Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
+) {
+  const graph = useGraphInstance();
+
+  return useQuery({
+    queryKey: graphKeys.accounts(fromIndex, limit),
+    queryFn: () => graph.getAccounts({ fromIndex, limit }),
+    ...options,
+  });
+}
+
+export function useGraphNode(
+  nodeId: number,
+  fromIndex?: number,
+  limit?: number,
+  options?: Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
+) {
+  const graph = useGraphInstance();
+
+  return useQuery({
+    queryKey: graphKeys.node(nodeId, fromIndex, limit),
+    queryFn: () => graph.getNode({ nodeId, fromIndex, limit }),
+    enabled: nodeId !== undefined,
+    ...options,
+  });
+}
+
+export function useGraphNodes(
+  fromIndex?: number,
+  limit?: number,
+  options?: Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
+) {
+  const graph = useGraphInstance();
+
+  return useQuery({
+    queryKey: graphKeys.nodes(fromIndex, limit),
+    queryFn: () => graph.getNodes({ fromIndex, limit }),
+    ...options,
+  });
+}
+
+export function useGraphNodeCount(
+  options?: Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
+) {
+  const graph = useGraphInstance();
+
+  return useQuery({
+    queryKey: graphKeys.nodeCount(),
+    queryFn: () => graph.getNodeCount(),
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
 export function useGraphSet() {
   const queryClient = useQueryClient();
   const { accountId } = useWallet();
@@ -149,6 +206,102 @@ export function useGraphSet() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: graphKeys.all });
       queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
+  });
+}
+
+export function useGraphGrantWritePermission() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const graph = useGraphInstance();
+
+  return useMutation({
+    mutationFn: async (params: {
+      keys: string[];
+      granteeAccountId?: string;
+      granteePublicKey?: string;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await graph.grantWritePermission({
+        signerId: accountId,
+        ...params,
+      });
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: graphKeys.all });
+    },
+  });
+}
+
+export function useGraphStorageDeposit() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const graph = useGraphInstance();
+
+  return useMutation({
+    mutationFn: async (params: {
+      accountId?: string;
+      deposit: string;
+      registrationOnly?: boolean;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await graph.storageDeposit({
+        signerId: accountId,
+        ...params,
+      });
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: graphKeys.all });
+    },
+  });
+}
+
+export function useGraphStorageWithdraw() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const graph = useGraphInstance();
+
+  return useMutation({
+    mutationFn: async (params: { amount?: string }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await graph.storageWithdraw({
+        signerId: accountId,
+        ...params,
+      });
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: graphKeys.all });
+    },
+  });
+}
+
+export function useGraphStorageUnregister() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const graph = useGraphInstance();
+
+  return useMutation({
+    mutationFn: async (params: { force?: boolean }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await graph.storageUnregister({
+        signerId: accountId,
+        ...params,
+      });
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: graphKeys.all });
     },
   });
 }
