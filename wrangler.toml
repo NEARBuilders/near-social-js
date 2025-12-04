@@ -1,0 +1,11 @@
+name = "near-social-js-demo"
+compatibility_date = "2024-12-01"
+
+pages_build_output_dir = "demo/ui/dist"
+
+[build]
+command = "bun run build:demo"
+cwd = ""
+
+[build.upload]
+format = "service-worker"
