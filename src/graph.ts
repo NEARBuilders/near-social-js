@@ -1,4 +1,4 @@
-import { Near, Amount, Network } from 'near-kit';
+import { Amount, Near, Network } from 'near-kit';
 import { DEFAULT_API_SERVER, DEFAULT_CONTRACT_ID } from './constants';
 import { InvalidAccountIdError, KeyNotAllowedError } from './errors';
 import type {
@@ -16,7 +16,8 @@ import type {
   StorageBalance,
   StorageBalanceResult,
   StorageDepositOptions,
-  StorageWithdrawOptions,
+  StorageUnregisterOptions,
+  StorageWithdrawOptions
 } from './types';
 import {
   calculateRequiredDeposit,
@@ -401,5 +402,14 @@ export class Graph {
         { ...(amount && { amount }) },
         { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
       );
+  }
+
+  async storageUnregister({ signerId, force }: StorageUnregisterOptions) {
+    return this.near.transaction(signerId).functionCall(
+      this.contractId,
+      'storage_unregister',
+      { ...(force !== undefined && { force }) },
+      { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
+    );
   }
 }

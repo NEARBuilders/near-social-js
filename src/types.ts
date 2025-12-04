@@ -68,6 +68,11 @@ export interface StorageWithdrawOptions {
   amount?: string;
 }
 
+export interface StorageUnregisterOptions {
+  signerId: string;
+  force?: boolean;
+}
+
 export interface StorageBalance {
   available: bigint;
   total: bigint;

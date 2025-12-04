@@ -83,7 +83,7 @@
   },
   "dependencies": {
     "bignumber.js": "^9.3.1",
-    "near-kit": "^0.5.2"
+    "near-kit": "^0.6.0"
   },
   "resolutions": {
     "braces": "^3.0.3",
