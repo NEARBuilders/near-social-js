@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NEARBuilders/near-social-js"
+    "url": "git+https://github.com/NEARBuilders/near-social-js.git"
   },
   "contributors": [
     {
