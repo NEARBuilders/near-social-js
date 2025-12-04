@@ -4,13 +4,58 @@ slug: /
 
 # Overview
 
-import TOCInline from '@theme/TOCInline';
+A JavaScript SDK for interacting with the NEAR Social graph database contract (`social.near`) with helper functions for typical social features.
 
-<TOCInline
-  maxHeadingLevel={4}
-  toc={toc}
-/>
+## Architecture
 
-## Introduction
+The SDK provides two main classes:
 
-A JavaScript SDK for interacting with the social contract (social.near) with helper functions for typical social features.
+### `Graph` (Low-Level)
+
+Direct interface to the social DB contract. Use this for:
+- Custom data storage patterns
+- Advanced queries with block heights
+- Storage management
+- Write permission management
+
+### `Social` (High-Level)
+
+Extends `Graph` with convenience methods for common social features:
+- Profile management
+- Posts and content
+- Following/followers
+- Likes and interactions
+
+## Quick Start
+
+```typescript
+import { Social } from 'near-social-js';
+
+const social = new Social();
+
+// Get a profile
+const profile = await social.getProfile('alice.near');
+
+// Create a post (requires signing)
+const tx = await social.createPost('alice.near', {
+  main: 'Hello NEAR!',
+});
+await tx.send();
+
+// Follow someone
+const followTx = await social.follow('alice.near', 'bob.near');
+await followTx.send();
+```
+
+## Installation
+
+```bash npm2yarn
+npm install near-social-js
+```
+
+## Key Features
+
+- **Simple API**: High-level methods for common social operations
+- **Flexible**: Low-level `Graph` class for custom implementations
+- **TypeScript**: Full type definitions included
+- **Lightweight**: Built on `near-kit` for minimal dependencies

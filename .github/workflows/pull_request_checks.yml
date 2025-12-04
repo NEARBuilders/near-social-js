@@ -14,8 +14,8 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
 
   ##
   # lint, build documentation, build package and test
@@ -28,10 +28,10 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
       - name: "👕 Lint"
-        run: yarn lint
+        run: bun run lint
 
   build_documenation:
     name: "Build Documentation"
@@ -40,10 +40,10 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
       - name: "🏗️ Build"
-        run: yarn docs:build
+        run: bun run docs:build
 
   build_pakage:
     name: "Build Package"
@@ -52,10 +52,10 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
       - name: "🏗️ Build"
-        run: yarn build
+        run: bun run build
 
   test:
     name: "Test"
@@ -64,7 +64,7 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
       - name: "🧪 Test"
-        run: yarn test
+        run: bun run test

@@ -1,0 +1,186 @@
+# Cookbook
+
+Common recipes for building with `near-social-js`.
+
+:::tip For AI Assistants
+Download the condensed context file: [LLM.txt](/LLM.txt)
+:::
+
+## Profiles
+
+### Get a Profile
+
+```typescript
+import { Social } from 'near-social-js';
+
+const social = new Social();
+const profile = await social.getProfile('alice.near');
+
+console.log(profile?.name);        // "Alice"
+console.log(profile?.description); // "Builder on NEAR"
+console.log(profile?.image);       // { ipfs_cid: "..." }
+```
+
+### Update a Profile
+
+```typescript
+const tx = await social.setProfile('alice.near', {
+  name: 'Alice',
+  description: 'Building on NEAR',
+  image: { ipfs_cid: 'bafkrei...' },
+  linktree: { twitter: 'alice', github: 'alice' },
+  tags: { developer: '', rust: '' },
+});
+await tx.send();
+```
+
+## Posts
+
+### Create a Post
+
+```typescript
+const tx = await social.createPost('alice.near', {
+  main: 'Hello NEAR! 🚀',
+});
+await tx.send();
+```
+
+### Get a Post
+
+```typescript
+const post = await social.getPost('alice.near', 123456789);
+console.log(post?.main); // "Hello NEAR! 🚀"
+```
+
+## Social Graph
+
+### Follow an Account
+
+```typescript
+const tx = await social.follow('alice.near', 'bob.near');
+await tx.send();
+```
+
+### Unfollow an Account
+
+```typescript
+const tx = await social.unfollow('alice.near', 'bob.near');
+await tx.send();
+```
+
+### Get Following
+
+```typescript
+const following = await social.getFollowing('alice.near');
+// { "bob.near": "", "charlie.near": "" }
+```
+
+### Get Followers
+
+```typescript
+const followers = await social.getFollowers('alice.near');
+// { "dave.near": "", "eve.near": "" }
+```
+
+## Likes
+
+### Like a Post
+
+```typescript
+const item = {
+  type: 'social',
+  path: 'bob.near/post/main',
+  blockHeight: 123456789,
+};
+
+const tx = await social.like('alice.near', item);
+await tx.send();
+```
+
+### Get Likes
+
+```typescript
+const likes = await social.getLikes(item);
+// Array of index entries
+```
+
+## Low-Level Access
+
+Use `Graph` for direct contract access:
+
+### Read Any Data
+
+```typescript
+import { Graph } from 'near-social-js';
+
+const graph = new Graph();
+const data = await graph.get({
+  keys: ['alice.near/profile/**', 'bob.near/widget/*'],
+});
+```
+
+### Store Custom Data
+
+```typescript
+const tx = await graph.set({
+  signerId: 'alice.near',
+  data: {
+    'alice.near': {
+      myApp: {
+        settings: { theme: 'dark', notifications: true },
+      },
+    },
+  },
+});
+await tx.send();
+```
+
+### Query Index
+
+```typescript
+const posts = await graph.index({
+  action: 'post',
+  key: 'main',
+  order: 'desc',
+  limit: 20,
+});
+```
+
+## Data Patterns
+
+### Key Structure
+
+Data is stored hierarchically: `{accountId}/{category}/{key}`
+
+| Type | Path Example |
+|------|--------------|
+| Profile | `alice.near/profile/name` |
+| Post | `alice.near/post/main` |
+| Widget | `alice.near/widget/MyWidget` |
+| Follow | `alice.near/graph/follow/bob.near` |
+
+### Wildcards
+
+- `*` — Match one level
+- `**` — Match all nested levels
+
+```typescript
+// Get all profile fields
+await graph.get({ keys: ['alice.near/profile/*'] });
+
+// Get entire profile including nested
+await graph.get({ keys: ['alice.near/profile/**'] });
+
+// Get all widgets from all accounts
+await graph.get({ keys: ['*/widget/*'] });
+```
+
+### Index Actions
+
+| Action | Description |
+|--------|-------------|
+| `post` | Posts feed |
+| `like` | Likes on items |
+| `comment` | Comments on posts |
+| `graph` | Follow/unfollow events |
+| `notify` | Notifications |

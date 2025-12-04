@@ -17,8 +17,8 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v4
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
 
   ##
   # release
@@ -42,10 +42,10 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_READ_AND_WRITE_PACKAGES_TOKEN }}" >> .npmrc
           echo "@builddao:registry=https://registry.npmjs.org" >> .npmrc
           echo "access=public" >> .npmrc
-      - name: "🧶 Setup Yarn Dependencies"
-        uses: ./.github/actions/use-yarn-dependencies
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
       - name: "🏗️ Build"
-        run: yarn build
+        run: bun run build
       - name: "🔖 Release"
         env:
           # appears on the release commits
@@ -55,4 +55,4 @@ jobs:
           GIT_COMMITTER_EMAIL: tech@nearbuilders.org
           # used to push the release commit and create the tags
           GITHUB_TOKEN: ${{ secrets.GH_READ_AND_WRITE_REPOS_TOKEN }}
-        run: yarn semantic-release
+        run: bun run semantic-release

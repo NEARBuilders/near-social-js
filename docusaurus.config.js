@@ -30,8 +30,12 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'throw',
   onDuplicateRoutes: 'throw',
   organizationName: 'NEARBuilders',
   projectName: 'near-social-js',
@@ -130,15 +134,15 @@ const config = {
               },
               {
                 label: 'Usage',
-                to: 'usage/index',
+                to: '/usage',
               },
               {
-                label: 'Advanced',
-                to: 'advanced/index',
+                label: 'Cookbook',
+                to: '/cookbook',
               },
               {
                 label: 'API Reference',
-                to: 'api-reference/index',
+                to: '/api-reference',
               },
             ],
           },

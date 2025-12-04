@@ -1,35 +1,21 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR=$(dirname "${0}")
+INFO_PREFIX="[\033[1;94mINFO\033[0m]"
+ERROR_PREFIX="[\033[1;91mERROR\033[0m]"
 
-source "${SCRIPT_DIR}/set_vars.sh"
-
-# Public: Adds the latest version to the issue templates.
-#
-# $1 - The version to add.
-#
-# Examples
-#
-#   ./bin/update_issue_templates.sh "1.0.0"
-#
-# Returns exit code 0 if successful, or 1 if the semantic version is incorrectly formatted.
 function main {
   local version_included
 
-  set_vars
-
   if [ -z "${1}" ]; then
-    printf "%b no version specified, use: ./bin/update_issue_templates.sh [version] \n" "${ERROR_PREFIX}"
+    printf "%b no version specified, use: ./scripts/update_issue_templates.sh [version] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
-  # check the input is in semantic version format
   if [[ ! "${1}" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
     printf "%b invalid semantic version, got '${1}', but should be in the format '1.0.0' \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
-  # check the input is not a beta release
   if [[ "${1}" =~ ^[0-9]+\.[0-9]+\.[0-9]-beta+ ]]; then
     printf "%b pre-release versions should not be added, skipping \n" "${INFO_PREFIX}"
     exit 0
@@ -48,5 +34,4 @@ function main {
   exit 0
 }
 
-# and so, it begins...
 main "$1"
