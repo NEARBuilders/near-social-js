@@ -41,6 +41,8 @@
   "scripts": {
     "build": "tsup",
     "build:demo": "cd demo/ui && bun install && bun run build",
+    "deploy:demo": "bun run build:demo && wrangler pages deploy demo/ui/dist --project-name=near-social-js-demo",
+    "deploy:demo:preview": "bun run build:demo && wrangler pages deploy demo/ui/dist --project-name=near-social-js-demo --branch=preview",
     "docs:build": "docusaurus build --out-dir .docs",
     "docs:serve": "docusaurus serve --dir .docs --no-open",
     "docs:start": "docusaurus start --no-open --port 8080",
