@@ -1,78 +1,121 @@
-import { Effect } from "every-plugin/effect";
-import { describe, expect, it } from "vitest";
-import { TemplateService } from "@/service";
+import { describe, expect, it, vi, beforeEach } from "vitest";
+import { RelayerService } from "@/service";
 
-describe("TemplateService", () => {
-  const service = new TemplateService(
-    "https://api.example.com",
-    "test-api-key",
-    5000
-  );
+const mockSend = vi.fn();
+const mockFunctionCall = vi.fn(() => ({ send: mockSend }));
+const mockSignedDelegateAction = vi.fn(() => ({ send: mockSend }));
+const mockTransaction = vi.fn(() => ({
+  functionCall: mockFunctionCall,
+  signedDelegateAction: mockSignedDelegateAction,
+}));
 
-  describe("getById", () => {
-    it("should fetch item by id successfully", async () => {
-      const result = await Effect.runPromise(service.getById("test-123"));
+const mockStorageBalanceOf = vi.fn();
+
+vi.mock("near-kit", () => ({
+  Near: vi.fn().mockImplementation(() => ({
+    transaction: mockTransaction,
+  })),
+  decodeSignedDelegateAction: vi.fn((payload: string) => ({
+    decoded: true,
+    payload,
+  })),
+}));
+
+vi.mock("near-social-js", () => ({
+  Graph: vi.fn().mockImplementation(() => ({
+    storageBalanceOf: mockStorageBalanceOf,
+  })),
+}));
+
+describe("RelayerService", () => {
+  let service: RelayerService;
+  const mockNear = {
+    transaction: mockTransaction,
+  };
+  const relayerAccountId = "relayer.near";
+  const contractId = "social.near";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    service = new RelayerService(mockNear as any, relayerAccountId, contractId);
+  });
+
+  describe("ensureStorageDeposit", () => {
+    it("should return hasStorage: true when account already has storage", async () => {
+      mockStorageBalanceOf.mockResolvedValue({
+        total: "1000000000000000000000000",
+        available: "500000000000000000000000",
+      });
+
+      const result = await service.ensureStorageDeposit("user.near");
 
       expect(result).toEqual({
-        id: "test-123",
-        title: "Item test-123",
-        createdAt: expect.any(String),
+        accountId: "user.near",
+        hasStorage: true,
       });
+      expect(mockTransaction).not.toHaveBeenCalled();
     });
 
-    it("should handle not found error", async () => {
-      await expect(
-        Effect.runPromise(service.getById("not-found"))
-      ).rejects.toThrow("Failed to fetch item: Item not found");
+    it("should deposit storage when account has no storage", async () => {
+      mockStorageBalanceOf.mockResolvedValue(null);
+      mockSend.mockResolvedValue({
+        transaction: { hash: "tx-hash-123" },
+      });
+
+      const result = await service.ensureStorageDeposit("user.near");
+
+      expect(result).toEqual({
+        accountId: "user.near",
+        hasStorage: false,
+        depositTxHash: "tx-hash-123",
+      });
+      expect(mockTransaction).toHaveBeenCalledWith(relayerAccountId);
+      expect(mockFunctionCall).toHaveBeenCalledWith(
+        contractId,
+        "storage_deposit",
+        { account_id: "user.near" },
+        { gas: "30 Tgas", attachedDeposit: BigInt("500000000000000000000000") }
+      );
+      expect(mockSend).toHaveBeenCalled();
+    });
+
+    it("should deposit storage when account has zero balance", async () => {
+      mockStorageBalanceOf.mockResolvedValue({
+        total: "0",
+        available: "0",
+      });
+      mockSend.mockResolvedValue({
+        transaction: { hash: "tx-hash-456" },
+      });
+
+      const result = await service.ensureStorageDeposit("newuser.near");
+
+      expect(result).toEqual({
+        accountId: "newuser.near",
+        hasStorage: false,
+        depositTxHash: "tx-hash-456",
+      });
     });
   });
 
-  describe("search", () => {
-    it("should return search results as async generator", async () => {
-      const generator = await Effect.runPromise(
-        service.search("test-query", 3)
-      );
-
-      const results = [];
-      for await (const result of generator) {
-        results.push(result);
-      }
-
-      expect(results).toHaveLength(3);
-      expect(results[0]).toEqual({
-        item: {
-          id: "test-query-0",
-          title: "test-query result 1",
-          createdAt: expect.any(String),
-        },
-        score: 1,
+  describe("submitDelegateAction", () => {
+    it("should decode and submit a signed delegate action", async () => {
+      const mockPayload = "base64-encoded-payload";
+      mockSend.mockResolvedValue({
+        transaction: { hash: "delegate-tx-hash" },
       });
-      expect(results[1]?.score).toBe(0.9);
-      expect(results[2]?.score).toBe(0.8);
-    });
 
-    it("should respect limit parameter", async () => {
-      const generator = await Effect.runPromise(
-        service.search("limited", 2)
-      );
-
-      const results = [];
-      for await (const result of generator) {
-        results.push(result);
-      }
-
-      expect(results).toHaveLength(2);
-    });
-  });
-
-  describe("ping", () => {
-    it("should return healthy status", async () => {
-      const result = await Effect.runPromise(service.ping());
+      const result = await service.submitDelegateAction(mockPayload);
 
       expect(result).toEqual({
-        status: "ok",
-        timestamp: expect.any(String),
+        hash: "delegate-tx-hash",
       });
+      expect(mockTransaction).toHaveBeenCalledWith(relayerAccountId);
+      expect(mockSignedDelegateAction).toHaveBeenCalledWith({
+        decoded: true,
+        payload: mockPayload,
+      });
+      expect(mockSend).toHaveBeenCalled();
     });
   });
 });

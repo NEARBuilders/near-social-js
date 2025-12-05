@@ -1,115 +1,138 @@
-# Template Plugin
+# near-social-js Relayer
 
-A minimal, well-documented template for building every-plugin plugins. Use this as a starting point for integrating external APIs, libraries, or services.
+A relayer plugin for near-social-js that enables gasless transactions on NEAR Social (social.near).
 
-## What's Included
+## Features
 
-```bash
-src/
-├── contract.ts    # oRPC contract (3 procedures: getById, search, ping)
-├── service.ts     # Plain TypeScript class with Effect error handling
-├── index.ts       # Plugin implementation with createPlugin
-└── LLM.txt        # Comprehensive guide for building plugins
-```
+- **Connect**: Ensures users have storage deposit on social.near
+- **Publish**: Relays signed delegate actions (meta-transactions) for gasless social posts and profile updates
 
 ## Quick Start
 
-> **📖 For a comprehensive guide with code examples and patterns, see [LLM.txt](./LLM.txt)**
+### 1. Install dependencies
 
-1. **Copy the template:**
-
-   ```bash
-   npx degit near-everything/every-plugin/plugins/template my-plugin
-   cd my-plugin
-   ```
-
-2. **Update `contract.ts`:**
-   - Define your API procedures
-   - Create Zod schemas for inputs/outputs
-
-3. **Update `service.ts`:**
-   - Replace constructor params with your config needs
-   - Implement methods to call your external API
-   - Use `Effect.tryPromise` for error handling
-
-4. **Update `index.ts`:**
-   - Change plugin `id` to `@your-org/your-plugin`
-   - Update `variables` and `secrets` schemas
-   - Pass config to service constructor
-
-5. **Test locally:**
-
-   ```typescript
-   import { createLocalPluginRuntime } from "every-plugin/runtime";
-   import YourPlugin from "./src/index";
-
-   const runtime = createLocalPluginRuntime(
-     { registry: {} },
-     { "your-plugin": YourPlugin }
-   );
-
-   const { client } = await runtime.usePlugin("your-plugin", {
-     variables: { baseUrl: "https://api.example.com", timeout: 10000 },
-     secrets: { apiKey: "your-key" }
-   });
-
-   const result = await client.getById({ id: "123" });
-   ```
-
-## Documentation
-
-**👉 Read [LLM.txt](./LLM.txt) for the complete guide** - it includes:
-
-- Step-by-step plugin building tutorial
-- Advanced patterns (background processing, webhooks, pagination)
-- Error handling with CommonPluginErrors
-- Copy-paste code templates
-- Best practices and common pitfalls
-- Full working examples
-
-The LLM.txt file is designed to be used with AI coding assistants to help you build plugins quickly.
-
-## Example: The Template in Action
-
-```typescript
-// After building and deploying
-const runtime = createPluginRuntime({
-  registry: {
-    "template": {
-      remoteUrl: "https://cdn.example.com/template/remoteEntry.js",
-      version: "1.0.0"
-    }
-  },
-  secrets: { API_KEY: process.env.API_KEY }
-});
-
-const { client } = await runtime.usePlugin("template", {
-  variables: { 
-    baseUrl: "https://api.example.com",
-    timeout: 5000 
-  },
-  secrets: { apiKey: "{{API_KEY}}" }
-});
-
-// Single fetch
-const item = await client.getById({ id: "item-123" });
-console.log(item.title);
-
-// Streaming
-const stream = await client.search({ query: "typescript", limit: 10 });
-for await (const result of stream) {
-  console.log(`${result.score}: ${result.item.title}`);
-}
-
-// Health check
-const ping = await client.ping();
-console.log(ping.status); // "ok"
+```bash
+cd demo/relayer
+bun install
 ```
 
-## Related Examples
+### 2. Configure secrets
 
-- **[test-plugin](../../packages/core/__tests__/test-plugin/)** - Testing patterns
+Create a `.env` file or set environment variables:
+
+```bash
+RELAYER_ACCOUNT_ID=your-relayer.near
+RELAYER_PRIVATE_KEY=ed25519:...
+```
+
+### 3. Run the dev server
+
+```bash
+bun run dev
+```
+
+The relayer will be available at `http://localhost:3014/relayer`
+
+## API Endpoints
+
+### POST /connect
+
+Ensures an account has storage deposit on social.near.
+
+**Request:**
+```json
+{
+  "accountId": "user.near"
+}
+```
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "hasStorage": false,
+  "depositTxHash": "ABC123..."
+}
+```
+
+### POST /publish
+
+Submits a signed delegate action to the network.
+
+**Request:**
+```json
+{
+  "payload": "base64-encoded-signed-delegate-action"
+}
+```
+
+**Response:**
+```json
+{
+  "hash": "DEF456..."
+}
+```
+
+### GET /ping
+
+Health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
+```
+
+## Client Usage
+
+### Creating a delegate action for profile update
+
+```typescript
+import { Social } from "near-social-js";
+import { Near } from "near-kit";
+
+const near = new Near({
+  network: "mainnet",
+  wallet: yourWalletAdapter,
+});
+
+const social = new Social({ near });
+
+const tx = await social.setProfile("user.near", {
+  name: "My Name",
+  description: "Hello world",
+});
+
+const { payload } = await tx.delegate();
+
+const response = await fetch("http://localhost:3014/relayer/publish", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ payload }),
+});
+
+const result = await response.json();
+console.log("Transaction hash:", result.hash);
+```
+
+## Configuration
+
+### Variables
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `network` | `"mainnet" \| "testnet"` | `"mainnet"` | NEAR network to connect to |
+| `contractId` | `string` | `"social.near"` | Social contract ID |
+
+### Secrets
+
+| Name | Required | Description |
+|------|----------|-------------|
+| `relayerAccountId` | Yes | Account ID of the relayer (pays for gas) |
+| `relayerPrivateKey` | Yes | Private key of the relayer account |
 
 ## License
 
-Part of the [every-plugin](https://github.com/near-everything/every-plugin) framework.
+Part of the [near-social-js](https://github.com/NEARBuilders/near-social-js) library.

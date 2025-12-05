@@ -1,15 +1,19 @@
-import type { PluginConfigInput } from 'every-plugin';
-import type Plugin from './src/index';
-import packageJson from './package.json' with { type: 'json' };
+import type { PluginConfigInput } from "every-plugin";
+import type Plugin from "./src/index";
+import packageJson from "./package.json" with { type: "json" };
 
 export default {
   pluginId: packageJson.name,
   port: 3014,
-  prefix: '/template',
+  prefix: "/relayer",
   config: {
     variables: {
+      network: "mainnet",
+      contractId: "social.near",
     },
     secrets: {
-    }
-  } satisfies PluginConfigInput<typeof Plugin>
-}
+      relayerAccountId: "{{RELAYER_ACCOUNT_ID}}",
+      relayerPrivateKey: "{{RELAYER_PRIVATE_KEY}}",
+    },
+  } satisfies PluginConfigInput<typeof Plugin>,
+};

@@ -1,79 +1,65 @@
-import { Effect } from "every-plugin/effect";
-import type { z } from "every-plugin/zod";
+import { Near, decodeSignedDelegateAction } from "near-kit";
+import { Graph } from "near-social-js";
+import type { ConnectOutput, PublishOutput } from "./schema";
 
-// Import types from contract
-import type { ItemSchema, SearchResultSchema } from "./contract";
+const DEFAULT_STORAGE_DEPOSIT = "500000000000000000000000";
 
-// Infer the types from the schemas
-type Item = z.infer<typeof ItemSchema>;
-type SearchResult = z.infer<typeof SearchResultSchema>;
+export class RelayerService {
+  private readonly near: Near;
+  private readonly graph: Graph;
+  private readonly relayerAccountId: string;
+  private readonly contractId: string;
 
-/**
- * Template Service - Wraps external API calls with Effect-based error handling.
- */
-export class TemplateService {
   constructor(
-    private readonly baseUrl: string,
-    private readonly apiKey: string,
-    private readonly timeout: number
-  ) { }
-
-  getById(id: string) {
-    return Effect.tryPromise({
-      try: async () => {
-        // In a real plugin, use this.baseUrl, this.apiKey, this.timeout
-        console.log(`[TemplateService] Fetching from ${this.baseUrl} with timeout ${this.timeout}ms`);
-
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        if (id === "not-found") {
-          throw new Error("Item not found");
-        }
-
-        return {
-          id,
-          title: `Item ${id}`,
-          createdAt: new Date().toISOString(),
-        } satisfies Item;
-      },
-      catch: (error: unknown) => new Error(`Failed to fetch item: ${error instanceof Error ? error.message : String(error)}`)
+    near: Near,
+    relayerAccountId: string,
+    contractId: string = "social.near"
+  ) {
+    this.near = near;
+    this.relayerAccountId = relayerAccountId;
+    this.contractId = contractId;
+    this.graph = new Graph({
+      near,
+      contractId,
     });
   }
 
-  search(query: string, limit: number) {
-    return Effect.gen(function* () {
-      // Simulate API call
-      yield* Effect.sleep("100 millis");
+  async ensureStorageDeposit(accountId: string): Promise<ConnectOutput> {
+    const storageBalance = await this.graph.storageBalanceOf(accountId);
+    const hasStorage = storageBalance !== null && BigInt(storageBalance.total) > 0n;
 
-      // Mock streaming search results
-      const generator: AsyncGenerator<SearchResult> = (async function* () {
-        for (let i = 0; i < limit; i++) {
-          yield {
-            item: {
-              id: `${query}-${i}`,
-              title: `${query} result ${i + 1}`,
-              createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-            },
-            score: Math.max(0.1, 1 - i * 0.1),
-          };
-        }
-      })();
+    if (hasStorage) {
+      return {
+        accountId,
+        hasStorage: true,
+      };
+    }
 
-      return generator;
-    });
+    const result = await this.near
+      .transaction(this.relayerAccountId)
+      .functionCall(
+        this.contractId,
+        "storage_deposit",
+        { account_id: accountId },
+        { gas: "30 Tgas", attachedDeposit: BigInt(DEFAULT_STORAGE_DEPOSIT) }
+      )
+      .send();
+
+    return {
+      accountId,
+      hasStorage: false,
+      depositTxHash: result.transaction.hash,
+    };
   }
 
-  ping() {
-    return Effect.tryPromise({
-      try: async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
-        return {
-          status: "ok" as const,
-          timestamp: new Date().toISOString(),
-        };
-      },
-      catch: (error: unknown) => new Error(`Health check failed: ${error instanceof Error ? error.message : String(error)}`)
-    });
+  async submitDelegateAction(payload: string): Promise<PublishOutput> {
+    const signedDelegateAction = decodeSignedDelegateAction(payload);
+
+    const result = await this.near
+      .transaction(this.relayerAccountId)
+      .signedDelegateAction(signedDelegateAction)
+      .send();
+
+    return { hash: result.transaction.hash };
   }
 }

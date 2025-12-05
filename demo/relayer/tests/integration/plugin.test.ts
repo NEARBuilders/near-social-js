@@ -1,70 +1,96 @@
-import { describe, expect, it } from "vitest";
-import { getPluginClient } from "../setup";
+import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import { createPluginRuntime } from "every-plugin";
+import { Near, generateKey, type PrivateKey } from "near-kit";
+import { Social } from "near-social-js";
+import {
+  createTestSandbox,
+  stopTestSandbox,
+  type TestContext,
+} from "../../../../test/setup";
+import Plugin from "../../src/index";
 
-describe("Template Plugin Integration Tests", () => {
-  describe("getById procedure", () => {
-    it("should fetch item successfully", async () => {
-      const client = await getPluginClient();
+let ctx: TestContext;
+let pluginRuntime: ReturnType<typeof createPluginRuntime>;
+let relayerAccountId: string;
+let relayerPrivateKey: string;
+let userAccountId: string;
+let userNear: Near;
+let userSocial: Social;
+let sandboxRpcUrl: string;
 
-      const result = await client.getById({ id: "test-123" });
+beforeAll(async () => {
+  ctx = await createTestSandbox("social");
+  const { near, sandbox, contractId, rootAccountId } = ctx;
+  sandboxRpcUrl = sandbox.rpcUrl;
 
-      expect(result.item).toEqual({
-        id: "test-123",
-        title: "Item test-123",
-        createdAt: expect.any(String),
-      });
-    });
+  const relayerKey = generateKey();
+  relayerAccountId = `relayer.${rootAccountId}`;
+  relayerPrivateKey = relayerKey.secretKey;
 
-    it("should handle not found error", async () => {
-      const client = await getPluginClient();
+  await near
+    .transaction(rootAccountId)
+    .createAccount(relayerAccountId)
+    .transfer(relayerAccountId, "20 NEAR")
+    .addKey(relayerKey.publicKey.toString(), { type: "fullAccess" })
+    .send();
 
-      await expect(
-        client.getById({ id: "not-found" })
-      ).rejects.toThrow("Failed to fetch item: Item not found");
-    });
+  const userKey = generateKey();
+  userAccountId = `user.${rootAccountId}`;
+
+  await near
+    .transaction(rootAccountId)
+    .createAccount(userAccountId)
+    .transfer(userAccountId, "10 NEAR")
+    .addKey(userKey.publicKey.toString(), { type: "fullAccess" })
+    .send();
+
+  userNear = new Near({
+    network: sandbox,
+    privateKey: userKey.secretKey as PrivateKey,
+    defaultSignerId: userAccountId,
+    defaultWaitUntil: "FINAL",
   });
 
-  describe("search procedure", () => {
-    it("should stream search results", async () => {
-      const client = await getPluginClient();
-
-      const stream = await client.search({ query: "test-query", limit: 3 });
-
-      const results = [];
-      for await (const result of stream) {
-        results.push(result);
-      }
-
-      expect(results).toHaveLength(3);
-      expect(results[0]).toEqual({
-        item: {
-          id: "test-query-0",
-          title: "test-query result 1",
-          createdAt: expect.any(String),
-        },
-        score: 1,
-      });
-      expect(results[1]?.score).toBe(0.9);
-      expect(results[2]?.score).toBe(0.8);
-    });
-
-    it("should respect limit parameter", async () => {
-      const client = await getPluginClient();
-
-      const stream = await client.search({ query: "limited", limit: 2 });
-
-      const results = [];
-      for await (const result of stream) {
-        results.push(result);
-      }
-
-      expect(results).toHaveLength(2);
-    });
+  userSocial = new Social({
+    near: userNear,
+    contractId,
+    useApiServer: false,
   });
 
+  pluginRuntime = createPluginRuntime({
+    registry: {
+      "near-social-js-relayer": {
+        module: Plugin,
+      },
+    },
+    secrets: {
+      RELAYER_ACCOUNT_ID: relayerAccountId,
+      RELAYER_PRIVATE_KEY: relayerPrivateKey,
+    },
+  });
+}, 120000);
+
+afterAll(async () => {
+  if (pluginRuntime) {
+    await pluginRuntime.shutdown();
+  }
+  await stopTestSandbox(ctx);
+});
+
+describe("Relayer Plugin Integration Tests", () => {
   describe("ping procedure", () => {
     it("should return healthy status", async () => {
-      const client = await getPluginClient();
+      const { client } = await pluginRuntime.usePlugin("near-social-js-relayer", {
+        variables: {
+          network: "testnet",
+          contractId: ctx.contractId,
+          nodeUrl: sandboxRpcUrl,
+        },
+        secrets: {
+          relayerAccountId: "{{RELAYER_ACCOUNT_ID}}",
+          relayerPrivateKey: "{{RELAYER_PRIVATE_KEY}}",
+        },
+      });
 
       const result = await client.ping();
 
@@ -72,6 +98,64 @@ describe("Template Plugin Integration Tests", () => {
         status: "ok",
         timestamp: expect.any(String),
       });
+    });
+  });
+
+  describe("connect procedure", () => {
+    it("should ensure storage deposit for a new account", async () => {
+      const { client } = await pluginRuntime.usePlugin("near-social-js-relayer", {
+        variables: {
+          network: "testnet",
+          contractId: ctx.contractId,
+          nodeUrl: sandboxRpcUrl,
+        },
+        secrets: {
+          relayerAccountId: "{{RELAYER_ACCOUNT_ID}}",
+          relayerPrivateKey: "{{RELAYER_PRIVATE_KEY}}",
+        },
+      });
+
+      const result = await client.connect({ accountId: userAccountId });
+
+      expect(result.accountId).toBe(userAccountId);
+      expect(typeof result.hasStorage).toBe("boolean");
+      if (!result.hasStorage) {
+        expect(result.depositTxHash).toBeDefined();
+      }
+    });
+  });
+
+  describe("publish procedure", () => {
+    it("should relay a signed delegate action for profile update", async () => {
+      const { client } = await pluginRuntime.usePlugin("near-social-js-relayer", {
+        variables: {
+          network: "testnet",
+          contractId: ctx.contractId,
+          nodeUrl: sandboxRpcUrl,
+        },
+        secrets: {
+          relayerAccountId: "{{RELAYER_ACCOUNT_ID}}",
+          relayerPrivateKey: "{{RELAYER_PRIVATE_KEY}}",
+        },
+      });
+
+      await client.connect({ accountId: userAccountId });
+
+      const txBuilder = await userSocial.setProfile(userAccountId, {
+        name: "Relayed User",
+        description: "Profile set via relayer",
+      });
+
+      const { payload } = await txBuilder.delegate();
+
+      const result = await client.publish({ payload });
+
+      expect(result.hash).toBeDefined();
+      expect(typeof result.hash).toBe("string");
+
+      const profile = await userSocial.getProfile(userAccountId);
+      expect(profile?.name).toBe("Relayed User");
+      expect(profile?.description).toBe("Profile set via relayer");
     });
   });
 });
