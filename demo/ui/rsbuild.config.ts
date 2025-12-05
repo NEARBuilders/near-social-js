@@ -1,11 +1,61 @@
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
-import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
+import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
 import pkg from './package.json';
 
 export default defineConfig({
-  plugins: [pluginReact()],
+  plugins: [
+    pluginReact(),
+    pluginModuleFederation({
+      name: 'near_social_js',
+      filename: 'remoteEntry.js',
+      dts: false,
+      exposes: {
+        './App': './src/bootstrap.tsx',
+        './Router': './src/router.tsx',
+        './components': './src/components/index.ts',
+        './profile': './src/components/profile/index.ts',
+        './providers': './src/providers/index.tsx',
+        './hooks/social': './src/integrations/near-social/hooks.ts',
+        './hooks/graph': './src/integrations/near-graph/hooks.ts',
+        './hooks/wallet': './src/integrations/near-wallet/index.ts',
+        './types': './src/types/index.ts',
+      },
+      shared: {
+        react: {
+          singleton: true,
+          eager: true,
+          requiredVersion: pkg.dependencies.react,
+        },
+        'react-dom': {
+          singleton: true,
+          eager: true,
+          requiredVersion: pkg.dependencies['react-dom'],
+        },
+        '@tanstack/react-query': {
+          singleton: true,
+          eager: true,
+          requiredVersion: pkg.dependencies['@tanstack/react-query'],
+        },
+        '@tanstack/react-router': {
+          singleton: true,
+          eager: true,
+          requiredVersion: pkg.dependencies['@tanstack/react-router'],
+        },
+        '@hot-labs/near-connect': {
+          singleton: true,
+          eager: false,
+          requiredVersion: pkg.dependencies['@hot-labs/near-connect'],
+        },
+        'near-kit': {
+          singleton: true,
+          eager: false,
+          requiredVersion: pkg.dependencies['near-kit'],
+        },
+      },
+    }),
+  ],
   source: {
     entry: {
       index: './src/main.tsx',
@@ -15,14 +65,23 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': './src',
-      'near-social-js': '../../src/index.ts',
+      // we want this in dev but not remote
+      // 'near-social-js': '../../src/index.ts',
     },
   },
   html: {
     template: './index.html',
   },
+  dev: {
+    lazyCompilation: false,
+  },
   server: {
     port: 3000,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
   },
   tools: {
     rspack: {
@@ -42,52 +101,13 @@ export default defineConfig({
           target: 'react',
           autoCodeSplitting: true,
         }),
-        new ModuleFederationPlugin({
-          name: 'near_social_js',
-          filename: 'remoteEntry.js',
-          dts: false,
-          exposes: {
-            './App': './src/bootstrap.tsx',
-            './components': './src/components/index.ts',
-            './profile': './src/components/profile/index.ts',
-            './providers': './src/providers/index.tsx',
-            './hooks/social': './src/integrations/near-social/hooks.ts',
-            './hooks/graph': './src/integrations/near-graph/hooks.ts',
-            './hooks/wallet': './src/integrations/near-wallet/index.ts',
-            './types': './src/types/index.ts',
-          },
-          shared: {
-            react: {
-              singleton: true,
-              eager: true,
-              requiredVersion: pkg.dependencies.react,
-            },
-            'react-dom': {
-              singleton: true,
-              eager: true,
-              requiredVersion: pkg.dependencies['react-dom'],
-            },
-            '@tanstack/react-query': {
-              singleton: true,
-              eager: true,
-              requiredVersion: pkg.dependencies['@tanstack/react-query'],
-            },
-            '@tanstack/react-router': {
-              singleton: true,
-              eager: true,
-              requiredVersion: pkg.dependencies['@tanstack/react-router'],
-            },
-            'near-kit': {
-              singleton: true,
-              eager: true,
-              requiredVersion: pkg.dependencies['near-kit'],
-            },
-          },
-        }),
       ],
     },
   },
   output: {
     assetPrefix: 'auto',
+    filename: {
+      css: 'static/css/[name].css',
+    },
   },
 });

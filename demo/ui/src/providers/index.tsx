@@ -1,3 +1,5 @@
+import '../styles.css';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WalletProvider } from '../integrations/near-wallet';
 import type { Network } from 'near-kit';
