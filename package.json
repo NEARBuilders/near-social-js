@@ -1,7 +1,10 @@
 {
   "name": "near-social-js",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A JavaScript SDK for interacting with the NEAR Social graph database contract with helper functions for typical social features.",
+  "files": [
+    "dist"
+  ],
   "homepage": "https://nearbuilders.github.io/near-social-js/",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
