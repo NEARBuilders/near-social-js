@@ -18,12 +18,12 @@ export interface Profile {
 }
 
 export interface Post {
-  main: string;
+  text: string;
+  type?: string;
   image?: {
     ipfs_cid?: string;
     url?: string;
   };
-  [key: string]: unknown;
 }
 
 export type SocialOptions = GraphOptions;
@@ -68,12 +68,21 @@ export class Social extends Graph {
   }
 
   async createPost(signerId: string, post: Post) {
+    const { text, type = 'md', image } = post;
+    const mainContent: { text: string; type: string; image?: Post['image'] } = {
+      text,
+      type,
+    };
+    if (image) {
+      mainContent.image = image;
+    }
+
     return this.set({
       signerId,
       data: {
         [signerId]: {
           post: {
-            main: JSON.stringify(post),
+            main: JSON.stringify(mainContent),
           },
           index: {
             post: JSON.stringify({

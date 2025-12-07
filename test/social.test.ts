@@ -63,11 +63,75 @@ describe('Social - Post Methods', () => {
   describe('createPost', () => {
     it('should create a transaction builder for creating post', async () => {
       const txBuilder = await social.createPost(rootAccountId, {
-        main: 'Hello world!',
+        text: 'Hello world!',
       });
 
       expect(txBuilder).toBeDefined();
       expect(typeof txBuilder.send).toBe('function');
+    });
+
+    it('should create a post with proper structure', async () => {
+      const tx = await social.createPost(rootAccountId, {
+        text: 'Hello',
+        type: 'md',
+      });
+      await tx.send();
+
+      // Verify stored data matches expected structure
+      // The post should be stored with { text, type } JSON stringified in post/main
+      // and indexed with key "main" and value { type: "md" }
+      const result = await social.get({
+        keys: [`${rootAccountId}/post/main`],
+      });
+
+      expect(result).not.toBeNull();
+      const accountData = result![rootAccountId] as {
+        post?: { main?: string };
+      };
+      expect(accountData?.post?.main).toBeDefined();
+
+      const parsedPost = JSON.parse(accountData.post!.main!);
+      expect(parsedPost.text).toBe('Hello');
+      expect(parsedPost.type).toBe('md');
+    });
+
+    it('should default type to md when not provided', async () => {
+      const tx = await social.createPost(rootAccountId, {
+        text: 'Default type test',
+      });
+      await tx.send();
+
+      const result = await social.get({
+        keys: [`${rootAccountId}/post/main`],
+      });
+
+      expect(result).not.toBeNull();
+      const accountData = result![rootAccountId] as {
+        post?: { main?: string };
+      };
+      const parsedPost = JSON.parse(accountData.post!.main!);
+      expect(parsedPost.type).toBe('md');
+    });
+
+    it('should include image in post when provided', async () => {
+      const tx = await social.createPost(rootAccountId, {
+        text: 'Post with image',
+        type: 'md',
+        image: { url: 'https://example.com/image.png' },
+      });
+      await tx.send();
+
+      const result = await social.get({
+        keys: [`${rootAccountId}/post/main`],
+      });
+
+      expect(result).not.toBeNull();
+      const accountData = result![rootAccountId] as {
+        post?: { main?: string };
+      };
+      const parsedPost = JSON.parse(accountData.post!.main!);
+      expect(parsedPost.text).toBe('Post with image');
+      expect(parsedPost.image).toEqual({ url: 'https://example.com/image.png' });
     });
   });
 });
@@ -97,8 +161,8 @@ describe('Social - Follow Methods', () => {
       await txBuilder.send();
 
       const following = await social.getFollowing(rootAccountId);
-      expect(following).toBeDefined();
-      expect(following[targetAccountId]).toBeDefined();
+      expect(following).not.toBeNull();
+      expect(following![targetAccountId]).toBeDefined();
     });
   });
 

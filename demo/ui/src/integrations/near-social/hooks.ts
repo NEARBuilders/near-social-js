@@ -162,9 +162,9 @@ export function useCreatePost() {
 
   return useMutation({
     mutationFn: async (post: {
-      main: string;
+      text: string;
+      type?: string;
       image?: { ipfs_cid?: string; url?: string };
-      [key: string]: unknown;
     }) => {
       if (!accountId) {
         throw new Error('Wallet not connected');
