@@ -218,3 +218,44 @@ export function useLikes(
     ...options,
   });
 }
+
+export function useCreateComment() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async (comment: {
+      item: { type: string; path: string; blockHeight: number };
+      text: string;
+      image?: { ipfs_cid?: string; url?: string };
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.createComment(accountId, comment);
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
+  });
+}
+
+export function useComments(
+  item: { type: string; path: string; blockHeight: number } | null,
+  options?: Omit<UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+
+  return useQuery({
+    queryKey: socialKeys.comments(
+      item?.type || '',
+      item?.path || '',
+      item?.blockHeight || 0
+    ),
+    queryFn: () => social.getComments(item!),
+    enabled: !!item,
+    ...options,
+  });
+}

@@ -11,4 +11,6 @@ export const socialKeys = {
     [...socialKeys.all, 'post', accountId, blockHeight] as const,
   likes: (type: string, path: string, blockHeight: number) =>
     [...socialKeys.all, 'likes', type, path, blockHeight] as const,
+  comments: (type: string, path: string, blockHeight: number) =>
+    [...socialKeys.all, 'comments', type, path, blockHeight] as const,
 };

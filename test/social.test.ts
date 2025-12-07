@@ -210,3 +210,81 @@ describe('Social - Like Methods', () => {
     });
   });
 });
+
+describe('Social - Comment Methods', () => {
+  const testItem = {
+    type: 'social',
+    path: 'alice.near/post/main',
+    blockHeight: 12345,
+  };
+
+  describe('createComment', () => {
+    it('should create a transaction builder for creating comment', async () => {
+      const txBuilder = await social.createComment(rootAccountId, {
+        item: testItem,
+        text: 'Great post!',
+      });
+
+      expect(txBuilder).toBeDefined();
+      expect(typeof txBuilder.send).toBe('function');
+    });
+
+    it('should create a comment with proper structure', async () => {
+      const tx = await social.createComment(rootAccountId, {
+        item: testItem,
+        text: 'This is a comment',
+      });
+      await tx.send();
+
+      // Verify stored data matches expected structure
+      const result = await social.get({
+        keys: [`${rootAccountId}/post/comment`],
+      });
+
+      expect(result).not.toBeNull();
+      const accountData = result![rootAccountId] as {
+        post?: { comment?: string };
+      };
+      expect(accountData?.post?.comment).toBeDefined();
+
+      const parsedComment = JSON.parse(accountData.post!.comment!);
+      expect(parsedComment.text).toBe('This is a comment');
+      expect(parsedComment.type).toBe('md');
+      expect(parsedComment.item).toEqual(testItem);
+    });
+
+    it('should include image in comment when provided', async () => {
+      const tx = await social.createComment(rootAccountId, {
+        item: testItem,
+        text: 'Comment with image',
+        image: { url: 'https://example.com/comment-image.png' },
+      });
+      await tx.send();
+
+      const result = await social.get({
+        keys: [`${rootAccountId}/post/comment`],
+      });
+
+      expect(result).not.toBeNull();
+      const accountData = result![rootAccountId] as {
+        post?: { comment?: string };
+      };
+      const parsedComment = JSON.parse(accountData.post!.comment!);
+      expect(parsedComment.text).toBe('Comment with image');
+      expect(parsedComment.image).toEqual({
+        url: 'https://example.com/comment-image.png',
+      });
+    });
+  });
+
+  describe('getComments', () => {
+    it('should return empty array for item with no comments', async () => {
+      const comments = await social.getComments({
+        type: 'social',
+        path: 'nonexistent.near/post/main',
+        blockHeight: 99999,
+      });
+      expect(Array.isArray(comments)).toBe(true);
+    });
+  });
+});

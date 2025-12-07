@@ -11,6 +11,7 @@ import {
   useSocialInstance,
   useCreatePost,
   useLike,
+  useCreateComment,
 } from '../../integrations/near-social';
 import { ProfileCard } from '../../components/profile-card';
 import { ProfileAvatar } from '../../components/profile-avatar';
@@ -38,6 +39,7 @@ function SocialPage() {
   const social = useSocialInstance();
   const createPostMutation = useCreatePost();
   const likeMutation = useLike();
+  const createCommentMutation = useCreateComment();
 
   const handleLookup = () => {
     if (!searchInput) return;
@@ -405,6 +407,118 @@ function SocialPage() {
             isConnected={!!accountId}
             onExecute={async (params: Record<string, string>) => {
               return social.getLikes({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="createComment"
+            description="Create a comment on a post (requires wallet)"
+            fields={[
+              {
+                name: 'itemType',
+                label: 'Item Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'itemPath',
+                label: 'Item Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'itemBlockHeight',
+                label: 'Item Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+              {
+                name: 'text',
+                label: 'Comment Text',
+                type: 'textarea' as const,
+                placeholder: 'Great post!',
+                required: true,
+              },
+              {
+                name: 'imageUrl',
+                label: 'Image URL (optional)',
+                type: 'text' as const,
+                placeholder: 'https://example.com/image.png',
+                required: false,
+              },
+              {
+                name: 'imageCid',
+                label: 'Image IPFS CID (optional)',
+                type: 'text' as const,
+                placeholder: 'bafybei...',
+                required: false,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              const comment: {
+                item: { type: string; path: string; blockHeight: number };
+                text: string;
+                image?: { ipfs_cid?: string; url?: string };
+              } = {
+                item: {
+                  type: params.itemType,
+                  path: params.itemPath,
+                  blockHeight: parseInt(params.itemBlockHeight),
+                },
+                text: params.text,
+              };
+              if (params.imageUrl || params.imageCid) {
+                comment.image = {
+                  ...(params.imageUrl && { url: params.imageUrl }),
+                  ...(params.imageCid && { ipfs_cid: params.imageCid }),
+                };
+              }
+              return createCommentMutation.mutateAsync(comment);
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getComments"
+            description="Get comments for a post or item"
+            fields={[
+              {
+                name: 'type',
+                label: 'Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getComments({
                 type: params.type,
                 path: params.path,
                 blockHeight: parseInt(params.blockHeight),

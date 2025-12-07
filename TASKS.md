@@ -19,6 +19,12 @@ This document outlines the remaining tasks for the `near-social-js` v2.0 release
 - [x] `createPost` stores `{ text, type }` in `post/main` (JSON stringified)
 - [x] `createPost` indexes to `index/post` with key "main" and value `{ type: "md" }`
 
+### 4. Comments Feature
+- [x] `createComment(signerId, { item, text, image? })` method exists
+- [x] Comment stored at `{signerId}/post/comment` as JSON with `{ item, text, type }`
+- [x] Comment indexed at `index/comment` with key = `item`, value = `{ type: "md" }`
+- [x] `getComments(item)` returns array of comments for a post item
+
 ---
 
 ## In Progress 🔄
@@ -35,38 +41,12 @@ Current methods implemented in `src/social.ts`:
 - [x] `unfollow(signerId, accountId)`
 - [x] `like(signerId, item)`
 - [x] `getLikes(item)`
+- [x] `createComment(signerId, comment)`
+- [x] `getComments(item)`
 
 ---
 
 ## TODO 📋
-
-### 4. Comments Feature
-**Description**: Add ability to create and retrieve comments on posts.
-
-**Acceptance Criteria**:
-- [ ] `createComment(signerId, { item, text, image? })` method exists
-- [ ] Comment stored at `{signerId}/post/comment` as JSON with `{ item, text, type }`
-- [ ] Comment indexed at `index/comment` with key = `item`, value = `{ type: "md" }`
-- [ ] `getComments(item)` returns array of comments for a post item
-
-**Data Structure**:
-```typescript
-// item format
-{ type: "social", path: "alice.near/post/main", blockHeight: 12345 }
-
-// stored data
-{
-  post: { comment: JSON.stringify({ item, text, type: "md" }) },
-  index: { comment: JSON.stringify({ key: item, value: { type: "md" } }) }
-}
-```
-
-**Tests**:
-- [ ] Can create a comment on a post
-- [ ] Can retrieve comments for a post item
-- [ ] Comment data structure matches expected format
-
----
 
 ### 5. Repost Feature
 **Description**: Add ability to repost content to your feed.

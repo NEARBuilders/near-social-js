@@ -26,6 +26,21 @@ export interface Post {
   };
 }
 
+export interface CommentItem {
+  type: string;
+  path: string;
+  blockHeight: number;
+}
+
+export interface Comment {
+  item: CommentItem;
+  text: string;
+  image?: {
+    ipfs_cid?: string;
+    url?: string;
+  };
+}
+
 export type SocialOptions = GraphOptions;
 
 export class Social extends Graph {
@@ -94,6 +109,49 @@ export class Social extends Graph {
           },
         },
       },
+    });
+  }
+
+  async createComment(signerId: string, comment: Comment) {
+    const { item, text, image } = comment;
+    const commentContent: {
+      item: CommentItem;
+      text: string;
+      type: string;
+      image?: Comment['image'];
+    } = {
+      item,
+      text,
+      type: 'md',
+    };
+    if (image) {
+      commentContent.image = image;
+    }
+
+    return this.set({
+      signerId,
+      data: {
+        [signerId]: {
+          post: {
+            comment: JSON.stringify(commentContent),
+          },
+          index: {
+            comment: JSON.stringify({
+              key: item,
+              value: {
+                type: 'md',
+              },
+            }),
+          },
+        },
+      },
+    });
+  }
+
+  async getComments(item: CommentItem): Promise<unknown[]> {
+    return this.index({
+      action: 'comment',
+      key: item,
     });
   }
 
