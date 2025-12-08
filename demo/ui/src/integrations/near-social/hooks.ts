@@ -4,7 +4,13 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from '@tanstack/react-query';
-import { Social, type Profile } from 'near-social-js';
+import {
+  Social,
+  type Profile,
+  type IndexEntry,
+  type Notification,
+  type AccountFeedOptions,
+} from 'near-social-js';
 import { useWallet } from '../near-wallet';
 import { socialKeys } from './query-keys';
 import { useMemo } from 'react';
@@ -36,7 +42,7 @@ export function useProfile(
 
 export function useFollowers(
   accountId: string,
-  options?: Omit<UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<{ accountId: string }[]>, 'queryKey' | 'queryFn'>
 ) {
   const social = useSocialInstance();
 
@@ -143,15 +149,16 @@ export function useSetProfile() {
 export function usePost(
   accountId: string,
   blockHeight: number,
-  options?: Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
+  options?: { comments?: boolean } & Omit<UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>
 ) {
   const social = useSocialInstance();
+  const { comments, ...queryOptions } = options ?? {};
 
   return useQuery({
     queryKey: socialKeys.post(accountId, blockHeight),
-    queryFn: () => social.getPost(accountId, blockHeight),
+    queryFn: () => social.getPost(accountId, blockHeight, { comments }),
     enabled: !!accountId && !!blockHeight,
-    ...options,
+    ...queryOptions,
   });
 }
 
@@ -203,7 +210,7 @@ export function useLike() {
 
 export function useLikes(
   item: { type: string; path: string; blockHeight: number } | null,
-  options?: Omit<UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<IndexEntry[]>, 'queryKey' | 'queryFn'>
 ) {
   const social = useSocialInstance();
 
@@ -216,6 +223,29 @@ export function useLikes(
     queryFn: () => social.getLikes(item!),
     enabled: !!item,
     ...options,
+  });
+}
+
+export function useUnlike() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async (item: {
+      type: string;
+      path: string;
+      blockHeight: number;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.unlike(accountId, item);
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
   });
 }
 
@@ -244,7 +274,7 @@ export function useCreateComment() {
 
 export function useComments(
   item: { type: string; path: string; blockHeight: number } | null,
-  options?: Omit<UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<IndexEntry[]>, 'queryKey' | 'queryFn'>
 ) {
   const social = useSocialInstance();
 
@@ -257,5 +287,198 @@ export function useComments(
     queryFn: () => social.getComments(item!),
     enabled: !!item,
     ...options,
+  });
+}
+
+export function useRepost() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async (item: {
+      type: string;
+      path: string;
+      blockHeight: number;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.repost(accountId, item);
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
+  });
+}
+
+export function useReposts(
+  item: { type: string; path: string; blockHeight: number } | null,
+  options?: Omit<UseQueryOptions<IndexEntry[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+
+  return useQuery({
+    queryKey: socialKeys.reposts(
+      item?.type || '',
+      item?.path || '',
+      item?.blockHeight || 0
+    ),
+    queryFn: () => social.getReposts(item!),
+    enabled: !!item,
+    ...options,
+  });
+}
+
+// ============================================
+// Feed Hooks
+// ============================================
+
+export function useAccountFeed(
+  accountId: string,
+  options?: AccountFeedOptions & Omit<UseQueryOptions<IndexEntry[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+  const { limit, from, order, includeReplies, ...queryOptions } = options ?? {};
+
+  return useQuery({
+    queryKey: socialKeys.accountFeed(accountId, limit, from, order, includeReplies),
+    queryFn: () => social.getAccountFeed(accountId, { limit, from, order, includeReplies }),
+    enabled: !!accountId,
+    ...queryOptions,
+  });
+}
+
+export function useHashtagFeed(
+  hashtag: string,
+  options?: {
+    limit?: number;
+    from?: number;
+    order?: 'asc' | 'desc';
+  } & Omit<UseQueryOptions<IndexEntry[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+  const { limit, from, order, ...queryOptions } = options ?? {};
+
+  return useQuery({
+    queryKey: socialKeys.hashtagFeed(hashtag, limit, from, order),
+    queryFn: () => social.getHashtagFeed(hashtag, { limit, from, order }),
+    enabled: !!hashtag,
+    ...queryOptions,
+  });
+}
+
+export function useActivityFeed(
+  options?: {
+    limit?: number;
+    from?: number;
+    order?: 'asc' | 'desc';
+  } & Omit<UseQueryOptions<IndexEntry[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+  const { limit, from, order, ...queryOptions } = options ?? {};
+
+  return useQuery({
+    queryKey: socialKeys.activityFeed(limit, from, order),
+    queryFn: () => social.getActivityFeed({ limit, from, order }),
+    ...queryOptions,
+  });
+}
+
+export function useMentionedFeed(
+  accountId: string,
+  options?: {
+    limit?: number;
+    from?: number;
+    order?: 'asc' | 'desc';
+  } & Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+  const { limit, from, order, ...queryOptions } = options ?? {};
+
+  return useQuery({
+    queryKey: socialKeys.mentionedFeed(accountId, limit, from, order),
+    queryFn: () => social.getMentionedFeed(accountId, { limit, from, order }),
+    enabled: !!accountId,
+    ...queryOptions,
+  });
+}
+
+// ============================================
+// Notification Hooks
+// ============================================
+
+export function useNotifications(
+  accountId: string,
+  options?: {
+    limit?: number;
+    from?: number;
+    order?: 'asc' | 'desc';
+  } & Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
+) {
+  const social = useSocialInstance();
+  const { limit, from, order, ...queryOptions } = options ?? {};
+
+  return useQuery({
+    queryKey: socialKeys.notifications(accountId, limit, from, order),
+    queryFn: () => social.getNotifications(accountId, { limit, from, order }),
+    enabled: !!accountId,
+    ...queryOptions,
+  });
+}
+
+export function useNotify() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async ({
+      targetAccountId,
+      item,
+      type = 'custom',
+    }: {
+      targetAccountId: string;
+      item?: { type: string; path: string; blockHeight: number };
+      type?: string;
+    }) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.notify(
+        accountId,
+        targetAccountId,
+        item,
+        type
+      );
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
+  });
+}
+
+// ============================================
+// Poke Hook
+// ============================================
+
+export function usePoke() {
+  const queryClient = useQueryClient();
+  const { accountId } = useWallet();
+  const social = useSocialInstance();
+
+  return useMutation({
+    mutationFn: async (targetAccountId: string) => {
+      if (!accountId) {
+        throw new Error('Wallet not connected');
+      }
+      const txBuilder = await social.poke(accountId, targetAccountId);
+      return txBuilder.send();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: socialKeys.all });
+    },
   });
 }

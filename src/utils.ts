@@ -112,3 +112,80 @@ export function uniqueAccountIdsFromKeys(keys: string[]): string[] {
     return acc.find((value) => value === accountId) ? acc : [...acc, accountId];
   }, []);
 }
+
+/**
+ * Extracts @mentions from text and returns an array of valid NEAR account IDs.
+ * Mentions must start with @ followed by a valid NEAR account ID.
+ * @param text - The text to extract mentions from
+ * @returns An array of unique account IDs mentioned in the text
+ */
+export function extractMentions(text: string): string[] {
+  // Match @accountId pattern - NEAR account IDs can contain lowercase letters, digits, hyphens, and underscores
+  // They must be 2-64 characters and follow specific rules
+  const mentionRegex = /@([a-z\d]+[-_]*[a-z\d]*(?:\.[a-z\d]+[-_]*[a-z\d]*)*)/gi;
+  const matches = text.match(mentionRegex);
+
+  if (!matches) {
+    return [];
+  }
+
+  // Remove @ prefix and filter for valid account IDs
+  const accountIds = matches
+    .map((match) => match.slice(1).toLowerCase())
+    .filter((accountId) => validateAccountId(accountId));
+
+  // Return unique account IDs
+  return [...new Set(accountIds)];
+}
+
+/**
+ * Extracts #hashtags from text and returns an array of hashtag strings (without the # prefix).
+ * @param text - The text to extract hashtags from
+ * @returns An array of unique hashtags (lowercase, without # prefix)
+ */
+export function extractHashtags(text: string): string[] {
+  // Match #hashtag pattern - hashtags can contain letters, numbers, and underscores
+  const hashtagRegex = /#([a-zA-Z][a-zA-Z0-9_]*)/g;
+  const matches = text.match(hashtagRegex);
+
+  if (!matches) {
+    return [];
+  }
+
+  // Remove # prefix and convert to lowercase
+  const hashtags = matches.map((match) => match.slice(1).toLowerCase());
+
+  // Return unique hashtags
+  return [...new Set(hashtags)];
+}
+
+/**
+ * Builds notification index data for mentioned accounts.
+ * This creates the data structure needed to notify users when they are mentioned.
+ * @param mentions - Array of account IDs that were mentioned
+ * @param item - The item (post/comment) where the mentions occurred
+ * @returns The notification index data structure to be stored
+ */
+export function buildNotifications(
+  mentions: string[],
+  item: { type: string; path: string; blockHeight: number }
+): Record<string, string> | null {
+  if (mentions.length === 0) {
+    return null;
+  }
+
+  // Build notification entries for each mentioned account
+  const notifications: Array<{ key: string; value: { type: string; item: typeof item } }> = 
+    mentions.map((accountId) => ({
+      key: accountId,
+      value: {
+        type: 'mention',
+        item,
+      },
+    }));
+
+  // Return as a JSON stringified object for index/notify
+  return {
+    notify: JSON.stringify(notifications.length === 1 ? notifications[0] : notifications),
+  };
+}
