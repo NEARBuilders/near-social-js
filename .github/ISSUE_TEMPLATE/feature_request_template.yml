@@ -1,5 +1,5 @@
 name: "✨ Feature Request"
-description: Suggest an idea or feature for the NEAR Social SDK
+description: Suggest an idea or feature for the NearSocial.JS
 title: "[Feature]: "
 labels: ["✨ feature"]
 
@@ -13,14 +13,14 @@ body:
   - type: textarea
     attributes:
       label: What is your idea or feature suggestion?
-      description: Tell us, what idea or feature you suggest to be added to the NEAR Social SDK.
+      description: Tell us, what idea or feature you suggest to be added to the NearSocial.JS.
     validations:
       required: true
   # benefits
   - type: textarea
     attributes:
       label: Benefits
-      description: Tell us, how this this will be beneficial to the NEAR Social SDK.
+      description: Tell us, how this this will be beneficial to the NearSocial.JS.
     validations:
       required: false
   # extra information
