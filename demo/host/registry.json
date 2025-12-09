@@ -1,12 +1,13 @@
 {
   "plugins": {
-    "near-social-js": {
+    "near-social-js-relayer": {
       "remote": "https://elliot-braem-1011-near-social-js-relayer-near-soc-1ded15674-ze.zephyrcloud.app/remoteEntry.js",
       "variables": {
         "baseUrl": "https://example.com"
       },
       "secrets": {
-        "REDIS_URL": "{{REDIS_URL}}"
+        "relayerAccountId": "{{RELAYER_ACCOUNT_ID}}",
+        "relayerPrivateKey": "{{RELAYER_PRIVATE_KEY}}"
       }
     }
   }

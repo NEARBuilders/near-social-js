@@ -78,8 +78,8 @@
         "clsx": "^2.1.1",
         "every-plugin": "^0.6.1",
         "lucide-react": "^0.544.0",
-        "near-kit": "link:near-kit",
-        "near-social-js": "link:near-social-js",
+        "near-kit": "^0.6.3",
+        "near-social-js": "^2.0.3",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "tailwind-merge": "^3.4.0",
@@ -1354,7 +1354,7 @@
 
     "near-kit": ["near-kit@0.6.3", "", { "dependencies": { "@napi-rs/keyring": "^1.2.0", "@noble/curves": "^2.0.1", "@noble/hashes": "^2.0.1", "@scure/base": "^2.0.0", "@scure/bip32": "^2.0.1", "@scure/bip39": "^2.0.1", "@zorsh/zorsh": "^0.4.0", "tar": "^7.5.2", "zod": "^4.1.12" }, "peerDependencies": { "@hot-labs/near-connect": ">=0.6.0", "@near-wallet-selector/core": ">=8.0.0" }, "optionalPeers": ["@hot-labs/near-connect", "@near-wallet-selector/core"] }, "sha512-3OibK7+2iODvwb+E9Cualz9HsH+hKdh6Q6WwhhGSjrKKurOslkcCOA1Bz7EK5sU7p+SZItJ53rI+eyQ0wQteNg=="],
 
-    "near-social-js": ["near-social-js@link:near-social-js", {}],
+    "near-social-js": ["near-social-js@2.0.3", "", { "dependencies": { "bignumber.js": "^9.3.1", "near-kit": "^0.6.3" } }, "sha512-JJv5avVaR+UTRqSZzhA1xE/fYO3R7TtZ2IWJ6RL9PlK4lHkv5m+iimhJpoilJQhYd+EKbwBCqbheES26DCV3Qw=="],
 
     "near-social-js-relayer": ["near-social-js-relayer@workspace:relayer"],
 
@@ -1912,8 +1912,6 @@
 
     "h3/cookie-es": ["cookie-es@1.2.2", "", {}, "sha512-+W7VmiVINB+ywl1HGXJXmrqkOhpKrIiVZV6tQuV54ZyQC7MMuBt81Vc336GMLoHBq5hV/F9eXgt5Mnx0Rha5Fg=="],
 
-    "host/near-social-js": ["near-social-js@2.0.3", "", { "dependencies": { "bignumber.js": "^9.3.1", "near-kit": "^0.6.3" } }, "sha512-JJv5avVaR+UTRqSZzhA1xE/fYO3R7TtZ2IWJ6RL9PlK4lHkv5m+iimhJpoilJQhYd+EKbwBCqbheES26DCV3Qw=="],
-
     "hpack.js/readable-stream": ["readable-stream@2.3.8", "", { "dependencies": { "core-util-is": "~1.0.0", "inherits": "~2.0.3", "isarray": "~1.0.0", "process-nextick-args": "~2.0.0", "safe-buffer": "~5.1.1", "string_decoder": "~1.1.1", "util-deprecate": "~1.0.1" } }, "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA=="],
 
     "http-assert/http-errors": ["http-errors@1.8.1", "", { "dependencies": { "depd": "~1.1.2", "inherits": "2.0.4", "setprototypeof": "1.2.0", "statuses": ">= 1.5.0 < 2", "toidentifier": "1.0.1" } }, "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g=="],
@@ -1931,8 +1929,6 @@
     "near-kit/zod": ["zod@4.1.13", "", {}, "sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig=="],
 
     "near-social-js-relayer/@types/node": ["@types/node@24.10.2", "", { "dependencies": { "undici-types": "~7.16.0" } }, "sha512-WOhQTZ4G8xZ1tjJTvKOpyEVSGgOTvJAfDK3FNFgELyaTpzhdgHVHeqW8V+UJvzF5BT+/B54T/1S2K6gd9c7bbA=="],
-
-    "near-social-js-relayer/near-social-js": ["near-social-js@2.0.3", "", { "dependencies": { "bignumber.js": "^9.3.1", "near-kit": "^0.6.3" } }, "sha512-JJv5avVaR+UTRqSZzhA1xE/fYO3R7TtZ2IWJ6RL9PlK4lHkv5m+iimhJpoilJQhYd+EKbwBCqbheES26DCV3Qw=="],
 
     "node-fetch/whatwg-url": ["whatwg-url@5.0.0", "", { "dependencies": { "tr46": "~0.0.3", "webidl-conversions": "^3.0.0" } }, "sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw=="],
 

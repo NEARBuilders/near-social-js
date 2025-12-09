@@ -1,13 +1,24 @@
 import type { RouterClient } from 'every-plugin/orpc'
 import { os } from 'every-plugin/orpc'
-import type { Plugins } from '../runtime'
+import type { Plugins, PluginStatus } from '../runtime'
 
 export function createRouter(plugins: Plugins) {
-  return {
+  const baseRouter = {
     health: os
       .route({ method: 'GET', path: '/health' })
       .handler(() => 'OK'),
-      // Main API, loaded from a main plugin
+    status: os
+      .route({ method: 'GET', path: '/status' })
+      .handler((): PluginStatus => plugins.status),
+  } as const
+
+  if (!plugins.status.available || !plugins.api?.router) {
+    console.warn('[Router] Plugin router not available, using base router only')
+    return baseRouter
+  }
+
+  return {
+    ...baseRouter,
     ...plugins.api.router,
   } as const
 }

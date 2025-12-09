@@ -56,7 +56,7 @@ const LoadedMarker: FC<{ onLoad: () => void }> = ({ onLoad }) => {
   return null;
 };
 
-const HOST_TITLE = 'Marketplace';
+const HOST_TITLE = 'Social';
 
 export const Main: FC = () => {
   const [ready, setReady] = useState(false);
