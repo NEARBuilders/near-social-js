@@ -1,8 +1,8 @@
-import { Near, decodeSignedDelegateAction } from "near-kit";
-import { Graph } from "near-social-js";
-import type { ConnectOutput, PublishOutput } from "./schema";
+import { Near, decodeSignedDelegateAction } from 'near-kit';
+import { Graph } from 'near-social-js';
+import type { ConnectOutput, PublishOutput } from './schema';
 
-const DEFAULT_STORAGE_DEPOSIT = "500000000000000000000000";
+const DEFAULT_STORAGE_DEPOSIT = '500000000000000000000000';
 
 export class RelayerService {
   private readonly near: Near;
@@ -13,7 +13,7 @@ export class RelayerService {
   constructor(
     near: Near,
     relayerAccountId: string,
-    contractId: string = "social.near"
+    contractId: string = 'social.near'
   ) {
     this.near = near;
     this.relayerAccountId = relayerAccountId;
@@ -26,7 +26,8 @@ export class RelayerService {
 
   async ensureStorageDeposit(accountId: string): Promise<ConnectOutput> {
     const storageBalance = await this.graph.storageBalanceOf(accountId);
-    const hasStorage = storageBalance !== null && BigInt(storageBalance.total) > 0n;
+    const hasStorage =
+      storageBalance !== null && BigInt(storageBalance.total) > 0n;
 
     if (hasStorage) {
       return {
@@ -39,9 +40,9 @@ export class RelayerService {
       .transaction(this.relayerAccountId)
       .functionCall(
         this.contractId,
-        "storage_deposit",
+        'storage_deposit',
         { account_id: accountId },
-        { gas: "30 Tgas", attachedDeposit: BigInt(DEFAULT_STORAGE_DEPOSIT) }
+        { gas: '30 Tgas', attachedDeposit: BigInt(DEFAULT_STORAGE_DEPOSIT) }
       )
       .send();
 
@@ -55,9 +56,16 @@ export class RelayerService {
   async submitDelegateAction(payload: string): Promise<PublishOutput> {
     const signedDelegateAction = decodeSignedDelegateAction(payload);
 
-    console.log("[Relayer] submitDelegateAction called");
-    console.log("[Relayer] relayerAccountId:", this.relayerAccountId);
-    console.log("[Relayer] signedDelegateAction:", JSON.stringify(signedDelegateAction, (_, v) => typeof v === "bigint" ? v.toString() : v, 2));
+    console.log('[Relayer] submitDelegateAction called');
+    console.log('[Relayer] relayerAccountId:', this.relayerAccountId);
+    console.log(
+      '[Relayer] signedDelegateAction:',
+      JSON.stringify(
+        signedDelegateAction,
+        (_, v) => (typeof v === 'bigint' ? v.toString() : v),
+        2
+      )
+    );
 
     const result = await this.near
       .transaction(this.relayerAccountId)

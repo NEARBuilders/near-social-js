@@ -96,7 +96,10 @@ export function useFollow(lookupAccountId: string) {
           throw new Error('Delegate key not initialized');
         }
         await relayerClient.connect({ accountId });
-        const txBuilder = await delegateSocial.follow(accountId, lookupAccountId);
+        const txBuilder = await delegateSocial.follow(
+          accountId,
+          lookupAccountId
+        );
         const { payload } = await txBuilder.delegate();
         return relayerClient.publish({ payload });
       }
@@ -135,7 +138,10 @@ export function useUnfollow(lookupAccountId: string) {
           throw new Error('Delegate key not initialized');
         }
         await relayerClient.connect({ accountId });
-        const txBuilder = await delegateSocial.unfollow(accountId, lookupAccountId);
+        const txBuilder = await delegateSocial.unfollow(
+          accountId,
+          lookupAccountId
+        );
         const { payload } = await txBuilder.delegate();
         return relayerClient.publish({ payload });
       }

@@ -9,7 +9,6 @@ import {
 import { NearConnector } from '@hot-labs/near-connect';
 import { Near, fromHotConnect, type Network } from 'near-kit';
 
-
 interface WalletContextType {
   near: Near | null;
   accountId: string | null;
@@ -35,7 +34,9 @@ export function WalletProvider({
   const [connector, setConnector] = useState<NearConnector | null>(null);
 
   useEffect(() => {
-    const nearConnector = new NearConnector({ network: network as "mainnet" | "testnet" });
+    const nearConnector = new NearConnector({
+      network: network as 'mainnet' | 'testnet',
+    });
     setConnector(nearConnector);
 
     nearConnector.on('wallet:signIn', async (data) => {

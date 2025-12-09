@@ -58,7 +58,11 @@ export const Stagger: FC<StaggerProps> = ({
 }) => (
   <div className={className}>
     {children.map((child, i) => (
-      <FadeIn key={i} delay={initialDelay + i * staggerDelay} duration={duration}>
+      <FadeIn
+        key={i}
+        delay={initialDelay + i * staggerDelay}
+        duration={duration}
+      >
         {child}
       </FadeIn>
     ))}

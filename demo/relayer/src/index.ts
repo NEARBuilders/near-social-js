@@ -1,23 +1,23 @@
-import { createPlugin } from "every-plugin";
-import { Effect } from "every-plugin/effect";
-import { z } from "every-plugin/zod";
-import { Near, InMemoryKeyStore, parseKey, type Network } from "near-kit";
+import { createPlugin } from 'every-plugin';
+import { Effect } from 'every-plugin/effect';
+import { z } from 'every-plugin/zod';
+import { Near, InMemoryKeyStore, parseKey, type Network } from 'near-kit';
 
-import { contract } from "./contract";
-import { RelayerService } from "./service";
+import { contract } from './contract';
+import { RelayerService } from './service';
 
-export * from "./schema";
+export * from './schema';
 
 export default createPlugin({
   variables: z.object({
-    network: z.enum(["mainnet", "testnet"]).default("mainnet"),
-    contractId: z.string().default("social.near"),
+    network: z.enum(['mainnet', 'testnet']).default('mainnet'),
+    contractId: z.string().default('social.near'),
     nodeUrl: z.string().optional(),
   }),
 
   secrets: z.object({
-    relayerAccountId: z.string().min(1, "Relayer account ID is required"),
-    relayerPrivateKey: z.string().min(1, "Relayer private key is required"),
+    relayerAccountId: z.string().min(1, 'Relayer account ID is required'),
+    relayerPrivateKey: z.string().min(1, 'Relayer private key is required'),
   }),
 
   contract,
@@ -31,9 +31,12 @@ export default createPlugin({
           }
         : (config.variables.network as Network);
 
-      console.log("[Relayer Init] relayerAccountId:", config.secrets.relayerAccountId);
-      console.log("[Relayer Init] network:", config.variables.network);
-      console.log("[Relayer Init] contractId:", config.variables.contractId);
+      console.log(
+        '[Relayer Init] relayerAccountId:',
+        config.secrets.relayerAccountId
+      );
+      console.log('[Relayer Init] network:', config.variables.network);
+      console.log('[Relayer Init] contractId:', config.variables.contractId);
 
       const keyStore = new InMemoryKeyStore();
       yield* Effect.promise(() =>
@@ -43,16 +46,22 @@ export default createPlugin({
         )
       );
 
-      console.log("[Relayer Init] Key added to keyStore for account:", config.secrets.relayerAccountId);
+      console.log(
+        '[Relayer Init] Key added to keyStore for account:',
+        config.secrets.relayerAccountId
+      );
 
       const near = new Near({
         network: networkConfig,
         keyStore,
         defaultSignerId: config.secrets.relayerAccountId,
-        defaultWaitUntil: "FINAL",
+        defaultWaitUntil: 'FINAL',
       });
 
-      console.log("[Relayer Init] Near instance created with defaultSignerId:", config.secrets.relayerAccountId);
+      console.log(
+        '[Relayer Init] Near instance created with defaultSignerId:',
+        config.secrets.relayerAccountId
+      );
 
       const service = new RelayerService(
         near,
@@ -60,7 +69,7 @@ export default createPlugin({
         config.variables.contractId
       );
 
-      console.log("[Relayer Init] RelayerService initialized");
+      console.log('[Relayer Init] RelayerService initialized');
 
       return { service };
     }),
@@ -81,7 +90,7 @@ export default createPlugin({
 
       ping: builder.ping.handler(async () => {
         return {
-          status: "ok" as const,
+          status: 'ok' as const,
           timestamp: new Date().toISOString(),
         };
       }),

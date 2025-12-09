@@ -109,7 +109,10 @@ export const LoadingFallback: FC<LoadingFallbackProps> = ({
   };
 
   return (
-    <div style={pageStyle} className="flex min-h-screen flex-col items-center justify-center bg-background">
+    <div
+      style={pageStyle}
+      className="flex min-h-screen flex-col items-center justify-center bg-background"
+    >
       <style>
         {`
           @keyframes spin { to { transform: rotate(360deg); } }
@@ -126,18 +129,44 @@ export const LoadingFallback: FC<LoadingFallbackProps> = ({
         `}
       </style>
 
-      <div style={{ ...contentStyle, ...containerAnimation }} className="flex flex-col items-center gap-6">
+      <div
+        style={{ ...contentStyle, ...containerAnimation }}
+        className="flex flex-col items-center gap-6"
+      >
         <div style={spinnerContainerStyle} className="relative">
-          <div style={pulseRingStyle} className="absolute inset-0 rounded-full bg-primary/20" />
-          <div style={spinnerStyle} className="h-12 w-12 rounded-full border-4 border-muted border-t-primary" />
-          <div style={spinnerCenterStyle} className="absolute inset-0 flex items-center justify-center">
-            <div style={spinnerDotStyle} className="h-6 w-6 rounded-full bg-background" />
+          <div
+            style={pulseRingStyle}
+            className="absolute inset-0 rounded-full bg-primary/20"
+          />
+          <div
+            style={spinnerStyle}
+            className="h-12 w-12 rounded-full border-4 border-muted border-t-primary"
+          />
+          <div
+            style={spinnerCenterStyle}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <div
+              style={spinnerDotStyle}
+              className="h-6 w-6 rounded-full bg-background"
+            />
           </div>
         </div>
 
-        <div style={textContainerStyle} className="flex flex-col items-center gap-2">
-          <p style={messageStyle} className="text-lg font-medium text-foreground">{message}</p>
-          <p style={submessageStyle} className="flex items-center gap-1 text-sm text-muted-foreground">
+        <div
+          style={textContainerStyle}
+          className="flex flex-col items-center gap-2"
+        >
+          <p
+            style={messageStyle}
+            className="text-lg font-medium text-foreground"
+          >
+            {message}
+          </p>
+          <p
+            style={submessageStyle}
+            className="flex items-center gap-1 text-sm text-muted-foreground"
+          >
             {submessage}
             {dotsVisible && <LoadingDots />}
           </p>
@@ -167,7 +196,8 @@ const LoadingSkeleton: FC<LoadingSkeletonProps> = ({ visible }) => {
   };
 
   const shimmerStyle: CSSProperties = {
-    background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.04), transparent)',
+    background:
+      'linear-gradient(90deg, transparent, rgba(0,0,0,0.04), transparent)',
     backgroundSize: '200% 100%',
     animation: 'shimmer 1.5s linear infinite',
   };
@@ -222,35 +252,86 @@ const LoadingSkeleton: FC<LoadingSkeletonProps> = ({ visible }) => {
   return (
     <div style={skeletonStyle} className="mt-8 w-full max-w-md space-y-4 px-4">
       <div style={rowStyle} className="flex items-center gap-3">
-        <div style={avatarStyle} className="relative h-10 w-10 overflow-hidden rounded-full bg-muted">
-          <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+        <div
+          style={avatarStyle}
+          className="relative h-10 w-10 overflow-hidden rounded-full bg-muted"
+        >
+          <div
+            style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+            className="absolute inset-0"
+          />
         </div>
         <div style={textBlockStyle} className="flex-1 space-y-2">
-          <div style={lineStyle('75%')} className="relative h-4 w-3/4 overflow-hidden rounded bg-muted">
-            <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+          <div
+            style={lineStyle('75%')}
+            className="relative h-4 w-3/4 overflow-hidden rounded bg-muted"
+          >
+            <div
+              style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+              className="absolute inset-0"
+            />
           </div>
-          <div style={lineStyle('50%')} className="relative h-3 w-1/2 overflow-hidden rounded bg-muted">
-            <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+          <div
+            style={lineStyle('50%')}
+            className="relative h-3 w-1/2 overflow-hidden rounded bg-muted"
+          >
+            <div
+              style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+              className="absolute inset-0"
+            />
           </div>
         </div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }} className="space-y-3">
-        <div style={lineStyle('100%')} className="relative h-3 w-full overflow-hidden rounded bg-muted">
-          <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+      <div
+        style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+        className="space-y-3"
+      >
+        <div
+          style={lineStyle('100%')}
+          className="relative h-3 w-full overflow-hidden rounded bg-muted"
+        >
+          <div
+            style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+            className="absolute inset-0"
+          />
         </div>
-        <div style={lineStyle('83%')} className="relative h-3 w-5/6 overflow-hidden rounded bg-muted">
-          <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+        <div
+          style={lineStyle('83%')}
+          className="relative h-3 w-5/6 overflow-hidden rounded bg-muted"
+        >
+          <div
+            style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+            className="absolute inset-0"
+          />
         </div>
-        <div style={lineStyle('66%')} className="relative h-3 w-4/6 overflow-hidden rounded bg-muted">
-          <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+        <div
+          style={lineStyle('66%')}
+          className="relative h-3 w-4/6 overflow-hidden rounded bg-muted"
+        >
+          <div
+            style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+            className="absolute inset-0"
+          />
         </div>
       </div>
       <div style={buttonRowStyle} className="flex gap-2 pt-2">
-        <div style={buttonStyle} className="relative h-8 w-20 overflow-hidden rounded-lg bg-muted">
-          <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+        <div
+          style={buttonStyle}
+          className="relative h-8 w-20 overflow-hidden rounded-lg bg-muted"
+        >
+          <div
+            style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+            className="absolute inset-0"
+          />
         </div>
-        <div style={buttonStyle} className="relative h-8 w-20 overflow-hidden rounded-lg bg-muted">
-          <div style={{ ...shimmerStyle, position: 'absolute', inset: 0 }} className="absolute inset-0" />
+        <div
+          style={buttonStyle}
+          className="relative h-8 w-20 overflow-hidden rounded-lg bg-muted"
+        >
+          <div
+            style={{ ...shimmerStyle, position: 'absolute', inset: 0 }}
+            className="absolute inset-0"
+          />
         </div>
       </div>
     </div>
@@ -258,24 +339,56 @@ const LoadingSkeleton: FC<LoadingSkeletonProps> = ({ visible }) => {
 };
 
 export const LoadingDots: FC = () => (
-  <span style={{ display: 'inline-flex', gap: '2px' }} className="inline-flex gap-0.5">
+  <span
+    style={{ display: 'inline-flex', gap: '2px' }}
+    className="inline-flex gap-0.5"
+  >
     <span
-      style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'currentColor', animation: 'bounce 1s ease-in-out infinite', animationDelay: '-0.3s' }}
+      style={{
+        width: '4px',
+        height: '4px',
+        borderRadius: '50%',
+        backgroundColor: 'currentColor',
+        animation: 'bounce 1s ease-in-out infinite',
+        animationDelay: '-0.3s',
+      }}
       className="h-1 w-1 rounded-full bg-current"
     />
     <span
-      style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'currentColor', animation: 'bounce 1s ease-in-out infinite', animationDelay: '-0.15s' }}
+      style={{
+        width: '4px',
+        height: '4px',
+        borderRadius: '50%',
+        backgroundColor: 'currentColor',
+        animation: 'bounce 1s ease-in-out infinite',
+        animationDelay: '-0.15s',
+      }}
       className="h-1 w-1 rounded-full bg-current"
     />
     <span
-      style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'currentColor', animation: 'bounce 1s ease-in-out infinite' }}
+      style={{
+        width: '4px',
+        height: '4px',
+        borderRadius: '50%',
+        backgroundColor: 'currentColor',
+        animation: 'bounce 1s ease-in-out infinite',
+      }}
       className="h-1 w-1 rounded-full bg-current"
     />
   </span>
 );
 
 export const InlineLoader: FC<{ text?: string }> = ({ text = 'Loading' }) => (
-  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: '#888' }} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+  <span
+    style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '0.375rem',
+      fontSize: '0.875rem',
+      color: '#888',
+    }}
+    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground"
+  >
     {text}
     <LoadingDots />
   </span>

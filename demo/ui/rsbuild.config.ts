@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pkg from './package.json';
-import { withZephyr } from "zephyr-rsbuild-plugin"
+import { withZephyr } from 'zephyr-rsbuild-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +20,10 @@ function updateHostConfig(name: string, url: string) {
     fs.writeFileSync(configPath, JSON.stringify(json, null, 2) + '\n');
     console.log('   ✅ Updated host/remotes.json');
   } catch (err) {
-    console.error('   ❌ Failed to update host/remotes.json:', (err as Error).message);
+    console.error(
+      '   ❌ Failed to update host/remotes.json:',
+      (err as Error).message
+    );
   }
 }
 
@@ -83,12 +86,14 @@ export default defineConfig({
           console.log(`   Module: ${info.snapshot.uid.app_name}`);
           console.log(`   Build ID: ${info.snapshot.uid.build}`);
           console.log(`   Dependencies: ${info.federatedDependencies.length}`);
-          console.log(`   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`);
+          console.log(
+            `   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`
+          );
           console.log(`   CI: ${info.buildStats.context.isCI ? 'Yes' : 'No'}`);
           updateHostConfig(normalizedName, info.url);
         },
       },
-    })
+    }),
   ],
   source: {
     entry: {

@@ -1,5 +1,16 @@
 import { createFileRoute, Outlet, Link } from '@tanstack/react-router';
-import { BookOpen, Database, Github, Home, Loader2, Menu, Radio, Trash2, Users, X } from 'lucide-react';
+import {
+  BookOpen,
+  Database,
+  Github,
+  Home,
+  Loader2,
+  Menu,
+  Radio,
+  Trash2,
+  Users,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Logo } from '../components/logo';
 import { WalletButton } from '../components/wallet-button';
@@ -25,7 +36,13 @@ const GradientBlur = ({
 function LayoutComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const { accountId } = useWallet();
-  const { isRelayerEnabled, toggleRelayer, deleteDelegateKey, isLoading, canToggle } = useRelayer();
+  const {
+    isRelayerEnabled,
+    toggleRelayer,
+    deleteDelegateKey,
+    isLoading,
+    canToggle,
+  } = useRelayer();
 
   return (
     <div className="relative flex flex-col w-full min-h-screen bg-[#0d1117] overflow-hidden">
@@ -79,15 +96,28 @@ function LayoutComponent() {
                       ? 'bg-[#00EC97]/20 text-[#00EC97] border border-[#00EC97]/30'
                       : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
                   }`}
-                  title={!canToggle ? 'Connect wallet to enable relayer' : isRelayerEnabled ? 'Relayer enabled - transactions are gasless' : 'Relayer disabled - using direct wallet'}
+                  title={
+                    !canToggle
+                      ? 'Connect wallet to enable relayer'
+                      : isRelayerEnabled
+                        ? 'Relayer enabled - transactions are gasless'
+                        : 'Relayer disabled - using direct wallet'
+                  }
                 >
                   {isLoading ? (
                     <Loader2 size={16} className="animate-spin" />
                   ) : (
-                    <Radio size={16} className={isRelayerEnabled ? 'animate-pulse' : ''} />
+                    <Radio
+                      size={16}
+                      className={isRelayerEnabled ? 'animate-pulse' : ''}
+                    />
                   )}
                   <span className="hidden sm:inline">
-                    {isLoading ? 'Loading...' : isRelayerEnabled ? 'Relayed' : 'Direct'}
+                    {isLoading
+                      ? 'Loading...'
+                      : isRelayerEnabled
+                        ? 'Relayed'
+                        : 'Direct'}
                   </span>
                 </button>
                 {isRelayerEnabled && (

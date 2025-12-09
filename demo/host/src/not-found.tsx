@@ -109,7 +109,10 @@ export const NotFound: FC<NotFoundProps> = ({
   onNavigateHome,
 }) => {
   return (
-    <div style={pageStyle} className="flex min-h-screen flex-col items-center justify-center bg-background p-8">
+    <div
+      style={pageStyle}
+      className="flex min-h-screen flex-col items-center justify-center bg-background p-8"
+    >
       <style>
         {`
           @keyframes float {
@@ -127,14 +130,20 @@ export const NotFound: FC<NotFoundProps> = ({
         <div style={contentStyle} className="text-center">
           <div style={numberContainerStyle} className="mb-8">
             <div style={numberWrapperStyle} className="relative inline-block">
-              <span style={numberBaseStyle} className="text-[120px] font-bold leading-none text-foreground/10 sm:text-[180px]">
+              <span
+                style={numberBaseStyle}
+                className="text-[120px] font-bold leading-none text-foreground/10 sm:text-[180px]"
+              >
                 404
               </span>
               <div
                 style={numberGlowStyle}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <span style={numberGlowTextStyle} className="text-[120px] font-bold leading-none text-foreground/30 sm:text-[180px]">
+                <span
+                  style={numberGlowTextStyle}
+                  className="text-[120px] font-bold leading-none text-foreground/30 sm:text-[180px]"
+                >
                   404
                 </span>
               </div>
@@ -142,19 +151,28 @@ export const NotFound: FC<NotFoundProps> = ({
           </div>
 
           <FadeIn delay={200} duration={500}>
-            <h1 style={headingStyle} className="mb-4 text-2xl font-semibold text-foreground sm:text-3xl">
+            <h1
+              style={headingStyle}
+              className="mb-4 text-2xl font-semibold text-foreground sm:text-3xl"
+            >
               {title}
             </h1>
           </FadeIn>
 
           <FadeIn delay={350} duration={500}>
-            <p style={messageStyle} className="mx-auto mb-8 max-w-md text-muted-foreground">
+            <p
+              style={messageStyle}
+              className="mx-auto mb-8 max-w-md text-muted-foreground"
+            >
               {message}
             </p>
           </FadeIn>
 
           <FadeIn delay={500} duration={500}>
-            <div style={buttonContainerStyle} className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div
+              style={buttonContainerStyle}
+              className="flex flex-col gap-3 sm:flex-row sm:justify-center"
+            >
               <button
                 onClick={onNavigateHome || (() => (window.location.href = '/'))}
                 style={primaryButtonStyle}

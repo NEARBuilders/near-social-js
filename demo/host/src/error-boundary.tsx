@@ -103,7 +103,12 @@ const retryCountStyle: CSSProperties = {
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, retryCount: 0, animateIn: false };
+    this.state = {
+      hasError: false,
+      error: null,
+      retryCount: 0,
+      animateIn: false,
+    };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -152,7 +157,10 @@ export class ErrorBoundary extends Component<Props, State> {
       };
 
       return (
-        <div style={pageStyle} className="flex min-h-screen flex-col items-center justify-center bg-background p-8 text-foreground">
+        <div
+          style={pageStyle}
+          className="flex min-h-screen flex-col items-center justify-center bg-background p-8 text-foreground"
+        >
           <style>
             {`
               @keyframes shake {
@@ -167,10 +175,18 @@ export class ErrorBoundary extends Component<Props, State> {
             `}
           </style>
 
-          <div style={{ ...contentStyle, ...containerAnimation }} className="max-w-md text-center">
+          <div
+            style={{ ...contentStyle, ...containerAnimation }}
+            className="max-w-md text-center"
+          >
             <FadeIn delay={100} duration={400}>
               <div
-                style={{ ...emojiStyle, animation: isNetworkError ? 'shake 0.5s ease-in-out' : 'pulse-soft 2s ease-in-out infinite' }}
+                style={{
+                  ...emojiStyle,
+                  animation: isNetworkError
+                    ? 'shake 0.5s ease-in-out'
+                    : 'pulse-soft 2s ease-in-out infinite',
+                }}
                 className="mb-6 text-6xl"
               >
                 {isNetworkError ? '🔌' : '⚠️'}
@@ -193,11 +209,31 @@ export class ErrorBoundary extends Component<Props, State> {
 
             {this.state.error && (
               <FadeIn delay={400} duration={400}>
-                <details style={detailsStyle} className="mb-6 rounded-lg border border-border bg-muted/50 p-4 text-left transition-all hover:bg-muted/70">
-                  <summary style={{ cursor: 'pointer', fontWeight: 500, fontSize: '0.875rem' }} className="cursor-pointer text-sm font-medium">
+                <details
+                  style={detailsStyle}
+                  className="mb-6 rounded-lg border border-border bg-muted/50 p-4 text-left transition-all hover:bg-muted/70"
+                >
+                  <summary
+                    style={{
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                      fontSize: '0.875rem',
+                    }}
+                    className="cursor-pointer text-sm font-medium"
+                  >
                     Technical Details
                   </summary>
-                  <pre style={{ marginTop: '0.5rem', overflow: 'auto', fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }} className="mt-2 overflow-auto text-xs text-muted-foreground">
+                  <pre
+                    style={{
+                      marginTop: '0.5rem',
+                      overflow: 'auto',
+                      fontSize: '0.75rem',
+                      color: '#888',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                    }}
+                    className="mt-2 overflow-auto text-xs text-muted-foreground"
+                  >
                     {this.state.error.message}
                   </pre>
                 </details>
@@ -205,7 +241,10 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
 
             <FadeIn delay={500} duration={400}>
-              <div style={buttonContainerStyle} className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <div
+                style={buttonContainerStyle}
+                className="flex flex-col gap-3 sm:flex-row sm:justify-center"
+              >
                 <button
                   onClick={this.handleRetry}
                   style={primaryButtonStyle}
@@ -225,7 +264,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
             {this.state.retryCount > 0 && (
               <FadeIn delay={600} duration={400}>
-                <p style={retryCountStyle} className="mt-4 text-sm text-muted-foreground">
+                <p
+                  style={retryCountStyle}
+                  className="mt-4 text-sm text-muted-foreground"
+                >
                   Retry attempts: {this.state.retryCount}
                 </p>
               </FadeIn>

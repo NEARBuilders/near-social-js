@@ -1,6 +1,6 @@
-import Plugin from "@/index";
-import pluginDevConfig from "../plugin.dev";
-import { createPluginRuntime } from "every-plugin";
+import Plugin from '@/index';
+import pluginDevConfig from '../plugin.dev';
+import { createPluginRuntime } from 'every-plugin';
 
 const TEST_PLUGIN_ID = pluginDevConfig.pluginId;
 const TEST_CONFIG = pluginDevConfig.config;
@@ -8,7 +8,7 @@ const TEST_CONFIG = pluginDevConfig.config;
 const TEST_REGISTRY = {
   [TEST_PLUGIN_ID]: {
     module: Plugin,
-    description: "Integration test runtime",
+    description: 'Integration test runtime',
   },
 } as const;
 

@@ -34,12 +34,15 @@ interface Registry {
 }
 
 const [primaryRemoteName] = Object.keys(remotesConfig.remotes);
-const primaryRemote = remotesConfig.remotes[primaryRemoteName as keyof typeof remotesConfig.remotes];
+const primaryRemote =
+  remotesConfig.remotes[
+    primaryRemoteName as keyof typeof remotesConfig.remotes
+  ];
 
 const SocialProvider = lazy(async () => {
-  const module = await loadRemote<{ SocialProvider: FC<{ network: string; children: React.ReactNode }> }>(
-    `${primaryRemoteName}/providers`
-  );
+  const module = await loadRemote<{
+    SocialProvider: FC<{ network: string; children: React.ReactNode }>;
+  }>(`${primaryRemoteName}/providers`);
   if (!module) throw new Error(`Failed to load ${primaryRemoteName}/providers`);
   return { default: module.SocialProvider };
 });
@@ -66,7 +69,8 @@ const cardTitleStyle: CSSProperties = {
   fontSize: '13px',
   fontWeight: 600,
   color: '#374151',
-  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  fontFamily:
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
 };
 
 const previewContainerStyle: CSSProperties = {
@@ -96,7 +100,8 @@ const propsContainerStyle: CSSProperties = {
   background: '#f9fafb',
   padding: '12px 16px',
   fontSize: '11px',
-  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  fontFamily:
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
   color: '#6b7280',
   overflow: 'auto',
   maxHeight: '120px',
@@ -136,7 +141,14 @@ interface ComponentCardProps {
   index: number;
 }
 
-const ComponentCard: FC<ComponentCardProps> = ({ name, title, description, Component, props, index }) => {
+const ComponentCard: FC<ComponentCardProps> = ({
+  name,
+  title,
+  description,
+  Component,
+  props,
+  index,
+}) => {
   const [loaded, setLoaded] = useState(false);
   const [showProps, setShowProps] = useState(false);
 
@@ -186,7 +198,13 @@ const ComponentCard: FC<ComponentCardProps> = ({ name, title, description, Compo
       </div>
       {hasProps && showProps && (
         <div style={propsContainerStyle}>
-          <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+          <pre
+            style={{
+              margin: 0,
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+          >
             {JSON.stringify(props, null, 2)}
           </pre>
         </div>
@@ -252,7 +270,8 @@ const codeStyle: CSSProperties = {
   background: '#e5e7eb',
   padding: '2px 6px',
   borderRadius: '4px',
-  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  fontFamily:
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
   fontSize: '0.9em',
 };
 
@@ -264,11 +283,13 @@ const gridStyle: CSSProperties = {
 
 const createLazyComponent = (componentName: string) => {
   return lazy(async () => {
-    const module = await loadRemote<Record<string, ComponentType<Record<string, unknown>>>>(
-      `${primaryRemoteName}/components`
-    );
+    const module = await loadRemote<
+      Record<string, ComponentType<Record<string, unknown>>>
+    >(`${primaryRemoteName}/components`);
     if (!module || !module[componentName]) {
-      throw new Error(`Component ${componentName} not found in ${primaryRemoteName}/components`);
+      throw new Error(
+        `Component ${componentName} not found in ${primaryRemoteName}/components`
+      );
     }
     return { default: module[componentName] };
   });
@@ -292,7 +313,8 @@ export const Components: FC = () => {
         const registryUrl = `${baseUrl}${primaryRemote.registryPath || '/r/registry.json'}`;
 
         const response = await fetch(registryUrl);
-        if (!response.ok) throw new Error(`Failed to fetch registry: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`Failed to fetch registry: ${response.status}`);
         const data = await response.json();
         setRegistry(data);
       } catch (err) {
@@ -330,7 +352,14 @@ export const Components: FC = () => {
         `}
       </style>
       <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback message="Loading providers..." submessage="Setting up social context" />}>
+        <Suspense
+          fallback={
+            <LoadingFallback
+              message="Loading providers..."
+              submessage="Setting up social context"
+            />
+          }
+        >
           <SocialProvider network="mainnet">
             <div style={scrollContainerStyle}>
               <div style={contentWrapperStyle}>
@@ -338,13 +367,22 @@ export const Components: FC = () => {
                   <header style={headerStyle}>
                     <h1 style={titleStyle}>Component Gallery</h1>
                     <p style={subtitleStyle}>
-                      Remote components from <code style={codeStyle}>{primaryRemote.displayName || primaryRemoteName}</code>
+                      Remote components from{' '}
+                      <code style={codeStyle}>
+                        {primaryRemote.displayName || primaryRemoteName}
+                      </code>
                     </p>
                   </header>
                 </FadeIn>
 
                 {registryError && (
-                  <div style={{ ...errorBadgeStyle, marginBottom: '16px', padding: '12px' }}>
+                  <div
+                    style={{
+                      ...errorBadgeStyle,
+                      marginBottom: '16px',
+                      padding: '12px',
+                    }}
+                  >
                     Failed to load registry: {registryError}
                   </div>
                 )}

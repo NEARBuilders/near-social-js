@@ -31,8 +31,12 @@ export function RelayerProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem(RELAYER_ENABLED_STORAGE);
     return stored === 'true';
   });
-  const [delegatePrivateKey, setDelegatePrivateKey] = useState<string | null>(null);
-  const [delegatePublicKey, setDelegatePublicKey] = useState<string | null>(null);
+  const [delegatePrivateKey, setDelegatePrivateKey] = useState<string | null>(
+    null
+  );
+  const [delegatePublicKey, setDelegatePublicKey] = useState<string | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const { near: walletNear, accountId } = useWallet();
   const graph = useGraphInstance();
@@ -41,8 +45,13 @@ export function RelayerProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem(DELEGATE_KEY_STORAGE);
     if (stored) {
       try {
-        const parsed = JSON.parse(stored) as { privateKey: string; publicKey: string };
-        const isValidKey = parsed.privateKey?.startsWith('ed25519:') || parsed.privateKey?.startsWith('secp256k1:');
+        const parsed = JSON.parse(stored) as {
+          privateKey: string;
+          publicKey: string;
+        };
+        const isValidKey =
+          parsed.privateKey?.startsWith('ed25519:') ||
+          parsed.privateKey?.startsWith('secp256k1:');
         if (isValidKey && parsed.publicKey) {
           setDelegatePrivateKey(parsed.privateKey);
           setDelegatePublicKey(parsed.publicKey);
@@ -73,7 +82,10 @@ export function RelayerProvider({ children }: { children: ReactNode }) {
 
   const delegateNear = useMemo(() => {
     if (!delegatePrivateKey) return null;
-    if (!delegatePrivateKey.startsWith('ed25519:') && !delegatePrivateKey.startsWith('secp256k1:')) {
+    if (
+      !delegatePrivateKey.startsWith('ed25519:') &&
+      !delegatePrivateKey.startsWith('secp256k1:')
+    ) {
       return null;
     }
     return new Near({
@@ -111,16 +123,18 @@ export function RelayerProvider({ children }: { children: ReactNode }) {
       const isRegistered = await checkKeyRegistered();
 
       if (!isRegistered) {
-        console.log("key", delegatePublicKey);
+        console.log('key', delegatePublicKey);
         const contractId = graph.getContractId();
-        console.log("contract", contractId);
-        const txBuilder = walletNear.transaction(accountId).addKey(delegatePublicKey, {
-          type: 'functionCall',
-          receiverId: contractId,
-          methodNames: [],
-          allowance: '0.25 NEAR',
-        });
-        console.log("tx", txBuilder);
+        console.log('contract', contractId);
+        const txBuilder = walletNear
+          .transaction(accountId)
+          .addKey(delegatePublicKey, {
+            type: 'functionCall',
+            receiverId: contractId,
+            methodNames: [],
+            allowance: '0.25 NEAR',
+          });
+        console.log('tx', txBuilder);
         await txBuilder.send();
       }
 
@@ -129,7 +143,14 @@ export function RelayerProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [isRelayerEnabled, walletNear, accountId, delegatePublicKey, graph, checkKeyRegistered]);
+  }, [
+    isRelayerEnabled,
+    walletNear,
+    accountId,
+    delegatePublicKey,
+    graph,
+    checkKeyRegistered,
+  ]);
 
   const deleteDelegateKey = useCallback(() => {
     localStorage.removeItem(DELEGATE_KEY_STORAGE);
@@ -139,7 +160,8 @@ export function RelayerProvider({ children }: { children: ReactNode }) {
     setRelayerEnabled(false);
   }, []);
 
-  const canToggle = isRelayerEnabled || (!!walletNear && !!accountId && !!delegatePublicKey);
+  const canToggle =
+    isRelayerEnabled || (!!walletNear && !!accountId && !!delegatePublicKey);
 
   return (
     <RelayerContext.Provider

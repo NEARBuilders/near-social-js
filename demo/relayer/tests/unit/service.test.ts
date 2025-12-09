@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { RelayerService } from "@/service";
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { RelayerService } from '@/service';
 
 const mockSend = vi.fn();
 const mockFunctionCall = vi.fn(() => ({ send: mockSend }));
@@ -11,7 +11,7 @@ const mockTransaction = vi.fn(() => ({
 
 const mockStorageBalanceOf = vi.fn();
 
-vi.mock("near-kit", () => ({
+vi.mock('near-kit', () => ({
   Near: vi.fn().mockImplementation(() => ({
     transaction: mockTransaction,
   })),
@@ -21,94 +21,94 @@ vi.mock("near-kit", () => ({
   })),
 }));
 
-vi.mock("near-social-js", () => ({
+vi.mock('near-social-js', () => ({
   Graph: vi.fn().mockImplementation(() => ({
     storageBalanceOf: mockStorageBalanceOf,
   })),
 }));
 
-describe("RelayerService", () => {
+describe('RelayerService', () => {
   let service: RelayerService;
   const mockNear = {
     transaction: mockTransaction,
   };
-  const relayerAccountId = "relayer.near";
-  const contractId = "social.near";
+  const relayerAccountId = 'relayer.near';
+  const contractId = 'social.near';
 
   beforeEach(() => {
     vi.clearAllMocks();
     service = new RelayerService(mockNear as any, relayerAccountId, contractId);
   });
 
-  describe("ensureStorageDeposit", () => {
-    it("should return hasStorage: true when account already has storage", async () => {
+  describe('ensureStorageDeposit', () => {
+    it('should return hasStorage: true when account already has storage', async () => {
       mockStorageBalanceOf.mockResolvedValue({
-        total: "1000000000000000000000000",
-        available: "500000000000000000000000",
+        total: '1000000000000000000000000',
+        available: '500000000000000000000000',
       });
 
-      const result = await service.ensureStorageDeposit("user.near");
+      const result = await service.ensureStorageDeposit('user.near');
 
       expect(result).toEqual({
-        accountId: "user.near",
+        accountId: 'user.near',
         hasStorage: true,
       });
       expect(mockTransaction).not.toHaveBeenCalled();
     });
 
-    it("should deposit storage when account has no storage", async () => {
+    it('should deposit storage when account has no storage', async () => {
       mockStorageBalanceOf.mockResolvedValue(null);
       mockSend.mockResolvedValue({
-        transaction: { hash: "tx-hash-123" },
+        transaction: { hash: 'tx-hash-123' },
       });
 
-      const result = await service.ensureStorageDeposit("user.near");
+      const result = await service.ensureStorageDeposit('user.near');
 
       expect(result).toEqual({
-        accountId: "user.near",
+        accountId: 'user.near',
         hasStorage: false,
-        depositTxHash: "tx-hash-123",
+        depositTxHash: 'tx-hash-123',
       });
       expect(mockTransaction).toHaveBeenCalledWith(relayerAccountId);
       expect(mockFunctionCall).toHaveBeenCalledWith(
         contractId,
-        "storage_deposit",
-        { account_id: "user.near" },
-        { gas: "30 Tgas", attachedDeposit: BigInt("500000000000000000000000") }
+        'storage_deposit',
+        { account_id: 'user.near' },
+        { gas: '30 Tgas', attachedDeposit: BigInt('500000000000000000000000') }
       );
       expect(mockSend).toHaveBeenCalled();
     });
 
-    it("should deposit storage when account has zero balance", async () => {
+    it('should deposit storage when account has zero balance', async () => {
       mockStorageBalanceOf.mockResolvedValue({
-        total: "0",
-        available: "0",
+        total: '0',
+        available: '0',
       });
       mockSend.mockResolvedValue({
-        transaction: { hash: "tx-hash-456" },
+        transaction: { hash: 'tx-hash-456' },
       });
 
-      const result = await service.ensureStorageDeposit("newuser.near");
+      const result = await service.ensureStorageDeposit('newuser.near');
 
       expect(result).toEqual({
-        accountId: "newuser.near",
+        accountId: 'newuser.near',
         hasStorage: false,
-        depositTxHash: "tx-hash-456",
+        depositTxHash: 'tx-hash-456',
       });
     });
   });
 
-  describe("submitDelegateAction", () => {
-    it("should decode and submit a signed delegate action", async () => {
-      const mockPayload = "base64-encoded-payload";
+  describe('submitDelegateAction', () => {
+    it('should decode and submit a signed delegate action', async () => {
+      const mockPayload = 'base64-encoded-payload';
       mockSend.mockResolvedValue({
-        transaction: { hash: "delegate-tx-hash" },
+        transaction: { hash: 'delegate-tx-hash' },
       });
 
       const result = await service.submitDelegateAction(mockPayload);
 
       expect(result).toEqual({
-        hash: "delegate-tx-hash",
+        hash: 'delegate-tx-hash',
       });
       expect(mockTransaction).toHaveBeenCalledWith(relayerAccountId);
       expect(mockSignedDelegateAction).toHaveBeenCalledWith({

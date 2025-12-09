@@ -175,7 +175,6 @@ describe('Graph - Transaction Methods', () => {
         useApiServer: false,
       });
 
-
       expect(result).toBeDefined();
       expect(result![rootAccountId]).toBeDefined();
     });
@@ -414,7 +413,6 @@ describe('Graph - Direct Contract Calls (useApiServer: false)', () => {
         useApiServer: false,
         returnType: 'BlockHeight',
       });
-
 
       expect(result).toBeDefined();
     });

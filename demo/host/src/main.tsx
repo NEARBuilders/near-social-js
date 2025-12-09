@@ -45,11 +45,7 @@ const SmoothSuspense: FC<SmoothSuspenseProps> = ({ children, fallback }) => {
 
   return (
     <Suspense
-      fallback={
-        <div onAnimationEnd={() => setLoaded(true)}>
-          {fallback}
-        </div>
-      }
+      fallback={<div onAnimationEnd={() => setLoaded(true)}>{fallback}</div>}
     >
       <LoadedMarker onLoad={() => setLoaded(true)} />
       <div style={contentStyle}>{children}</div>
@@ -85,9 +81,15 @@ export const Main: FC = () => {
       }
     };
 
-    window.addEventListener('near:title-change', handleTitleChange as EventListener);
+    window.addEventListener(
+      'near:title-change',
+      handleTitleChange as EventListener
+    );
     return () => {
-      window.removeEventListener('near:title-change', handleTitleChange as EventListener);
+      window.removeEventListener(
+        'near:title-change',
+        handleTitleChange as EventListener
+      );
     };
   }, []);
 

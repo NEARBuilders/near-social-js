@@ -222,7 +222,10 @@ export function useGraphSet() {
           throw new Error('Delegate key not initialized');
         }
         await relayerClient.connect({ accountId });
-        const txBuilder = await delegateGraph.set({ signerId: accountId, data });
+        const txBuilder = await delegateGraph.set({
+          signerId: accountId,
+          data,
+        });
         const { payload } = await txBuilder.delegate();
         return relayerClient.publish({ payload });
       }
