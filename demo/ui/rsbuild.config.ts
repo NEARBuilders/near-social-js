@@ -3,12 +3,13 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
 import pkg from './package.json';
+import { withZephyr } from "zephyr-rsbuild-plugin"
 
 export default defineConfig({
   plugins: [
     pluginReact(),
     pluginModuleFederation({
-      name: 'near_social_js',
+      name: 'near_social_js_ui',
       filename: 'remoteEntry.js',
       dts: false,
       exposes: {
@@ -55,6 +56,20 @@ export default defineConfig({
         },
       },
     }),
+    withZephyr({
+      hooks: {
+        onDeployComplete: (info) => {
+
+          console.log('🚀 Deployment Complete!');
+          console.log(`   URL: ${info.url}`); // remote URL
+          console.log(`   Module: ${info.snapshot.uid.app_name}`);
+          console.log(`   Build ID: ${info.snapshot.uid.build}`);
+          console.log(`   Dependencies: ${info.federatedDependencies.length}`);
+          console.log(`   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`);
+          console.log(`   CI: ${info.buildStats.context.isCI ? 'Yes' : 'No'}`);
+        },
+      },
+    })
   ],
   source: {
     entry: {

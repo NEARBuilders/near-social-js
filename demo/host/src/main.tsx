@@ -11,7 +11,7 @@ import {
 import { ErrorBoundary } from './error-boundary';
 import { LoadingFallback } from './loading-fallback';
 
-const RemoteApp = lazy(() => import('near_social_js/App'));
+const RemoteApp = lazy(() => import('near_social_js_ui/App'));
 
 interface SmoothSuspenseProps {
   children: ReactNode;

@@ -12,30 +12,30 @@ import { LoadingFallback } from './loading-fallback';
 import { FadeIn } from './fade-in';
 
 const SocialProvider = lazy(() =>
-  import('near_social_js/providers').then((m) => ({ default: m.SocialProvider }))
+  import('near_social_js_ui/providers').then((m) => ({ default: m.SocialProvider }))
 );
 
 const componentModules = {
   ProfileCard: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.ProfileCard }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.ProfileCard }))
   ),
   ProfileAvatar: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.ProfileAvatar }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.ProfileAvatar }))
   ),
   WalletButton: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.WalletButton }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.WalletButton }))
   ),
   Logo: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.Logo }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.Logo }))
   ),
   JsonViewer: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.JsonViewer }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.JsonViewer }))
   ),
   MethodCard: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.MethodCard }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.MethodCard }))
   ),
   ResponsePanel: lazy(() =>
-    import('near_social_js/components').then((m) => ({ default: m.ResponsePanel }))
+    import('near_social_js_ui/components').then((m) => ({ default: m.ResponsePanel }))
   ),
 };
 
@@ -297,7 +297,7 @@ export const Components: FC = () => {
                   <header style={headerStyle}>
                     <h1 style={titleStyle}>Component Gallery</h1>
                     <p style={subtitleStyle}>
-                      Remote components from <code style={codeStyle}>near_social_js</code>
+                      Remote components from <code style={codeStyle}>near_social_js_ui</code>
                     </p>
                   </header>
                 </FadeIn>

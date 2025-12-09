@@ -1,7 +1,7 @@
 {
   "remotes": {
-    "near_social_js": {
-      "url": "https://near-social-js-demo.pages.dev/remoteEntry.js",
+    "near_social_js_ui": {
+      "url": "https://elliot-braem-1014-near-social-js-ui-near-social-j-d8f1ce2a9-ze.zephyrcloud.app/remoteEntry.js",
       "exposes": {
         "App": "./App",
         "components": "./components",

@@ -102,6 +102,7 @@
         "typescript": "^5.9.3",
         "vitest": "^3.2.4",
         "web-vitals": "^5.1.0",
+        "zephyr-rsbuild-plugin": "^0.1.2",
       },
       "peerDependencies": {
         "@hot-labs/near-connect": "^0.6.x",
@@ -1769,6 +1770,8 @@
     "zephyr-agent": ["zephyr-agent@0.1.2", "", { "dependencies": { "@toon-format/toon": "^0.8.0", "axios": "^1.12.0", "axios-retry": "^4.5.0", "cloudflare": "^3.4.0", "debug": "^4.3.4", "eventsource": "^4.0.0", "git-url-parse": "^15.0.0", "is-ci": "^4.1.0", "jose": "^5.10.0", "node-persist": "^4.0.1", "open": "^10.1.0", "proper-lockfile": "^4.1.2", "tslib": "^2.8.1", "uuid": "^8.3.2", "ws": "^8.18.3", "zephyr-edge-contract": "0.1.2" } }, "sha512-+M78aN7AwKawqahrXeEINMIQnuyG1206IsZiMbV8nBSh17mPSyfj39M6q/3tnniT794WPCvK2HPDusc4hpwSFg=="],
 
     "zephyr-edge-contract": ["zephyr-edge-contract@0.1.2", "", { "dependencies": { "tslib": "^2.8.1" } }, "sha512-nERy80QrPn8DGA/kiUQZSLq4f7UdZ1elps/UEvF06QZ83n3YRWiFmP8aQaCu+/f4oWCS1NG9/CkFW28Yxp8tEw=="],
+
+    "zephyr-rsbuild-plugin": ["zephyr-rsbuild-plugin@0.1.2", "", { "dependencies": { "@rsbuild/core": "^1.3.22", "zephyr-rspack-plugin": "0.1.2" } }, "sha512-ZkA/ZX1/9QpRNu3kh1b6Twz3Q6ZCXdK2waluBFn5SQ/X8fWS/IwQt1LR/m2ul6wTCpUBbZqgO7MOOApdFpU8OA=="],
 
     "zephyr-rspack-plugin": ["zephyr-rspack-plugin@0.1.2", "", { "dependencies": { "@module-federation/automatic-vendor-federation": "^1.2.1", "@rspack/core": "^1.5.5", "is-ci": "^4.1.0", "tslib": "^2.8.1", "zephyr-agent": "0.1.2", "zephyr-xpack-internal": "0.1.2" } }, "sha512-Kb8xyH7kfV750Nj3oZFI3zDeU3HHpdbBSEy/mWVuxjURQN2wazZfGz5BsKXa/vBDz/h9bPqQMOFGRIFOh2WOUg=="],
 
