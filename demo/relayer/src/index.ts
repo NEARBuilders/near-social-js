@@ -31,13 +31,12 @@ export default createPlugin({
           }
         : (config.variables.network as Network);
 
-      console.log(
-        '[Relayer Init] relayerAccountId:',
-        config.secrets.relayerAccountId
-      );
-      console.log('[Relayer Init] network:', config.variables.network);
-      console.log('[Relayer Init] contractId:', config.variables.contractId);
+      console.log(`[Relayer Init] relayerAccountId: ${config.secrets.relayerAccountId}`);
 
+      console.log(`[Relayer Init] network: ${config.variables.network}`);
+      console.log(`[Relayer Init] contractId: ${config.variables.contractId}`);
+
+      // add key to keyStore
       const keyStore = new InMemoryKeyStore();
       yield* Effect.promise(() =>
         keyStore.add(
@@ -46,22 +45,12 @@ export default createPlugin({
         )
       );
 
-      console.log(
-        '[Relayer Init] Key added to keyStore for account:',
-        config.secrets.relayerAccountId
-      );
-
       const near = new Near({
         network: networkConfig,
         keyStore,
         defaultSignerId: config.secrets.relayerAccountId,
-        defaultWaitUntil: 'FINAL',
+        defaultWaitUntil: 'FINAL', // wait until transactions complete before responding
       });
-
-      console.log(
-        '[Relayer Init] Near instance created with defaultSignerId:',
-        config.secrets.relayerAccountId
-      );
 
       const service = new RelayerService(
         near,
@@ -69,7 +58,7 @@ export default createPlugin({
         config.variables.contractId
       );
 
-      console.log('[Relayer Init] RelayerService initialized');
+      console.debug('[Relayer Init] RelayerService initialized');
 
       return { service };
     }),

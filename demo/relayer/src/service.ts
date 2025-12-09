@@ -3,6 +3,7 @@ import { Graph } from 'near-social-js';
 import type { ConnectOutput, PublishOutput } from './schema';
 
 const DEFAULT_STORAGE_DEPOSIT = '500000000000000000000000';
+const DEFAULT_CONTRACT_ID = 'social.near';
 
 export class RelayerService {
   private readonly near: Near;
@@ -13,7 +14,7 @@ export class RelayerService {
   constructor(
     near: Near,
     relayerAccountId: string,
-    contractId: string = 'social.near'
+    contractId: string = DEFAULT_CONTRACT_ID
   ) {
     this.near = near;
     this.relayerAccountId = relayerAccountId;
@@ -25,6 +26,7 @@ export class RelayerService {
   }
 
   async ensureStorageDeposit(accountId: string): Promise<ConnectOutput> {
+    // social.near contract requires deposit for storing data
     const storageBalance = await this.graph.storageBalanceOf(accountId);
     const hasStorage =
       storageBalance !== null && BigInt(storageBalance.total) > 0n;
@@ -36,6 +38,7 @@ export class RelayerService {
       };
     }
 
+    // otherwise
     const result = await this.near
       .transaction(this.relayerAccountId)
       .functionCall(
@@ -56,16 +59,7 @@ export class RelayerService {
   async submitDelegateAction(payload: string): Promise<PublishOutput> {
     const signedDelegateAction = decodeSignedDelegateAction(payload);
 
-    console.log('[Relayer] submitDelegateAction called');
-    console.log('[Relayer] relayerAccountId:', this.relayerAccountId);
-    console.log(
-      '[Relayer] signedDelegateAction:',
-      JSON.stringify(
-        signedDelegateAction,
-        (_, v) => (typeof v === 'bigint' ? v.toString() : v),
-        2
-      )
-    );
+    console.debug(`[Relayer] signed delegate submitted to ${this.relayerAccountId}`);
 
     const result = await this.near
       .transaction(this.relayerAccountId)
