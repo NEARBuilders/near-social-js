@@ -12,9 +12,9 @@ export const contract = oc.router({
     .route({
       method: "POST",
       path: "/connect",
-      summary: "Connect account to social.near",
-      description: "Ensures the account has storage deposit on the social.near contract. If not, makes a deposit on behalf of the user.",
-      tags: ["Social"],
+      summary: "Connect to contract",
+      description: "Ensures the account has storage deposit on the contract. If not, makes a deposit on behalf of the user.",
+      tags: ["Relayer"],
     })
     .input(ConnectInputSchema)
     .output(ConnectOutputSchema),
@@ -25,7 +25,7 @@ export const contract = oc.router({
       path: "/publish",
       summary: "Publish a signed delegate action",
       description: "Submits a signed delegate action (meta-transaction) to the network. Used for gasless social posts and profile updates.",
-      tags: ["Social"],
+      tags: ["Relayer"],
     })
     .input(PublishInputSchema)
     .output(PublishOutputSchema),

@@ -9,13 +9,13 @@ const remotesConfig = JSON.parse(fs.readFileSync('./remotes.json', 'utf-8'));
 const remoteEntries = Object.entries(remotesConfig.remotes).reduce(
   (acc, [name, config]) => {
     const { url } = config as { url: string };
-    acc[name] = `${name}@${url}`;
+    acc[name] = `${name}@${url}/remoteEntry.js`;
     return acc;
   },
   {} as Record<string, string>
 );
 
-const remoteEntryUrl = remotesConfig.remotes.near_social_js?.url ?? '';
+const remoteEntryUrl = remotesConfig.remotes.near_social_js_ui?.url ?? "";
 const remoteOrigin = remoteEntryUrl ? new URL(remoteEntryUrl).origin : '';
 
 export default defineConfig({

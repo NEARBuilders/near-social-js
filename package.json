@@ -43,7 +43,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:demo": "cd demo/ui && bun install && bun run build",
+    "build:demo": "cd demo && bun install && bun run build",
     "docs:build": "docusaurus build --out-dir .docs",
     "docs:serve": "docusaurus serve --dir .docs --no-open",
     "docs:start": "docusaurus start --no-open --port 8080",

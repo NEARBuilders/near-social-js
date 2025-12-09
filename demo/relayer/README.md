@@ -1,6 +1,6 @@
 # near-social-js Relayer
 
-A relayer plugin for near-social-js that enables gasless transactions on NEAR Social (social.near).
+A relayer plugin for near-social-js that enables gasless transactions on [NEAR Social](https://near.social) (`social.near` contract).
 
 ## Features
 

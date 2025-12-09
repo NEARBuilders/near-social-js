@@ -1,0 +1,135 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "near-social-js-ui",
+  "homepage": "https://nearbuilders.github.io/near-social-js",
+  "items": [
+    {
+      "name": "profile-card",
+      "type": "registry:component",
+      "title": "ProfileCard",
+      "description": "Display a NEAR Social profile card",
+      "registryDependencies": ["card", "button"],
+      "files": [
+        {
+          "path": "components/profile-card.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {
+          "accountId": "root.near",
+          "profile": { "name": "Demo User" }
+        }
+      }
+    },
+    {
+      "name": "profile-avatar",
+      "type": "registry:component",
+      "title": "ProfileAvatar",
+      "description": "Display a NEAR Social profile avatar",
+      "files": [
+        {
+          "path": "components/profile-avatar.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {
+          "accountId": "root.near",
+          "size": 64
+        }
+      }
+    },
+    {
+      "name": "wallet-button",
+      "type": "registry:component",
+      "title": "WalletButton",
+      "description": "Connect to NEAR wallet",
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "components/wallet-button.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {}
+      }
+    },
+    {
+      "name": "logo",
+      "type": "registry:component",
+      "title": "Logo",
+      "description": "NearSocial.JS logo",
+      "files": [
+        {
+          "path": "components/logo.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {}
+      }
+    },
+    {
+      "name": "json-viewer",
+      "type": "registry:component",
+      "title": "JsonViewer",
+      "description": "Display JSON data with syntax highlighting",
+      "files": [
+        {
+          "path": "components/json-viewer.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {
+          "data": {
+            "message": "Hello from Module Federation",
+            "version": "1.0.0"
+          }
+        }
+      }
+    },
+    {
+      "name": "method-card",
+      "type": "registry:component",
+      "title": "MethodCard",
+      "description": "Display API method information",
+      "registryDependencies": ["card"],
+      "files": [
+        {
+          "path": "components/method-card.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {
+          "title": "getData",
+          "description": "Fetches data from the social contract"
+        }
+      }
+    },
+    {
+      "name": "response-panel",
+      "type": "registry:component",
+      "title": "ResponsePanel",
+      "description": "Display API response data",
+      "registryDependencies": ["card"],
+      "files": [
+        {
+          "path": "components/response-panel.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "meta": {
+        "defaultProps": {
+          "response": {
+            "success": true,
+            "data": { "key": "value" }
+          }
+        }
+      }
+    }
+  ]
+}

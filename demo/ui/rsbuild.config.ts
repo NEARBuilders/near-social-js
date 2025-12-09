@@ -2,14 +2,33 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import pkg from './package.json';
 import { withZephyr } from "zephyr-rsbuild-plugin"
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const normalizedName = pkg.name;
+
+function updateHostConfig(name: string, url: string) {
+  try {
+    const configPath = path.resolve(__dirname, '../host/remotes.json');
+    const json = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    json.remotes[name].url = url;
+    fs.writeFileSync(configPath, JSON.stringify(json, null, 2) + '\n');
+    console.log('   ✅ Updated host/remotes.json');
+  } catch (err) {
+    console.error('   ❌ Failed to update host/remotes.json:', (err as Error).message);
+  }
+}
 
 export default defineConfig({
   plugins: [
     pluginReact(),
     pluginModuleFederation({
-      name: 'near_social_js_ui',
+      name: normalizedName,
       filename: 'remoteEntry.js',
       dts: false,
       exposes: {
@@ -59,14 +78,14 @@ export default defineConfig({
     withZephyr({
       hooks: {
         onDeployComplete: (info) => {
-
           console.log('🚀 Deployment Complete!');
-          console.log(`   URL: ${info.url}`); // remote URL
+          console.log(`   URL: ${info.url}`);
           console.log(`   Module: ${info.snapshot.uid.app_name}`);
           console.log(`   Build ID: ${info.snapshot.uid.build}`);
           console.log(`   Dependencies: ${info.federatedDependencies.length}`);
           console.log(`   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`);
           console.log(`   CI: ${info.buildStats.context.isCI ? 'Yes' : 'No'}`);
+          updateHostConfig(normalizedName, info.url);
         },
       },
     })
@@ -80,8 +99,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': './src',
-      // we want this in dev but not remote
-      // 'near-social-js': '../../src/index.ts',
     },
   },
   html: {
@@ -101,6 +118,12 @@ export default defineConfig({
   tools: {
     rspack: {
       target: 'web',
+      output: {
+        library: {
+          name: normalizedName,
+          type: 'var',
+        },
+      },
       externalsType: 'module',
       externals: {
         fs: 'commonjs fs',

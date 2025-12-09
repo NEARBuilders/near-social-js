@@ -64,17 +64,17 @@ async function startServer() {
     credentials: true,
   }))
 
-  apiApp.get('/', (c) => c.text('OK'))
+  apiApp.get('/health', (c) => c.text('OK'))
 
   const serverUrl = process.env.SERVER_URL || 'http://localhost:3000'
 
   apiApp.all('/api/auth/*', async (c) => {
     const url = new URL(c.req.url)
     const targetUrl = `${serverUrl}${url.pathname}${url.search}`
-    
+
     const headers = new Headers(c.req.raw.headers)
     headers.delete('host')
-    
+
     const response = await fetch(targetUrl, {
       method: c.req.method,
       headers,
@@ -85,7 +85,7 @@ async function startServer() {
     })
 
     const responseHeaders = new Headers(response.headers)
-    
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
