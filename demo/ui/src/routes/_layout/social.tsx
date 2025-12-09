@@ -318,10 +318,10 @@ function SocialPage() {
             onExecute={async (params: Record<string, string>) => {
               if (!accountId) throw new Error('Wallet not connected');
               const post: {
-                main: string;
+                text: string;
                 image?: { ipfs_cid?: string; url?: string };
               } = {
-                main: params.content,
+                text: params.content,
               };
               if (params.imageUrl || params.imageCid) {
                 post.image = {

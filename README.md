@@ -32,6 +32,16 @@
 
 </details>
 
+## About
+
+This SDK provides a TypeScript interface for interacting with [NEAR Social](https://near.social), a decentralized social network built on NEAR Protocol. It simplifies reading and writing data to the `social.near` contract.
+
+### Related Projects
+
+- [near.social](https://near.social) - The live social network
+- [NearSocial/viewer](https://github.com/NearSocial/viewer) - The original NEAR Social frontend
+- [NearSocial/social-db](https://github.com/NearSocial/social-db) - The social.near smart contract
+
 ## Getting Started
 
 ### Installing dependencies

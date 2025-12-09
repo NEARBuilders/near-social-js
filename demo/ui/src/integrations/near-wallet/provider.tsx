@@ -7,9 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { NearConnector } from '@hot-labs/near-connect';
-import { Near, fromHotConnect } from 'near-kit';
-
-type NetworkId = 'mainnet' | 'testnet';
+import { Near, fromHotConnect, type Network } from 'near-kit';
 
 interface WalletContextType {
   near: Near | null;
@@ -23,7 +21,7 @@ const WalletContext = createContext<WalletContextType | null>(null);
 
 interface WalletProviderProps {
   children: ReactNode;
-  network?: NetworkId;
+  network?: Network;
 }
 
 export function WalletProvider({
@@ -36,7 +34,9 @@ export function WalletProvider({
   const [connector, setConnector] = useState<NearConnector | null>(null);
 
   useEffect(() => {
-    const nearConnector = new NearConnector({ network });
+    const nearConnector = new NearConnector({
+      network: network as 'mainnet' | 'testnet',
+    });
     setConnector(nearConnector);
 
     nearConnector.on('wallet:signIn', async (data) => {

@@ -18,7 +18,7 @@ export interface Profile {
 }
 
 export interface Post {
-  main: string;
+  text: string;
   image?: {
     ipfs_cid?: string;
     url?: string;

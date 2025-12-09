@@ -120,7 +120,9 @@ describe('Graph - Transaction Methods', () => {
         signerId: rootAccountId,
         deposit: '1000000000000000000000000',
       });
-      await txBuilder.send();
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
 
       const balance = await graph.storageBalanceOf(rootAccountId);
       expect(balance).not.toBeNull();
@@ -164,7 +166,9 @@ describe('Graph - Transaction Methods', () => {
           },
         },
       });
-      await txBuilder.send();
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
 
       const result = await graph.get({
         keys: [`${rootAccountId}/profile/**`],
@@ -172,7 +176,7 @@ describe('Graph - Transaction Methods', () => {
       });
 
       expect(result).toBeDefined();
-      expect(result[rootAccountId]).toBeDefined();
+      expect(result![rootAccountId]).toBeDefined();
     });
   });
 
@@ -214,7 +218,7 @@ describe('Graph - Transaction Methods', () => {
       expect(typeof txBuilder.send).toBe('function');
     });
 
-    it.skip('should grant permission and verify it', async () => {
+    it('should grant permission and verify it', async () => {
       const key = `${rootAccountId}/profile/name`;
 
       const txBuilder = await graph.grantWritePermission({
@@ -222,7 +226,9 @@ describe('Graph - Transaction Methods', () => {
         keys: [key],
         granteeAccountId,
       });
-      await txBuilder.send();
+      const result = await txBuilder.send();
+
+      expect(result.status).not.toHaveProperty('Failure');
 
       const hasPermission = await graph.isWritePermissionGranted({
         key,
@@ -298,14 +304,16 @@ describe('Graph - Transaction Methods', () => {
       });
 
       expect(txBuilder).toBeDefined();
-      await txBuilder.send();
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
 
       const result = await graph.get({
         keys: [`${rootAccountId}/test/**`],
         useApiServer: false,
       });
 
-      const testData = result[rootAccountId] as {
+      const testData = result![rootAccountId] as {
         test?: { deleteMe?: string };
       };
       expect(testData?.test?.deleteMe).toBeUndefined();
@@ -352,7 +360,9 @@ describe('Graph - Direct Contract Calls (useApiServer: false)', () => {
           },
         },
       });
-      await txBuilder.send();
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
     });
 
     it('should retrieve data directly from contract', async () => {
@@ -362,7 +372,7 @@ describe('Graph - Direct Contract Calls (useApiServer: false)', () => {
       });
 
       expect(result).toBeDefined();
-      expect(result[rootAccountId]).toBeDefined();
+      expect(result![rootAccountId]).toBeDefined();
     });
 
     it('should support withBlockHeight option', async () => {

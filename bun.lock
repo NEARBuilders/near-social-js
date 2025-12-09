@@ -6,7 +6,7 @@
       "name": "near-social-js",
       "dependencies": {
         "bignumber.js": "^9.3.1",
-        "near-kit": "^0.6.0",
+        "near-kit": "^0.6.3",
       },
       "devDependencies": {
         "@docusaurus/babel": "^3.9.2",
@@ -2102,7 +2102,7 @@
 
     "natural-compare": ["natural-compare@1.4.0", "", {}, "sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw=="],
 
-    "near-kit": ["near-kit@0.6.2", "", { "dependencies": { "@napi-rs/keyring": "^1.2.0", "@noble/curves": "^2.0.1", "@noble/hashes": "^2.0.1", "@scure/base": "^2.0.0", "@scure/bip32": "^2.0.1", "@scure/bip39": "^2.0.1", "@zorsh/zorsh": "^0.4.0", "tar": "^7.5.2", "zod": "^4.1.12" }, "peerDependencies": { "@hot-labs/near-connect": ">=0.6.0", "@near-wallet-selector/core": ">=8.0.0" }, "optionalPeers": ["@hot-labs/near-connect", "@near-wallet-selector/core"] }, "sha512-2zvtjyMtVltADXrCRuZ4VkHJUOVcS9StM2t7hSsqZqf7ZagTCAnFTUOldEpCBm7OeuJDFl8Fu0JfxbOxHUvONw=="],
+    "near-kit": ["near-kit@0.6.3", "", { "dependencies": { "@napi-rs/keyring": "^1.2.0", "@noble/curves": "^2.0.1", "@noble/hashes": "^2.0.1", "@scure/base": "^2.0.0", "@scure/bip32": "^2.0.1", "@scure/bip39": "^2.0.1", "@zorsh/zorsh": "^0.4.0", "tar": "^7.5.2", "zod": "^4.1.12" }, "peerDependencies": { "@hot-labs/near-connect": ">=0.6.0", "@near-wallet-selector/core": ">=8.0.0" }, "optionalPeers": ["@hot-labs/near-connect", "@near-wallet-selector/core"] }, "sha512-3OibK7+2iODvwb+E9Cualz9HsH+hKdh6Q6WwhhGSjrKKurOslkcCOA1Bz7EK5sU7p+SZItJ53rI+eyQ0wQteNg=="],
 
     "negotiator": ["negotiator@0.6.4", "", {}, "sha512-myRT3DiWPHqho5PrJaIRyaMv2kgYf0mUVgBNOYMuCH5Ki1yEiQaf/ZJuQ62nvpc44wL5WDbTX7yGJi1Neevw8w=="],
 

@@ -8,6 +8,8 @@ import { Social, type Profile } from 'near-social-js';
 import { useWallet } from '../near-wallet';
 import { socialKeys } from './query-keys';
 import { useMemo } from 'react';
+import { useRelayer } from '../../providers';
+import { relayerClient } from '../../utils/orpc';
 
 export function useSocialInstance() {
   const { near } = useWallet();
@@ -17,6 +19,17 @@ export function useSocialInstance() {
         ? new Social({ near, network: 'mainnet' })
         : new Social({ network: 'mainnet' }),
     [near]
+  );
+}
+
+export function useDelegateSocialInstance() {
+  const { delegateNear } = useRelayer();
+  return useMemo(
+    () =>
+      delegateNear
+        ? new Social({ near: delegateNear, network: 'mainnet' })
+        : new Social({ network: 'mainnet' }),
+    [delegateNear]
   );
 }
 
@@ -69,12 +82,28 @@ export function useFollow(lookupAccountId: string) {
   const queryClient = useQueryClient();
   const { accountId } = useWallet();
   const social = useSocialInstance();
+  const delegateSocial = useDelegateSocialInstance();
+  const { isRelayerEnabled, delegateNear } = useRelayer();
 
   return useMutation({
     mutationFn: async () => {
       if (!accountId || !lookupAccountId) {
         throw new Error('Wallet not connected');
       }
+
+      if (isRelayerEnabled) {
+        if (!delegateNear) {
+          throw new Error('Delegate key not initialized');
+        }
+        await relayerClient.connect({ accountId });
+        const txBuilder = await delegateSocial.follow(
+          accountId,
+          lookupAccountId
+        );
+        const { payload } = await txBuilder.delegate();
+        return relayerClient.publish({ payload });
+      }
+
       const txBuilder = await social.follow(accountId, lookupAccountId);
       return txBuilder.send();
     },
@@ -95,12 +124,28 @@ export function useUnfollow(lookupAccountId: string) {
   const queryClient = useQueryClient();
   const { accountId } = useWallet();
   const social = useSocialInstance();
+  const delegateSocial = useDelegateSocialInstance();
+  const { isRelayerEnabled, delegateNear } = useRelayer();
 
   return useMutation({
     mutationFn: async () => {
       if (!accountId || !lookupAccountId) {
         throw new Error('Wallet not connected');
       }
+
+      if (isRelayerEnabled) {
+        if (!delegateNear) {
+          throw new Error('Delegate key not initialized');
+        }
+        await relayerClient.connect({ accountId });
+        const txBuilder = await delegateSocial.unfollow(
+          accountId,
+          lookupAccountId
+        );
+        const { payload } = await txBuilder.delegate();
+        return relayerClient.publish({ payload });
+      }
+
       const txBuilder = await social.unfollow(accountId, lookupAccountId);
       return txBuilder.send();
     },
@@ -121,12 +166,25 @@ export function useSetProfile() {
   const queryClient = useQueryClient();
   const { accountId } = useWallet();
   const social = useSocialInstance();
+  const delegateSocial = useDelegateSocialInstance();
+  const { isRelayerEnabled, delegateNear } = useRelayer();
 
   return useMutation({
     mutationFn: async (profile: Partial<Profile>) => {
       if (!accountId) {
         throw new Error('Wallet not connected');
       }
+
+      if (isRelayerEnabled) {
+        if (!delegateNear) {
+          throw new Error('Delegate key not initialized');
+        }
+        await relayerClient.connect({ accountId });
+        const txBuilder = await delegateSocial.setProfile(accountId, profile);
+        const { payload } = await txBuilder.delegate();
+        return relayerClient.publish({ payload });
+      }
+
       const txBuilder = await social.setProfile(accountId, profile);
       return txBuilder.send();
     },
@@ -159,16 +217,29 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
   const { accountId } = useWallet();
   const social = useSocialInstance();
+  const delegateSocial = useDelegateSocialInstance();
+  const { isRelayerEnabled, delegateNear } = useRelayer();
 
   return useMutation({
     mutationFn: async (post: {
-      main: string;
+      text: string;
       image?: { ipfs_cid?: string; url?: string };
       [key: string]: unknown;
     }) => {
       if (!accountId) {
         throw new Error('Wallet not connected');
       }
+
+      if (isRelayerEnabled) {
+        if (!delegateNear) {
+          throw new Error('Delegate key not initialized');
+        }
+        await relayerClient.connect({ accountId });
+        const txBuilder = await delegateSocial.createPost(accountId, post);
+        const { payload } = await txBuilder.delegate();
+        return relayerClient.publish({ payload });
+      }
+
       const txBuilder = await social.createPost(accountId, post);
       return txBuilder.send();
     },
@@ -182,6 +253,8 @@ export function useLike() {
   const queryClient = useQueryClient();
   const { accountId } = useWallet();
   const social = useSocialInstance();
+  const delegateSocial = useDelegateSocialInstance();
+  const { isRelayerEnabled, delegateNear } = useRelayer();
 
   return useMutation({
     mutationFn: async (item: {
@@ -192,6 +265,17 @@ export function useLike() {
       if (!accountId) {
         throw new Error('Wallet not connected');
       }
+
+      if (isRelayerEnabled) {
+        if (!delegateNear) {
+          throw new Error('Delegate key not initialized');
+        }
+        await relayerClient.connect({ accountId });
+        const txBuilder = await delegateSocial.like(accountId, item);
+        const { payload } = await txBuilder.delegate();
+        return relayerClient.publish({ payload });
+      }
+
       const txBuilder = await social.like(accountId, item);
       return txBuilder.send();
     },

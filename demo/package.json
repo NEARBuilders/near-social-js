@@ -1,0 +1,23 @@
+{
+  "name": "near-social-js-demo",
+  "private": true,
+  "workspaces": [
+    "host",
+    "relayer",
+    "ui"
+  ],
+  "scripts": {
+    "dev": "bun --filter '*' dev",
+    "dev:host": "bun --filter host dev",
+    "dev:ui": "bun --filter near_social_js_ui dev",
+    "dev:relayer": "bun --filter near-social-js-relayer dev",
+    "build": "bun --filter '*' build",
+    "build:host": "bun --filter host build",
+    "build:ui": "bun --filter near_social_js_ui build",
+    "build:relayer": "bun --filter near-social-js-relayer build",
+    "deploy": "bun --filter near_social_js_ui build && bun --filter near-social-js-relayer build",
+    "start": "bun run --filter host preview",
+    "test": "bun --filter '*' test",
+    "typecheck": "bun --filter '*' typecheck"
+  }
+}
