@@ -45,12 +45,12 @@ export default defineConfig({
         },
         '@hot-labs/near-connect': {
           singleton: true,
-          eager: false,
+          eager: true,
           requiredVersion: pkg.dependencies['@hot-labs/near-connect'],
         },
         'near-kit': {
           singleton: true,
-          eager: false,
+          eager: true,
           requiredVersion: pkg.dependencies['near-kit'],
         },
       },

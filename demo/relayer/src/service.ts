@@ -55,6 +55,10 @@ export class RelayerService {
   async submitDelegateAction(payload: string): Promise<PublishOutput> {
     const signedDelegateAction = decodeSignedDelegateAction(payload);
 
+    console.log("[Relayer] submitDelegateAction called");
+    console.log("[Relayer] relayerAccountId:", this.relayerAccountId);
+    console.log("[Relayer] signedDelegateAction:", JSON.stringify(signedDelegateAction, (_, v) => typeof v === "bigint" ? v.toString() : v, 2));
+
     const result = await this.near
       .transaction(this.relayerAccountId)
       .signedDelegateAction(signedDelegateAction)

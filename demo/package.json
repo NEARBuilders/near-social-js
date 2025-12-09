@@ -1,0 +1,7 @@
+{
+  "workspaces": [
+    "host",
+    "relayer",
+    "ui"
+  ]
+}

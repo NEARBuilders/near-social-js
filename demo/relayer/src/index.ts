@@ -1,7 +1,7 @@
 import { createPlugin } from "every-plugin";
 import { Effect } from "every-plugin/effect";
 import { z } from "every-plugin/zod";
-import { Near, type Network } from "near-kit";
+import { Near, InMemoryKeyStore, parseKey, type Network } from "near-kit";
 
 import { contract } from "./contract";
 import { RelayerService } from "./service";
@@ -31,18 +31,36 @@ export default createPlugin({
           }
         : (config.variables.network as Network);
 
+      console.log("[Relayer Init] relayerAccountId:", config.secrets.relayerAccountId);
+      console.log("[Relayer Init] network:", config.variables.network);
+      console.log("[Relayer Init] contractId:", config.variables.contractId);
+
+      const keyStore = new InMemoryKeyStore();
+      yield* Effect.promise(() =>
+        keyStore.add(
+          config.secrets.relayerAccountId,
+          parseKey(config.secrets.relayerPrivateKey)
+        )
+      );
+
+      console.log("[Relayer Init] Key added to keyStore for account:", config.secrets.relayerAccountId);
+
       const near = new Near({
         network: networkConfig,
-        privateKey: config.secrets.relayerPrivateKey as `ed25519:${string}`,
+        keyStore,
         defaultSignerId: config.secrets.relayerAccountId,
         defaultWaitUntil: "FINAL",
       });
+
+      console.log("[Relayer Init] Near instance created with defaultSignerId:", config.secrets.relayerAccountId);
 
       const service = new RelayerService(
         near,
         config.secrets.relayerAccountId,
         config.variables.contractId
       );
+
+      console.log("[Relayer Init] RelayerService initialized");
 
       return { service };
     }),

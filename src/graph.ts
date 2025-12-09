@@ -427,4 +427,17 @@ export class Graph {
         { gas: '30 Tgas', attachedDeposit: Amount.ONE_YOCTO }
       );
   }
+
+  createDelegateKey(signerId: string, publicKey: string, allowance?: string) {
+    return this.near.transaction(signerId).addKey(publicKey, {
+      type: 'functionCall',
+      receiverId: this.contractId,
+      methodNames: [],
+      allowance: (allowance ?? '0.25 NEAR') as `${number} NEAR`,
+    });
+  }
+
+  getContractId(): string {
+    return this.contractId;
+  }
 }

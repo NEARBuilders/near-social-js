@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet, Link } from '@tanstack/react-router';
+import { BookOpen, Database, Github, Home, Loader2, Menu, Radio, Trash2, Users, X } from 'lucide-react';
 import { useState } from 'react';
-import { BookOpen, Database, Github, Home, Menu, Users, X } from 'lucide-react';
 import { Logo } from '../components/logo';
 import { WalletButton } from '../components/wallet-button';
 import { useWallet } from '../integrations/near-wallet';
+import { useRelayer } from '../providers';
 
 export const Route = createFileRoute('/_layout')({
   component: LayoutComponent,
@@ -24,6 +25,7 @@ const GradientBlur = ({
 function LayoutComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const { accountId } = useWallet();
+  const { isRelayerEnabled, toggleRelayer, deleteDelegateKey, isLoading, canToggle } = useRelayer();
 
   return (
     <div className="relative flex flex-col w-full min-h-screen bg-[#0d1117] overflow-hidden">
@@ -68,6 +70,36 @@ function LayoutComponent() {
             </div>
 
             <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => toggleRelayer()}
+                  disabled={isLoading || !canToggle}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isRelayerEnabled
+                      ? 'bg-[#00EC97]/20 text-[#00EC97] border border-[#00EC97]/30'
+                      : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+                  }`}
+                  title={!canToggle ? 'Connect wallet to enable relayer' : isRelayerEnabled ? 'Relayer enabled - transactions are gasless' : 'Relayer disabled - using direct wallet'}
+                >
+                  {isLoading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Radio size={16} className={isRelayerEnabled ? 'animate-pulse' : ''} />
+                  )}
+                  <span className="hidden sm:inline">
+                    {isLoading ? 'Loading...' : isRelayerEnabled ? 'Relayed' : 'Direct'}
+                  </span>
+                </button>
+                {isRelayerEnabled && (
+                  <button
+                    onClick={deleteDelegateKey}
+                    className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors cursor-pointer"
+                    title="Remove delegate key and disable relayer"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
               <a
                 href="https://nearbuilders.github.io/near-social-js/"
                 target="_blank"
