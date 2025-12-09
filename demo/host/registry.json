@@ -1,7 +1,7 @@
 {
   "plugins": {
     "near-social-js-relayer": {
-      "remote": "https://elliot-braem-1030-near-social-js-relayer-near-soc-800146c7d-ze.zephyrcloud.app",
+      "remote": "https://elliot-braem-1031-near-social-js-relayer-near-soc-39a429e74-ze.zephyrcloud.app",
       "variables": {
         "baseUrl": "https://example.com"
       },
