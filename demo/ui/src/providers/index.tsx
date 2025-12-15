@@ -1,7 +1,9 @@
+// @ts-ignore
 import '../styles.css';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WalletProvider } from '../integrations/near-wallet';
+import { RelayerProvider } from './relayer-provider';
 import type { Network } from 'near-kit';
 
 const defaultQueryClient = new QueryClient({
@@ -28,12 +30,15 @@ export function SocialProvider({
 }: SocialProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <WalletProvider network={network}>{children}</WalletProvider>
+      <WalletProvider network={network}>
+        <RelayerProvider>{children}</RelayerProvider>
+      </WalletProvider>
     </QueryClientProvider>
   );
 }
 
-export { WalletProvider, QueryClientProvider };
+export { WalletProvider, QueryClientProvider, RelayerProvider };
+export { useRelayer } from './relayer-provider';
 
 export function createQueryClient() {
   return new QueryClient({

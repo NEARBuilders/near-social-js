@@ -32,7 +32,7 @@ await tx.send();
 
 ```typescript
 // Create post
-const tx = await social.createPost('alice.near', { main: 'Hello world!' });
+const tx = await social.createPost('alice.near', { text: 'Hello world!' });
 await tx.send();
 
 // Get post at specific block

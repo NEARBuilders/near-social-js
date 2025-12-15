@@ -1,6 +1,27 @@
-# near-social-js Demo
+# near-social-js UI
 
-Interactive demo application showcasing the capabilities of the [near-social-js](https://github.com/NEARBuilders/near-social-js) TypeScript SDK for interacting with NEAR's social contract.
+Interactive demo application showcasing the capabilities of the [near-social-js](https://github.com/NEARBuilders/near-social-js) TypeScript SDK for interacting with [NEAR Social](https://near.social) (`social.near` contract).
+
+## Module Federation
+
+This package is configured as a Module Federation **remote**, exposing components, hooks, and providers that can be consumed by host applications. It also provides a [shadcn/ui registry](https://ui.shadcn.com/docs/registry) for easy component installation.
+
+### Exposed Modules
+
+- `./App` - Main application entry point
+- `./components` - UI components (ProfileCard, ProfileAvatar, WalletButton, etc.)
+- `./providers` - React context providers (SocialProvider)
+- `./hooks/social` - NEAR Social data hooks
+- `./hooks/graph` - Graph data hooks
+- `./hooks/wallet` - Wallet connection hooks
+
+### Component Registry
+
+Install components via shadcn CLI:
+
+```bash
+npx shadcn@latest add -r <remote-url> profile-card
+```
 
 ## Getting Started
 

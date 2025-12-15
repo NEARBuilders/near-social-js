@@ -42,7 +42,9 @@ describe('Social - Profile Methods', () => {
         name: 'Alice',
         description: 'Hello from Alice',
       });
-      await txBuilder.send();
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
 
       const profile = await social.getProfile(rootAccountId);
       expect(profile).toBeDefined();
@@ -268,7 +270,9 @@ describe('Social - Follow Methods', () => {
 
     it('should store follow relationship', async () => {
       const txBuilder = await social.follow(rootAccountId, targetAccountId);
-      await txBuilder.send();
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
 
       const following = await social.getFollowing(rootAccountId);
       expect(following).not.toBeNull();

@@ -19,7 +19,7 @@ const url = 'https://nearbuilders.github.io';
 // header
 const tagline =
   'A JavaScript SDK for interacting with the social contract (social.near) with helper functions for typical social features.';
-const title = 'Near Social SDK';
+const title = 'NearSocial.JS';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
