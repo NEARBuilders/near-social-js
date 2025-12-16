@@ -16,6 +16,27 @@ This document outlines the remaining tasks for the `near-social-js` v2.0 release
 
 ---
 
+### 3. Post Structure Enhancement
+**Description**: Update `Post` interface and `createPost` method to match NEAR Social's expected structure.
+
+**Current Issue**: Posts should have `type` field (default "md") in the main content.
+
+**Acceptance Criteria**:
+- [x] `Post` interface includes `text`, `type` (optional, defaults to "md"), and `image` (optional)
+- [x] `createPost` stores `{ text, type }` in `post/main` (JSON stringified)
+- [x] `createPost` indexes to `index/post` with key "main" and value `{ type: "md" }`
+
+**Test**:
+```typescript
+it('should create a post with proper structure', async () => {
+  const tx = await social.createPost(signerId, { text: 'Hello', type: 'md' });
+  await tx.send();
+  // Verify stored data matches expected structure
+});
+```
+
+---
+
 ## In Progress 🔄
 
 ### 2. Social Class Methods
@@ -34,27 +55,6 @@ Current methods implemented in `src/social.ts`:
 ---
 
 ## TODO 📋
-
-### 3. Post Structure Enhancement
-**Description**: Update `Post` interface and `createPost` method to match NEAR Social's expected structure.
-
-**Current Issue**: Posts should have `type` field (default "md") in the main content.
-
-**Acceptance Criteria**:
-- [ ] `Post` interface includes `text`, `type` (optional, defaults to "md"), and `image` (optional)
-- [ ] `createPost` stores `{ text, type }` in `post/main` (JSON stringified)
-- [ ] `createPost` indexes to `index/post` with key "main" and value `{ type: "md" }`
-
-**Test**:
-```typescript
-it('should create a post with proper structure', async () => {
-  const tx = await social.createPost(signerId, { text: 'Hello', type: 'md' });
-  await tx.send();
-  // Verify stored data matches expected structure
-});
-```
-
----
 
 ### 4. Comments Feature
 **Description**: Add ability to create and retrieve comments on posts.

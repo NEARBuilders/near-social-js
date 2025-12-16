@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "rsbuild dev --port 3000",
+    "dev": "rsbuild dev --port 3002",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
     "test": "vitest run",
@@ -31,7 +31,7 @@
     "every-plugin": "^0.6.1",
     "lucide-react": "^0.544.0",
     "near-kit": "^0.6.3",
-    "near-social-js": "^2.0.3",
+    "near-social-js": "file:../../near-social-js-2.0.3.tgz",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.4.0",

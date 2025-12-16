@@ -19,6 +19,7 @@ export interface Profile {
 
 export interface Post {
   text: string;
+  type?: string;
   image?: {
     ipfs_cid?: string;
     url?: string;
@@ -63,17 +64,37 @@ export class Social extends Graph {
 
     if (!result) return null;
 
-    const accountData = result[accountId] as { post?: Post } | undefined;
-    return accountData?.post ?? null;
+    const accountData = result[accountId] as
+      | { post?: { main?: unknown } }
+      | undefined;
+    const main = accountData?.post?.main;
+
+    if (typeof main !== 'string') return null;
+
+    try {
+      const parsed = JSON.parse(main) as Record<string, unknown> | null;
+      if (!parsed || typeof parsed !== 'object') return null;
+      return {
+        ...(parsed as Post),
+        type: typeof parsed.type === 'string' ? parsed.type : 'md',
+      };
+    } catch {
+      // Backwards compat: if the stored value wasn't JSON, treat it as raw markdown text.
+      return { text: main, type: 'md' };
+    }
   }
 
   async createPost(signerId: string, post: Post) {
+    const type = post.type ?? 'md';
     return this.set({
       signerId,
       data: {
         [signerId]: {
           post: {
-            main: JSON.stringify(post),
+            main: JSON.stringify({
+              text: post.text,
+              type,
+            }),
           },
           index: {
             post: JSON.stringify({

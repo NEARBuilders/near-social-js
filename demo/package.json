@@ -19,5 +19,9 @@
     "start": "bun run --filter host preview",
     "test": "bun --filter '*' test",
     "typecheck": "bun --filter '*' typecheck"
+  },
+  "dependencies": {
+    "near-social-js": "../near-social-js-2.0.3.tgz",
+    "ui": "^0.2.4"
   }
 }

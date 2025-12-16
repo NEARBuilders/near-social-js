@@ -71,6 +71,55 @@ describe('Social - Post Methods', () => {
       expect(txBuilder).toBeDefined();
       expect(typeof txBuilder.send).toBe('function');
     });
+
+    it('should store post with proper structure (post/main + index/post)', async () => {
+      const txBuilder = await social.createPost(rootAccountId, {
+        text: 'Hello',
+        type: 'md',
+      });
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
+
+      const rawPost = await social.get({
+        keys: [`${rootAccountId}/post/main`],
+        useApiServer: false,
+      });
+      const main = (rawPost?.[rootAccountId] as any)?.post?.main;
+      expect(typeof main).toBe('string');
+
+      const parsedMain = JSON.parse(main as string);
+      expect(parsedMain).toMatchObject({ text: 'Hello', type: 'md' });
+
+      const rawIndex = await social.get({
+        keys: [`${rootAccountId}/index/post`],
+        useApiServer: false,
+      });
+      const indexPost = (rawIndex?.[rootAccountId] as any)?.index?.post;
+      expect(typeof indexPost).toBe('string');
+
+      const parsedIndex = JSON.parse(indexPost as string);
+      expect(parsedIndex).toEqual({ key: 'main', value: { type: 'md' } });
+    });
+
+    it('should default post type to "md" when not provided', async () => {
+      const txBuilder = await social.createPost(rootAccountId, {
+        text: 'Hello without type',
+      });
+      const txResult = await txBuilder.send();
+
+      expect(txResult.status).not.toHaveProperty('Failure');
+
+      const rawPost = await social.get({
+        keys: [`${rootAccountId}/post/main`],
+        useApiServer: false,
+      });
+      const main = (rawPost?.[rootAccountId] as any)?.post?.main;
+      expect(typeof main).toBe('string');
+
+      const parsedMain = JSON.parse(main as string);
+      expect(parsedMain).toMatchObject({ text: 'Hello without type', type: 'md' });
+    });
   });
 });
 

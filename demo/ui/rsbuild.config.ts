@@ -78,22 +78,32 @@ export default defineConfig({
         },
       },
     }),
-    withZephyr({
-      hooks: {
-        onDeployComplete: (info) => {
-          console.log('🚀 Deployment Complete!');
-          console.log(`   URL: ${info.url}`);
-          console.log(`   Module: ${info.snapshot.uid.app_name}`);
-          console.log(`   Build ID: ${info.snapshot.uid.build}`);
-          console.log(`   Dependencies: ${info.federatedDependencies.length}`);
-          console.log(
-            `   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`
-          );
-          console.log(`   CI: ${info.buildStats.context.isCI ? 'Yes' : 'No'}`);
-          updateHostConfig(normalizedName, info.url);
-        },
-      },
-    }),
+    // Zephyr is only needed for cloud deployments. In local dev it prompts for auth and can
+    // cause the dev server to exit in non-interactive environments.
+    ...(process.env.ZE_SECRET_TOKEN
+      ? [
+          withZephyr({
+            hooks: {
+              onDeployComplete: (info) => {
+                console.log('🚀 Deployment Complete!');
+                console.log(`   URL: ${info.url}`);
+                console.log(`   Module: ${info.snapshot.uid.app_name}`);
+                console.log(`   Build ID: ${info.snapshot.uid.build}`);
+                console.log(
+                  `   Dependencies: ${info.federatedDependencies.length}`
+                );
+                console.log(
+                  `   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`
+                );
+                console.log(
+                  `   CI: ${info.buildStats.context.isCI ? 'Yes' : 'No'}`
+                );
+                updateHostConfig(normalizedName, info.url);
+              },
+            },
+          }),
+        ]
+      : []),
   ],
   source: {
     entry: {
@@ -113,7 +123,7 @@ export default defineConfig({
     lazyCompilation: false,
   },
   server: {
-    port: 3000,
+    port: 3002,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
