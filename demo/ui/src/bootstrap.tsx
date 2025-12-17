@@ -1,5 +1,4 @@
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { StrictMode } from 'react';
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx';
 
@@ -28,13 +27,11 @@ declare module '@tanstack/react-router' {
 
 export function App() {
   return (
-    <StrictMode>
-      <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-        <SocialProvider network="mainnet">
-          <RouterProvider router={router} />
-        </SocialProvider>
-      </TanStackQueryProvider.Provider>
-    </StrictMode>
+    <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+      <SocialProvider network="mainnet">
+        <RouterProvider router={router} />
+      </SocialProvider>
+    </TanStackQueryProvider.Provider>
   );
 }
 

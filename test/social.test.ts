@@ -7,6 +7,8 @@ let near: Near;
 let social: Social;
 let contractId: string;
 let rootAccountId: string;
+let ensureAccount: (accountId: string) => Promise<void>;
+let grantNotifyPermissionToRoot: (targetAccountId: string) => Promise<void>;
 
 beforeAll(async () => {
   ctx = await createTestSandbox('social');
@@ -19,6 +21,31 @@ beforeAll(async () => {
     contractId,
     useApiServer: false,
   });
+
+  // Helpers for sandbox tests that write notifications under other accounts.
+  ensureAccount = async (accountId: string) => {
+    try {
+      await near
+        .transaction(rootAccountId)
+        .createAccount(accountId)
+        .transfer(accountId, '5 NEAR')
+        .send();
+    } catch {
+      // account may already exist
+    }
+  };
+
+  // Writing `target/index/notify` requires the target account to grant permission to the signer.
+  grantNotifyPermissionToRoot = async (targetAccountId: string) => {
+    await ensureAccount(targetAccountId);
+    await (
+      await social.grantWritePermission({
+        signerId: targetAccountId,
+        keys: [`${targetAccountId}/index/notify`],
+        granteeAccountId: rootAccountId,
+      })
+    ).send();
+  };
 }, 60000);
 
 afterAll(async () => {
@@ -258,6 +285,9 @@ describe('Social - Follow Methods', () => {
       .createAccount(targetAccountId)
       .transfer(targetAccountId, '5 NEAR')
       .send();
+
+    // `follow()` writes a notify entry under the followed account.
+    await grantNotifyPermissionToRoot(targetAccountId);
   });
 
   describe('follow', () => {
@@ -350,7 +380,8 @@ describe('Social - Follow Methods', () => {
 describe('Social - Like Methods', () => {
   const testItem = {
     type: 'social',
-    path: `test.near/post/main`,
+    // Use the signer as post author to avoid cross-account notify permissions in sandbox.
+    path: `${rootAccountId}/post/main`,
     blockHeight: 12345,
   };
 
@@ -421,7 +452,8 @@ describe('Social - Like Methods', () => {
 describe('Social - Comment Methods', () => {
   const testItem = {
     type: 'social',
-    path: 'alice.near/post/main',
+    // Use the signer as post author to avoid cross-account notify permissions in sandbox.
+    path: `${rootAccountId}/post/main`,
     blockHeight: 12345,
   };
 
@@ -499,7 +531,8 @@ describe('Social - Comment Methods', () => {
 describe('Social - Repost Methods', () => {
   const testItem = {
     type: 'social',
-    path: 'alice.near/post/main',
+    // Use the signer as post author to avoid cross-account notify permissions in sandbox.
+    path: `${rootAccountId}/post/main`,
     blockHeight: 12345,
   };
 
@@ -666,6 +699,9 @@ describe('Social - Notification Methods', () => {
       } catch {
         // Account might already exist
       }
+
+      // `notify()` writes `target/index/notify` under the target account.
+      await grantNotifyPermissionToRoot(targetAccount);
     });
 
     it('should create a transaction builder for notifying', async () => {
@@ -718,6 +754,9 @@ describe('Social - Poke Method', () => {
     } catch {
       // Account might already exist
     }
+
+    // `poke()` writes `target/index/notify` under the target account.
+    await grantNotifyPermissionToRoot(pokeTarget);
   });
 
   describe('poke', () => {
@@ -741,10 +780,20 @@ describe('Social - Poke Method', () => {
 });
 
 describe('Social - Mention/Hashtag Extraction in Posts', () => {
+  let mentionA: string;
+  let mentionB: string;
+
+  beforeAll(async () => {
+    mentionA = `alice.${rootAccountId}`;
+    mentionB = `bob.${rootAccountId}`;
+    await grantNotifyPermissionToRoot(mentionA);
+    await grantNotifyPermissionToRoot(mentionB);
+  });
+
   describe('createPost with mentions', () => {
     it('should extract mentions from post text', async () => {
       const tx = await social.createPost(rootAccountId, {
-        text: 'Hello @alice.near and @bob.near!',
+        text: `Hello @${mentionA} and @${mentionB}!`,
         type: 'md',
       });
       await tx.send();
@@ -760,8 +809,8 @@ describe('Social - Mention/Hashtag Extraction in Posts', () => {
         post?: { main?: string };
       };
       const parsedPost = JSON.parse(accountData.post!.main!);
-      expect(parsedPost.text).toContain('@alice.near');
-      expect(parsedPost.text).toContain('@bob.near');
+      expect(parsedPost.text).toContain(`@${mentionA}`);
+      expect(parsedPost.text).toContain(`@${mentionB}`);
     });
   });
 
@@ -791,14 +840,15 @@ describe('Social - Mention/Hashtag Extraction in Posts', () => {
   describe('createComment with mentions', () => {
     const testItem = {
       type: 'social',
-      path: 'poster.near/post/main',
+      // Use signer as post author to avoid cross-account comment notify in sandbox.
+      path: `${rootAccountId}/post/main`,
       blockHeight: 12345,
     };
 
     it('should extract mentions from comment text', async () => {
       const tx = await social.createComment(rootAccountId, {
         item: testItem,
-        text: 'Great post @poster.near!',
+        text: `Great post @${mentionA}!`,
       });
       await tx.send();
 
@@ -812,7 +862,7 @@ describe('Social - Mention/Hashtag Extraction in Posts', () => {
         post?: { comment?: string };
       };
       const parsedComment = JSON.parse(accountData.post!.comment!);
-      expect(parsedComment.text).toContain('@poster.near');
+      expect(parsedComment.text).toContain(`@${mentionA}`);
     });
   });
 });

@@ -175,7 +175,7 @@ describe('Graph - Transaction Methods', () => {
         useApiServer: false,
       });
 
-      expect(result).toBeDefined();
+      expect(result).not.toBeNull();
       expect(result![rootAccountId]).toBeDefined();
     });
   });

@@ -160,9 +160,12 @@ export class Social extends Graph {
           data[mentionedAccount] = {
             index: {
               notify: JSON.stringify({
-                key: signerId,
+                // Notifications should be indexed by the recipient accountId so they can be
+                // fetched via `getNotifications(recipient)` / `getMentionedFeed(recipient)`.
+                key: mentionedAccount,
                 value: {
                   type: 'mention',
+                  accountId: signerId,
                   item: {
                     type: 'social',
                     path: `${signerId}/post/main`,
@@ -250,9 +253,10 @@ export class Social extends Graph {
       data[postAuthor] = {
         index: {
           notify: JSON.stringify({
-            key: signerId,
+            key: postAuthor,
             value: {
               type: 'comment',
+              accountId: signerId,
               item,
             },
           }),
@@ -267,9 +271,10 @@ export class Social extends Graph {
           data[mentionedAccount] = {
             index: {
               notify: JSON.stringify({
-                key: signerId,
+                key: mentionedAccount,
                 value: {
                   type: 'mention',
+                  accountId: signerId,
                   item: {
                     type: 'social',
                     path: `${signerId}/post/comment`,
@@ -357,9 +362,10 @@ export class Social extends Graph {
         [accountId]: {
           index: {
             notify: JSON.stringify({
-              key: signerId,
+              key: accountId,
               value: {
                 type: 'follow',
+                accountId: signerId,
               },
             }),
           },
@@ -418,9 +424,10 @@ export class Social extends Graph {
             [postAuthor]: {
               index: {
                 notify: JSON.stringify({
-                  key: signerId,
+                  key: postAuthor,
                   value: {
                     type: 'like',
+                    accountId: signerId,
                     item,
                   },
                 }),
@@ -480,9 +487,10 @@ export class Social extends Graph {
             [postAuthor]: {
               index: {
                 notify: JSON.stringify({
-                  key: signerId,
+                  key: postAuthor,
                   value: {
                     type: 'repost',
+                    accountId: signerId,
                     item,
                   },
                 }),
@@ -660,9 +668,10 @@ export class Social extends Graph {
         [targetAccountId]: {
           index: {
             notify: JSON.stringify({
-              key: signerId,
+              key: targetAccountId,
               value: {
                 type,
+                accountId: signerId,
                 ...(item && { item }),
               },
             }),
@@ -698,9 +707,10 @@ export class Social extends Graph {
         [targetAccountId]: {
           index: {
             notify: JSON.stringify({
-              key: signerId,
+              key: targetAccountId,
               value: {
                 type: 'poke',
+                accountId: signerId,
               },
             }),
           },
