@@ -1,6 +1,6 @@
 {
   "name": "near-social-js",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A JavaScript SDK for interacting with the NEAR Social graph database contract with helper functions for typical social features.",
   "files": [
     "dist"
@@ -43,7 +43,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:demo": "cd demo/ui && bun install && bun run build",
+    "build:demo": "cd demo && bun install && bun run build",
     "docs:build": "docusaurus build --out-dir .docs",
     "docs:serve": "docusaurus serve --dir .docs --no-open",
     "docs:start": "docusaurus start --no-open --port 8080",
@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "bignumber.js": "^9.3.1",
-    "near-kit": "^0.6.0"
+    "near-kit": "^0.6.3"
   },
   "resolutions": {
     "braces": "^3.0.3",

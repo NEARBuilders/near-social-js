@@ -1,10 +1,11 @@
 import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { StrictMode } from 'react';
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx';
-import { WalletProvider } from './integrations/near-wallet/index.ts';
 
 import { routeTree } from './routeTree.gen.ts';
 
+import { SocialProvider } from './providers/index.tsx';
 import './styles.css';
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();
@@ -27,11 +28,13 @@ declare module '@tanstack/react-router' {
 
 export function App() {
   return (
-    <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-      <WalletProvider network="mainnet">
-        <RouterProvider router={router} />
-      </WalletProvider>
-    </TanStackQueryProvider.Provider>
+    <StrictMode>
+      <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+        <SocialProvider network="mainnet">
+          <RouterProvider router={router} />
+        </SocialProvider>
+      </TanStackQueryProvider.Provider>
+    </StrictMode>
   );
 }
 

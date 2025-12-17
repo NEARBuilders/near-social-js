@@ -87,9 +87,7 @@ export async function createTestSandbox(
   };
 }
 
-export async function stopTestSandbox(ctx?: TestContext): Promise<void> {
-  // If sandbox startup fails, ctx may be undefined.
-  if (!ctx) return;
+export async function stopTestSandbox(ctx: TestContext): Promise<void> {
   if (ctx.sandbox) {
     await ctx.sandbox.stop();
   }

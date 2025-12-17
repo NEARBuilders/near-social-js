@@ -17,7 +17,7 @@ function HomePage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl text-white">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">NEAR Social JS</h1>
+        <h1 className="text-4xl font-bold mb-4">NearSocial.JS</h1>
         <p className="text-lg text-white/70 max-w-2xl mx-auto">
           A JavaScript SDK for interacting with the NEAR Social graph database
           contract with helper functions for typical social features.

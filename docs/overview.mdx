@@ -38,7 +38,7 @@ const profile = await social.getProfile('alice.near');
 
 // Create a post (requires signing)
 const tx = await social.createPost('alice.near', {
-  main: 'Hello NEAR!',
+  text: 'Hello NEAR!',
 });
 await tx.send();
 

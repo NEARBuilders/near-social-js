@@ -7,14 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { NearConnector } from '@hot-labs/near-connect';
-import { Near, fromHotConnect } from 'near-kit';
-
-type NetworkId = 'mainnet' | 'testnet';
-
-// In React StrictMode (dev), effects can run twice. NearConnector can also
-// touch global browser state (e.g. window.ethereum). Make initialization
-// idempotent to avoid "Cannot redefine property: ethereum".
-let nearConnectorSingleton: NearConnector | null = null;
+import { Near, fromHotConnect, type Network } from 'near-kit';
 
 interface WalletContextType {
   near: Near | null;
@@ -28,7 +21,7 @@ const WalletContext = createContext<WalletContextType | null>(null);
 
 interface WalletProviderProps {
   children: ReactNode;
-  network?: NetworkId;
+  network?: Network;
 }
 
 export function WalletProvider({
@@ -41,22 +34,9 @@ export function WalletProvider({
   const [connector, setConnector] = useState<NearConnector | null>(null);
 
   useEffect(() => {
-    // Ensure we don't initialize NearConnector more than once.
-    // If it already exists, clear previous listeners before reusing.
-    let nearConnector: NearConnector;
-    try {
-      if (nearConnectorSingleton) {
-        nearConnectorSingleton.removeAllListeners();
-        nearConnector = nearConnectorSingleton;
-      } else {
-        nearConnectorSingleton = new NearConnector({ network });
-        nearConnector = nearConnectorSingleton;
-      }
-    } catch (err) {
-      console.error('Failed to initialize NearConnector', err);
-      return;
-    }
-
+    const nearConnector = new NearConnector({
+      network: network as 'mainnet' | 'testnet',
+    });
     setConnector(nearConnector);
 
     nearConnector.on('wallet:signIn', async (data) => {
@@ -89,7 +69,6 @@ export function WalletProvider({
     });
 
     return () => {
-      // Don't destroy the singleton; just detach listeners for this mount.
       nearConnector.removeAllListeners();
     };
   }, [network]);

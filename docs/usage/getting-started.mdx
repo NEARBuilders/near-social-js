@@ -51,7 +51,7 @@ await tx.send();
 
 // Create a post
 const postTx = await social.createPost('alice.near', {
-  main: 'My first post!',
+  text: 'My first post!',
 });
 await postTx.send();
 

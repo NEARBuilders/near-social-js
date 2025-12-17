@@ -1,5 +1,6 @@
 {
-  "name": "demo",
+  "name": "near_social_js_ui",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,6 +13,9 @@
   },
   "dependencies": {
     "@hot-labs/near-connect": "^0.6.11",
+    "@orpc/client": "^1.12.2",
+    "@orpc/contract": "^1.12.2",
+    "@orpc/server": "^1.12.2",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-scroll-area": "^1.2.10",
@@ -24,9 +28,10 @@
     "@tanstack/react-router-devtools": "^1.139.14",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "every-plugin": "^0.6.1",
     "lucide-react": "^0.544.0",
-    "near-kit": "^0.6.2",
-    "near-social-js": "^2.0.2",
+    "near-kit": "^0.6.3",
+    "near-social-js": "^2.0.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.4.0",
@@ -47,15 +52,16 @@
     "@rsbuild/plugin-react": "^1.4.2",
     "@tailwindcss/postcss": "^4.1.17",
     "@tanstack/router-plugin": "^1.139.14",
-    "tailwindcss": "^4.1.17",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "jsdom": "^27.2.0",
+    "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
-    "web-vitals": "^5.1.0"
+    "web-vitals": "^5.1.0",
+    "zephyr-rsbuild-plugin": "^0.1.2"
   }
 }
