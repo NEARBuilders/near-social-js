@@ -1,0 +1,70 @@
+name: "Pull Request Checks"
+
+on:
+  pull_request:
+
+jobs:
+  ##
+  # install
+  ##
+
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
+
+  ##
+  # lint, build documentation, build package and test
+  ##
+
+  lint:
+    name: "Lint"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
+      - name: "👕 Lint"
+        run: bun run lint
+
+  build_documenation:
+    name: "Build Documentation"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
+      - name: "🏗️ Build"
+        run: bun run docs:build
+
+  build_pakage:
+    name: "Build Package"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
+      - name: "🏗️ Build"
+        run: bun run build
+
+  test:
+    name: "Test"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "📦 Setup Bun Dependencies"
+        uses: ./.github/actions/use-bun-dependencies
+      - name: "🧪 Test"
+        run: bun run test

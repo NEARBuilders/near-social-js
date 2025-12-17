@@ -1,0 +1,154 @@
+# [2.0.2](https://github.com/NEARBuilders/near-social-js/compare/v2.0.1...v2.0.2) (2025-12-07)
+
+### Features
+
+* **Social Class - Comments**: Add `createComment(signerId, comment)` and `getComments(item)` methods for post comments
+* **Social Class - Unlike**: Add `unlike(signerId, item)` method for unliking posts
+* **Social Class - Repost**: Add `repost(signerId, item)` and `getReposts(item)` methods for reposting content
+* **Social Class - Feeds**: Add feed methods: `getAccountFeed` (with `includeReplies` option), `getHashtagFeed`, `getActivityFeed`, `getMentionedFeed`
+* **Social Class - Notifications**: Add `getNotifications(accountId, options?)` and `notify(signerId, targetAccountId, item?, type?)` methods
+* **Social Class - Poke**: Add `poke(signerId, targetAccountId)` method
+* **Social Class - Auto Extraction**: `createPost` and `createComment` now automatically extract @mentions and #hashtags
+* **Social Class - Auto Notifications**: `follow`, `like`, `repost`, and `createComment` now automatically notify the target user
+* **Social Class - getPost**: Updated to support `comments?: boolean` option to fetch comments with post
+* **Utility Functions**: Add `extractMentions(text)`, `extractHashtags(text)`, and `buildNotifications(mentions, item)` helper functions
+* **Types**: Export new types: `FeedOptions`, `IndexEntry`, `Notification`, `PostWithMetadata`
+
+### Enhancements
+
+* **Post Structure**: Posts now properly store `{ text, type }` JSON stringified in `post/main` with default type "md"
+* **Hashtag Indexing**: Posts and comments with hashtags are automatically indexed for hashtag feed discovery
+* **Notification System**: Comprehensive notifications for social interactions (mentions, likes, comments, follows, reposts, pokes)
+
+# [2.0.1](https://github.com/NEARBuilders/near-social-js/compare/v2.0.0...v2.0.1) (2025-12-04)
+
+### Features
+
+* add storageUnregister method for contract storage management ([#44](https://github.com/NEARBuilders/near-social-js/issues/44))
+* support null values in set() method to delete keys from social DB ([#41](https://github.com/NEARBuilders/near-social-js/issues/41))
+
+### Bug Fixes
+
+* ensure deposit is 0 (not 1 yocto) when account has sufficient storage for gas-only transactions ([#39](https://github.com/NEARBuilders/near-social-js/issues/39))
+
+# [2.0.0](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.6...v2.0.0) (2025-12-02)
+
+### Features
+
+* expose storagebalanceof as public ([#26](https://github.com/NEARBuilders/near-social-js/issues/26)) ([3450670](https://github.com/NEARBuilders/near-social-js/commit/34506709196e1be3370c856841e3c7cda46293fe))
+
+### BREAKING CHANGES
+
+* **Renamed `Social` class to `Graph`**: The core low-level class for interacting with the social DB contract is now `Graph`. Import with `import { Graph } from 'near-social-js'`.
+* **New high-level `Social` class**: A new `Social` class extends `Graph` and provides convenience methods for common social features (`getProfile`, `setProfile`, `createPost`, `follow`, `like`, etc.).
+* **Renamed package**: Package name changed from `@builddao/near-social-js` to `near-social-js`.
+* **Renamed `SocialOptions` to `GraphOptions`**: Constructor options type renamed.
+
+### Features
+
+* **High-level Social API**: New `Social` class with `getProfile`, `setProfile`, `getPost`, `createPost`, `follow`, `unfollow`, `like`, `getLikes`, `getFollowers`, `getFollowing` methods.
+
+### Refactor
+
+* Migrated from `near-api-js` to `near-kit` for a simpler, more intuitive API
+* Simplified flat source structure (all core files in `src/`)
+* Switched from Jest to Vitest for faster ESM-native testing
+* Modernized TypeScript configuration with `moduleResolution: "bundler"`
+* Cleaned up package dependencies - removed unused packages
+
+
+# [1.1.0-beta.6](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2024-10-25)
+
+
+### Features
+
+* wallet support for frontend apps and API server methods ([#43](https://github.com/NEARBuilders/near-social-js/issues/43)) ([83bb3a6](https://github.com/NEARBuilders/near-social-js/commit/83bb3a6c4610a28bb4599a5be1ce2278a82ca989)), closes [#35](https://github.com/NEARBuilders/near-social-js/issues/35) [#35](https://github.com/NEARBuilders/near-social-js/issues/35) [#38](https://github.com/NEARBuilders/near-social-js/issues/38) [#38](https://github.com/NEARBuilders/near-social-js/issues/38) [#40](https://github.com/NEARBuilders/near-social-js/issues/40) [#40](https://github.com/NEARBuilders/near-social-js/issues/40) [#33](https://github.com/NEARBuilders/near-social-js/issues/33) [#33](https://github.com/NEARBuilders/near-social-js/issues/33) [#42](https://github.com/NEARBuilders/near-social-js/issues/42) [#42](https://github.com/NEARBuilders/near-social-js/issues/42)
+* converts to ESM package ([#52](https://github.com/NEARBuilders/near-social-js/issues/52)) ([741193b](https://github.com/NEARBuilders/near-social-js/commit/741193b6123918fd1ebcc640d8b4b72317580df8))
+
+# [1.1.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2024-08-05)
+
+
+### Features
+
+* aded transformActions utility and exposed all utils ([#42](https://github.com/NEARBuilders/near-social-js/issues/42)) ([bfc9072](https://github.com/NEARBuilders/near-social-js/commit/bfc90720035d9e686469e95bf25ef0cc17c79c4b))
+
+# [1.1.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2024-08-01)
+
+
+### Features
+
+* adding api server support for read methods ([#33](https://github.com/NEARBuilders/near-social-js/issues/33)) ([dc53b30](https://github.com/NEARBuilders/near-social-js/commit/dc53b30af3ade611a4e8d29316dfc56f77dc8791))
+
+# [1.1.0-beta.3](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2024-07-30)
+
+
+### Bug Fixes
+
+* required deposit fix when available storage is higher than needed ([#40](https://github.com/NEARBuilders/near-social-js/issues/40)) ([99f9e8d](https://github.com/NEARBuilders/near-social-js/commit/99f9e8de55d5410ff34f553348d978fe075e6fbf))
+
+# [1.1.0-beta.2](https://github.com/NEARBuilders/near-social-js/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2024-07-25)
+
+
+### Features
+
+* remove near-api-js account object dependency from change functions ([#38](https://github.com/NEARBuilders/near-social-js/issues/38)) ([134e463](https://github.com/NEARBuilders/near-social-js/commit/134e4638341febdaf945fe8412479172421332d3))
+
+# [1.1.0-beta.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.1...v1.1.0-beta.1) (2024-07-24)
+
+
+### Features
+
+* **wip:** removed signer from viewMethods by dropping NAJ account.ViewFunction ([#35](https://github.com/NEARBuilders/near-social-js/issues/35)) ([a57edc4](https://github.com/NEARBuilders/near-social-js/commit/a57edc42bee279abc1f3925acd130cba29cd239a))
+
+## [1.0.1](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0...v1.0.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* **readme:** broken docs link on readme ([#32](https://github.com/NEARBuilders/near-social-js/issues/32)) ([b5235e4](https://github.com/NEARBuilders/near-social-js/commit/b5235e46a969d615fb159f4ed2c3fbf983b1f255))
+
+# 1.0.0 (2024-07-05)
+
+
+### Features
+
+* adding more change methods from the social contract ([#9](https://github.com/NEARBuilders/near-social-js/issues/9)) ([1605f62](https://github.com/NEARBuilders/near-social-js/commit/1605f62407cf3d091e24e391059dab02db3f9839))
+* change blockhash and nonce parameters to be optional ([#20](https://github.com/NEARBuilders/near-social-js/issues/20)) ([7f1cf2e](https://github.com/NEARBuilders/near-social-js/commit/7f1cf2ee2e5d743a1a37bc0b5f6e774e8900e41a))
+* check for write permissions for each key in the set function ([#23](https://github.com/NEARBuilders/near-social-js/issues/23)) ([f95db02](https://github.com/NEARBuilders/near-social-js/commit/f95db020e02e4b77956d6058dc2d59778eb803a1))
+* implement function for grant write permission ([#16](https://github.com/NEARBuilders/near-social-js/issues/16)) ([f3047c7](https://github.com/NEARBuilders/near-social-js/commit/f3047c7a66bc5309a8f66df85f72e68e5e39bcfc))
+* implement function for set ([#6](https://github.com/NEARBuilders/near-social-js/issues/6)) ([8b7406f](https://github.com/NEARBuilders/near-social-js/commit/8b7406fb8632588726c8bcba82ace55b963e01d0))
+
+# [1.0.0-beta.5](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2024-07-05)
+
+
+### Features
+
+* check for write permissions for each key in the set function ([#23](https://github.com/NEARBuilders/near-social-js/issues/23)) ([f95db02](https://github.com/NEARBuilders/near-social-js/commit/f95db020e02e4b77956d6058dc2d59778eb803a1))
+
+# [1.0.0-beta.4](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2024-06-24)
+
+
+### Features
+
+* adding more change methods from the social contract ([#9](https://github.com/NEARBuilders/near-social-js/issues/9)) ([1605f62](https://github.com/NEARBuilders/near-social-js/commit/1605f62407cf3d091e24e391059dab02db3f9839))
+
+# [1.0.0-beta.3](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2024-06-12)
+
+
+### Features
+
+* implement function for grant write permission ([#16](https://github.com/NEARBuilders/near-social-js/issues/16)) ([f3047c7](https://github.com/NEARBuilders/near-social-js/commit/f3047c7a66bc5309a8f66df85f72e68e5e39bcfc))
+
+# [1.0.0-beta.2](https://github.com/NEARBuilders/near-social-js/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2024-06-05)
+
+
+### Features
+
+* change blockhash and nonce parameters to be optional ([#20](https://github.com/NEARBuilders/near-social-js/issues/20)) ([7f1cf2e](https://github.com/NEARBuilders/near-social-js/commit/7f1cf2ee2e5d743a1a37bc0b5f6e774e8900e41a))
+
+# 1.0.0-beta.1 (2024-05-15)
+
+
+### Features
+
+* implement function for set ([#6](https://github.com/NEARBuilders/near-social-js/issues/6)) ([8b7406f](https://github.com/NEARBuilders/near-social-js/commit/8b7406fb8632588726c8bcba82ace55b963e01d0))
