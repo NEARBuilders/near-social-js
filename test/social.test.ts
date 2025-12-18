@@ -1,4 +1,4 @@
-import { Near } from 'near-kit';
+import { Near, type PrivateKey, generateKey } from 'near-kit';
 import { Social } from '../src';
 import { createTestSandbox, stopTestSandbox, TestContext } from './setup';
 
@@ -9,6 +9,7 @@ let contractId: string;
 let rootAccountId: string;
 let ensureAccount: (accountId: string) => Promise<void>;
 let grantNotifyPermissionToRoot: (targetAccountId: string) => Promise<void>;
+let socialByAccountId: Map<string, Social>;
 
 beforeAll(async () => {
   ctx = await createTestSandbox('social');
@@ -23,23 +24,55 @@ beforeAll(async () => {
   });
 
   // Helpers for sandbox tests that write notifications under other accounts.
+  // In sandbox, to sign a transaction as `targetAccountId`, we must create that
+  // account with a key we own (otherwise near-kit throws "No key found for account").
+  socialByAccountId = new Map();
+
   ensureAccount = async (accountId: string) => {
+    if (socialByAccountId.has(accountId)) return;
+
+    const key = generateKey();
+
+    // Create account AND attach a full-access key we control.
+    // If the account already exists, skip creation and just keep going.
     try {
       await near
         .transaction(rootAccountId)
         .createAccount(accountId)
         .transfer(accountId, '5 NEAR')
+        .addKey(key.publicKey.toString(), { type: 'fullAccess' })
         .send();
     } catch {
       // account may already exist
     }
+
+    const accountNear = new Near({
+      network: ctx.sandbox,
+      privateKey: key.secretKey as PrivateKey,
+      defaultSignerId: accountId,
+      defaultWaitUntil: 'FINAL',
+    });
+
+    socialByAccountId.set(
+      accountId,
+      new Social({
+        near: accountNear,
+        contractId,
+        useApiServer: false,
+      })
+    );
   };
 
   // Writing `target/index/notify` requires the target account to grant permission to the signer.
   grantNotifyPermissionToRoot = async (targetAccountId: string) => {
     await ensureAccount(targetAccountId);
+    const socialAsTarget = socialByAccountId.get(targetAccountId);
+    if (!socialAsTarget) {
+      throw new Error(`Missing Social instance for account: ${targetAccountId}`);
+    }
+
     await (
-      await social.grantWritePermission({
+      await socialAsTarget.grantWritePermission({
         signerId: targetAccountId,
         keys: [`${targetAccountId}/index/notify`],
         granteeAccountId: rootAccountId,
@@ -378,12 +411,16 @@ describe('Social - Follow Methods', () => {
 });
 
 describe('Social - Like Methods', () => {
-  const testItem = {
-    type: 'social',
-    // Use the signer as post author to avoid cross-account notify permissions in sandbox.
-    path: `${rootAccountId}/post/main`,
-    blockHeight: 12345,
-  };
+  let testItem: { type: 'social'; path: string; blockHeight: number };
+
+  beforeAll(() => {
+    testItem = {
+      type: 'social',
+      // Use the signer as post author to avoid cross-account notify permissions in sandbox.
+      path: `${rootAccountId}/post/main`,
+      blockHeight: 12345,
+    };
+  });
 
   describe('like', () => {
     it('should create a transaction builder for liking', async () => {
@@ -450,12 +487,16 @@ describe('Social - Like Methods', () => {
 });
 
 describe('Social - Comment Methods', () => {
-  const testItem = {
-    type: 'social',
-    // Use the signer as post author to avoid cross-account notify permissions in sandbox.
-    path: `${rootAccountId}/post/main`,
-    blockHeight: 12345,
-  };
+  let testItem: { type: 'social'; path: string; blockHeight: number };
+
+  beforeAll(() => {
+    testItem = {
+      type: 'social',
+      // Use the signer as post author to avoid cross-account notify permissions in sandbox.
+      path: `${rootAccountId}/post/main`,
+      blockHeight: 12345,
+    };
+  });
 
   describe('createComment', () => {
     it('should create a transaction builder for creating comment', async () => {
@@ -529,12 +570,16 @@ describe('Social - Comment Methods', () => {
 });
 
 describe('Social - Repost Methods', () => {
-  const testItem = {
-    type: 'social',
-    // Use the signer as post author to avoid cross-account notify permissions in sandbox.
-    path: `${rootAccountId}/post/main`,
-    blockHeight: 12345,
-  };
+  let testItem: { type: 'social'; path: string; blockHeight: number };
+
+  beforeAll(() => {
+    testItem = {
+      type: 'social',
+      // Use the signer as post author to avoid cross-account notify permissions in sandbox.
+      path: `${rootAccountId}/post/main`,
+      blockHeight: 12345,
+    };
+  });
 
   describe('repost', () => {
     it('should create a transaction builder for reposting', async () => {
@@ -838,12 +883,16 @@ describe('Social - Mention/Hashtag Extraction in Posts', () => {
   });
 
   describe('createComment with mentions', () => {
-    const testItem = {
-      type: 'social',
-      // Use signer as post author to avoid cross-account comment notify in sandbox.
-      path: `${rootAccountId}/post/main`,
-      blockHeight: 12345,
-    };
+    let testItem: { type: 'social'; path: string; blockHeight: number };
+
+    beforeAll(() => {
+      testItem = {
+        type: 'social',
+        // Use signer as post author to avoid cross-account comment notify in sandbox.
+        path: `${rootAccountId}/post/main`,
+        blockHeight: 12345,
+      };
+    });
 
     it('should extract mentions from comment text', async () => {
       const tx = await social.createComment(rootAccountId, {
