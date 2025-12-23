@@ -11,7 +11,7 @@ import type {
   IndexEntry,
   Notification,
 } from './types';
-import { extractMentions, extractHashtags } from './utils';
+import { extractMentions, extractHashtags, validateAccountId } from './utils';
 
 export type SocialOptions = GraphOptions;
 
@@ -249,7 +249,7 @@ export class Social extends Graph {
 
     // Notify the post author about the comment
     const postAuthor = item.path.split('/')[0];
-    if (postAuthor && postAuthor !== signerId) {
+    if (postAuthor && validateAccountId(postAuthor) && postAuthor !== signerId) {
       data[postAuthor] = {
         index: {
           notify: JSON.stringify({
@@ -420,6 +420,7 @@ export class Social extends Graph {
         },
         // Notify the post author about the like
         ...(postAuthor &&
+          validateAccountId(postAuthor) &&
           postAuthor !== signerId && {
             [postAuthor]: {
               index: {
@@ -483,6 +484,7 @@ export class Social extends Graph {
         },
         // Notify the post author about the repost
         ...(postAuthor &&
+          validateAccountId(postAuthor) &&
           postAuthor !== signerId && {
             [postAuthor]: {
               index: {

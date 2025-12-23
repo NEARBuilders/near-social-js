@@ -2,90 +2,95 @@ import { Near, type PrivateKey, generateKey } from 'near-kit';
 import { Social } from '../src';
 import { createTestSandbox, stopTestSandbox, TestContext } from './setup';
 
-let ctx: TestContext;
-let near: Near;
-let social: Social;
-let contractId: string;
-let rootAccountId: string;
-let ensureAccount: (accountId: string) => Promise<void>;
-let grantNotifyPermissionToRoot: (targetAccountId: string) => Promise<void>;
-let socialByAccountId: Map<string, Social>;
-
-beforeAll(async () => {
-  ctx = await createTestSandbox('social');
-  near = ctx.near;
-  contractId = ctx.contractId;
-  rootAccountId = ctx.rootAccountId;
-
-  social = new Social({
-    near,
-    contractId,
-    useApiServer: false,
+// near-kit Sandbox is not supported on Windows. Skip sandbox-based tests there.
+if (process.platform === 'win32') {
+  describe.skip('Social (sandbox) - skipped on Windows', () => {
+    it('skips because near-kit Sandbox is unsupported on win32', () => {
+      expect(true).toBe(true);
+    });
   });
+} else {
+  let ctx: TestContext;
+  let near: Near;
+  let social: Social;
+  let contractId: string;
+  let rootAccountId: string;
+  let ensureAccount: (accountId: string) => Promise<void>;
+  let grantNotifyPermissionToRoot: (targetAccountId: string) => Promise<void>;
+  let socialByAccountId: Map<string, Social>;
 
-  // Helpers for sandbox tests that write notifications under other accounts.
-  // In sandbox, to sign a transaction as `targetAccountId`, we must create that
-  // account with a key we own (otherwise near-kit throws "No key found for account").
-  socialByAccountId = new Map();
+  beforeAll(async () => {
+    ctx = await createTestSandbox('social');
+    near = ctx.near;
+    contractId = ctx.contractId;
+    rootAccountId = ctx.rootAccountId;
 
-  ensureAccount = async (accountId: string) => {
-    if (socialByAccountId.has(accountId)) return;
+    social = new Social({
+      near,
+      contractId,
+      useApiServer: false,
+    });
 
-    const key = generateKey();
+    // Helpers for sandbox tests that write notifications under other accounts.
+    // In sandbox, to sign a transaction as `targetAccountId`, we must create that
+    // account with a key we own (otherwise near-kit throws "No key found for account").
+    socialByAccountId = new Map();
 
-    // Create account AND attach a full-access key we control.
-    // If the account already exists, skip creation and just keep going.
-    try {
+    ensureAccount = async (accountId: string) => {
+      if (socialByAccountId.has(accountId)) return;
+
+      const key = generateKey();
+
+      // Always create the account with a key we control.
+      // IMPORTANT: Do not create these accounts elsewhere without adding a key,
+      // or the account will exist but be un-signable in sandbox tests.
       await near
         .transaction(rootAccountId)
         .createAccount(accountId)
         .transfer(accountId, '5 NEAR')
         .addKey(key.publicKey.toString(), { type: 'fullAccess' })
         .send();
-    } catch {
-      // account may already exist
-    }
 
-    const accountNear = new Near({
-      network: ctx.sandbox,
-      privateKey: key.secretKey as PrivateKey,
-      defaultSignerId: accountId,
-      defaultWaitUntil: 'FINAL',
-    });
+      const accountNear = new Near({
+        network: ctx.sandbox,
+        privateKey: key.secretKey as PrivateKey,
+        defaultSignerId: accountId,
+        defaultWaitUntil: 'FINAL',
+      });
 
-    socialByAccountId.set(
-      accountId,
-      new Social({
-        near: accountNear,
-        contractId,
-        useApiServer: false,
-      })
-    );
-  };
+      socialByAccountId.set(
+        accountId,
+        new Social({
+          near: accountNear,
+          contractId,
+          useApiServer: false,
+        })
+      );
+    };
 
-  // Writing `target/index/notify` requires the target account to grant permission to the signer.
-  grantNotifyPermissionToRoot = async (targetAccountId: string) => {
-    await ensureAccount(targetAccountId);
-    const socialAsTarget = socialByAccountId.get(targetAccountId);
-    if (!socialAsTarget) {
-      throw new Error(`Missing Social instance for account: ${targetAccountId}`);
-    }
+    // Writing `target/index/notify` requires the target account to grant permission to the signer.
+    grantNotifyPermissionToRoot = async (targetAccountId: string) => {
+      await ensureAccount(targetAccountId);
+      const socialAsTarget = socialByAccountId.get(targetAccountId);
+      if (!socialAsTarget) {
+        throw new Error(`Missing Social instance for account: ${targetAccountId}`);
+      }
 
-    await (
-      await socialAsTarget.grantWritePermission({
-        signerId: targetAccountId,
-        keys: [`${targetAccountId}/index/notify`],
-        granteeAccountId: rootAccountId,
-      })
-    ).send();
-  };
-}, 60000);
+      await (
+        await socialAsTarget.grantWritePermission({
+          signerId: targetAccountId,
+          keys: [`${targetAccountId}/index/notify`],
+          granteeAccountId: rootAccountId,
+        })
+      ).send();
+    };
+  }, 60000);
 
-afterAll(async () => {
-  await stopTestSandbox(ctx);
-});
+  afterAll(async () => {
+    await stopTestSandbox(ctx);
+  });
 
-describe('Social - Profile Methods', () => {
+  describe('Social - Profile Methods', () => {
   describe('setProfile', () => {
     it('should create a transaction builder for setting profile', async () => {
       const txBuilder = await social.setProfile(rootAccountId, {
@@ -313,11 +318,7 @@ describe('Social - Follow Methods', () => {
 
   beforeAll(async () => {
     targetAccountId = `target.${rootAccountId}`;
-    await near
-      .transaction(rootAccountId)
-      .createAccount(targetAccountId)
-      .transfer(targetAccountId, '5 NEAR')
-      .send();
+    await ensureAccount(targetAccountId);
 
     // `follow()` writes a notify entry under the followed account.
     await grantNotifyPermissionToRoot(targetAccountId);
@@ -735,15 +736,7 @@ describe('Social - Notification Methods', () => {
 
     beforeAll(async () => {
       targetAccount = `notify-target.${rootAccountId}`;
-      try {
-        await near
-          .transaction(rootAccountId)
-          .createAccount(targetAccount)
-          .transfer(targetAccount, '5 NEAR')
-          .send();
-      } catch {
-        // Account might already exist
-      }
+      await ensureAccount(targetAccount);
 
       // `notify()` writes `target/index/notify` under the target account.
       await grantNotifyPermissionToRoot(targetAccount);
@@ -790,15 +783,7 @@ describe('Social - Poke Method', () => {
 
   beforeAll(async () => {
     pokeTarget = `poke-target.${rootAccountId}`;
-    try {
-      await near
-        .transaction(rootAccountId)
-        .createAccount(pokeTarget)
-        .transfer(pokeTarget, '5 NEAR')
-        .send();
-    } catch {
-      // Account might already exist
-    }
+    await ensureAccount(pokeTarget);
 
     // `poke()` writes `target/index/notify` under the target account.
     await grantNotifyPermissionToRoot(pokeTarget);
@@ -941,3 +926,4 @@ describe('Social - getPost with comments option', () => {
     expect(_post === null || _post !== null).toBe(true);
   });
 });
+}
