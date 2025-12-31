@@ -57,7 +57,7 @@ export async function createTestSandbox(
       contractId,
       'storage_deposit',
       {},
-      { gas: '30 Tgas', attachedDeposit: '1 NEAR' }
+      { gas: '30 Tgas', attachedDeposit: '5 NEAR' }
     )
     .send();
 

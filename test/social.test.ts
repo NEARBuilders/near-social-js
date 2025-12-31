@@ -51,6 +51,19 @@ if (process.platform === 'win32') {
         .addKey(key.publicKey.toString(), { type: 'fullAccess' })
         .send();
 
+      // Register the account for storage on the social/graph contract.
+      // Without this, contract calls like `grant_write_permission` may panic
+      // with "The attached deposit is less than the minimum storage balance".
+      await near
+        .transaction(rootAccountId)
+        .functionCall(
+          contractId,
+          'storage_deposit',
+          { account_id: accountId },
+          { gas: '30 Tgas', attachedDeposit: '5 NEAR' }
+        )
+        .send();
+
       const accountNear = new Near({
         network: ctx.sandbox,
         privateKey: key.secretKey as PrivateKey,
