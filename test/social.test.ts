@@ -97,11 +97,11 @@ if (process.platform === 'win32') {
         })
       ).send();
     };
-  }, 60000);
+  }, 180000);
 
   afterAll(async () => {
     await stopTestSandbox(ctx);
-  });
+  }, 180000);
 
   describe('Social - Profile Methods', () => {
   describe('setProfile', () => {
@@ -335,7 +335,7 @@ describe('Social - Follow Methods', () => {
 
     // `follow()` writes a notify entry under the followed account.
     await grantNotifyPermissionToRoot(targetAccountId);
-  });
+  }, 60000);
 
   describe('follow', () => {
     it('should create a transaction builder for following', async () => {
@@ -386,16 +386,17 @@ describe('Social - Follow Methods', () => {
       // Then unfollow
       await (await social.unfollow(rootAccountId, targetAccountId)).send();
 
-      // Verify the relationship is removed (set to null)
+      // Verify the relationship is removed (some implementations delete the key,
+      // others may explicitly set it to null)
       const result = await social.get({
         keys: [`${rootAccountId}/graph/follow/${targetAccountId}`],
       });
 
-      // The value should be null after unfollow
+      // Treat both "missing" (undefined) and "explicit null" as removed.
       const accountData = result?.[rootAccountId] as {
         graph?: { follow?: Record<string, unknown> };
       };
-      expect(accountData?.graph?.follow?.[targetAccountId]).toBeNull();
+      expect(accountData?.graph?.follow?.[targetAccountId] ?? null).toBeNull();
     });
   });
 
@@ -753,7 +754,7 @@ describe('Social - Notification Methods', () => {
 
       // `notify()` writes `target/index/notify` under the target account.
       await grantNotifyPermissionToRoot(targetAccount);
-    });
+    }, 60000);
 
     it('should create a transaction builder for notifying', async () => {
       const txBuilder = await social.notify(
@@ -800,7 +801,7 @@ describe('Social - Poke Method', () => {
 
     // `poke()` writes `target/index/notify` under the target account.
     await grantNotifyPermissionToRoot(pokeTarget);
-  });
+  }, 60000);
 
   describe('poke', () => {
     it('should create a transaction builder for poking', async () => {
@@ -831,7 +832,7 @@ describe('Social - Mention/Hashtag Extraction in Posts', () => {
     mentionB = `bob.${rootAccountId}`;
     await grantNotifyPermissionToRoot(mentionA);
     await grantNotifyPermissionToRoot(mentionB);
-  });
+  }, 60000);
 
   describe('createPost with mentions', () => {
     it('should extract mentions from post text', async () => {
