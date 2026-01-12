@@ -57,7 +57,7 @@ export async function createTestSandbox(
       contractId,
       'storage_deposit',
       {},
-      { gas: '30 Tgas', attachedDeposit: '1 NEAR' }
+      { gas: '30 Tgas', attachedDeposit: '5 NEAR' }
     )
     .send();
 
@@ -87,7 +87,9 @@ export async function createTestSandbox(
   };
 }
 
-export async function stopTestSandbox(ctx: TestContext): Promise<void> {
+export async function stopTestSandbox(ctx?: TestContext): Promise<void> {
+  // If sandbox startup fails, ctx may be undefined.
+  if (!ctx) return;
   if (ctx.sandbox) {
     await ctx.sandbox.stop();
   }

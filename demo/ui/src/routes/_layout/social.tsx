@@ -11,6 +11,11 @@ import {
   useSocialInstance,
   useCreatePost,
   useLike,
+  useUnlike,
+  useCreateComment,
+  useRepost,
+  usePoke,
+  useNotify,
 } from '../../integrations/near-social';
 import { ProfileCard } from '../../components/profile-card';
 import { ProfileAvatar } from '../../components/profile-avatar';
@@ -38,6 +43,11 @@ function SocialPage() {
   const social = useSocialInstance();
   const createPostMutation = useCreatePost();
   const likeMutation = useLike();
+  const unlikeMutation = useUnlike();
+  const createCommentMutation = useCreateComment();
+  const repostMutation = useRepost();
+  const pokeMutation = usePoke();
+  const notifyMutation = useNotify();
 
   const handleLookup = () => {
     if (!searchInput) return;
@@ -257,9 +267,12 @@ function SocialPage() {
         </p>
 
         <div className="grid gap-4 pb-[300px] md:pb-[250px]">
+          {/* Post Methods */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">Posts</h3>
+
           <MethodCard
             name="getPost"
-            description="Get a post by account ID and block height"
+            description="Get a post by account ID and block height (optionally with comments)"
             fields={[
               {
                 name: 'accountId',
@@ -275,13 +288,21 @@ function SocialPage() {
                 placeholder: '12345678',
                 required: true,
               },
+              {
+                name: 'includeComments',
+                label: 'Include Comments',
+                type: 'text' as const,
+                placeholder: 'true or false',
+                required: false,
+              },
             ]}
             requiresWallet={false}
             isConnected={!!accountId}
             onExecute={async (params: Record<string, string>) => {
               return social.getPost(
                 params.accountId,
-                parseInt(params.blockHeight)
+                parseInt(params.blockHeight),
+                { comments: params.includeComments === 'true' }
               );
             }}
             onResult={setResponse}
@@ -289,13 +310,13 @@ function SocialPage() {
 
           <MethodCard
             name="createPost"
-            description="Create a new post (requires wallet)"
+            description="Create a new post with auto-extraction of @mentions and #hashtags"
             fields={[
               {
                 name: 'content',
                 label: 'Post Content',
                 type: 'textarea' as const,
-                placeholder: 'Hello, NEAR!',
+                placeholder: 'Hello @alice.near! Check out #near #blockchain',
                 required: true,
               },
               {
@@ -319,9 +340,11 @@ function SocialPage() {
               if (!accountId) throw new Error('Wallet not connected');
               const post: {
                 text: string;
+                type?: string;
                 image?: { ipfs_cid?: string; url?: string };
               } = {
                 text: params.content,
+                type: 'md',
               };
               if (params.imageUrl || params.imageCid) {
                 post.image = {
@@ -334,6 +357,124 @@ function SocialPage() {
             onResult={setResponse}
           />
 
+          {/* Comment Methods */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">Comments</h3>
+
+          <MethodCard
+            name="createComment"
+            description="Create a comment on a post with auto-extraction of @mentions and #hashtags"
+            fields={[
+              {
+                name: 'itemType',
+                label: 'Item Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'itemPath',
+                label: 'Item Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'itemBlockHeight',
+                label: 'Item Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+              {
+                name: 'text',
+                label: 'Comment Text',
+                type: 'textarea' as const,
+                placeholder: 'Great post @alice.near! #awesome',
+                required: true,
+              },
+              {
+                name: 'imageUrl',
+                label: 'Image URL (optional)',
+                type: 'text' as const,
+                placeholder: 'https://example.com/image.png',
+                required: false,
+              },
+              {
+                name: 'imageCid',
+                label: 'Image IPFS CID (optional)',
+                type: 'text' as const,
+                placeholder: 'bafybei...',
+                required: false,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              const comment: {
+                item: { type: string; path: string; blockHeight: number };
+                text: string;
+                image?: { ipfs_cid?: string; url?: string };
+              } = {
+                item: {
+                  type: params.itemType,
+                  path: params.itemPath,
+                  blockHeight: parseInt(params.itemBlockHeight),
+                },
+                text: params.text,
+              };
+              if (params.imageUrl || params.imageCid) {
+                comment.image = {
+                  ...(params.imageUrl && { url: params.imageUrl }),
+                  ...(params.imageCid && { ipfs_cid: params.imageCid }),
+                };
+              }
+              return createCommentMutation.mutateAsync(comment);
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getComments"
+            description="Get comments for a post or item"
+            fields={[
+              {
+                name: 'type',
+                label: 'Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getComments({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          {/* Like Methods */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">Likes</h3>
+
           <MethodCard
             name="like"
             description="Like a post or item (requires wallet)"
@@ -342,7 +483,7 @@ function SocialPage() {
                 name: 'type',
                 label: 'Type',
                 type: 'text' as const,
-                placeholder: 'post',
+                placeholder: 'social',
                 required: true,
               },
               {
@@ -381,7 +522,7 @@ function SocialPage() {
                 name: 'type',
                 label: 'Type',
                 type: 'text' as const,
-                placeholder: 'post',
+                placeholder: 'social',
                 required: true,
               },
               {
@@ -407,6 +548,334 @@ function SocialPage() {
                 path: params.path,
                 blockHeight: parseInt(params.blockHeight),
               });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="unlike"
+            description="Unlike a previously liked post or item (requires wallet)"
+            fields={[
+              {
+                name: 'type',
+                label: 'Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              return unlikeMutation.mutateAsync({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          {/* Repost Methods */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">Reposts</h3>
+
+          <MethodCard
+            name="repost"
+            description="Repost a post to your feed (requires wallet)"
+            fields={[
+              {
+                name: 'type',
+                label: 'Item Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Item Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Item Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              return repostMutation.mutateAsync({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getReposts"
+            description="Get reposts for a post or item"
+            fields={[
+              {
+                name: 'type',
+                label: 'Type',
+                type: 'text' as const,
+                placeholder: 'social',
+                required: true,
+              },
+              {
+                name: 'path',
+                label: 'Path',
+                type: 'text' as const,
+                placeholder: 'alice.near/post/main',
+                required: true,
+              },
+              {
+                name: 'blockHeight',
+                label: 'Block Height',
+                type: 'number' as const,
+                placeholder: '12345678',
+                required: true,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getReposts({
+                type: params.type,
+                path: params.path,
+                blockHeight: parseInt(params.blockHeight),
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          {/* Feed Methods */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">Feeds</h3>
+
+          <MethodCard
+            name="getAccountFeed"
+            description="Get posts from a specific account's feed (optionally with replies)"
+            fields={[
+              {
+                name: 'accountId',
+                label: 'Account ID',
+                type: 'text' as const,
+                placeholder: 'alice.near',
+                required: true,
+              },
+              {
+                name: 'limit',
+                label: 'Limit',
+                type: 'number' as const,
+                placeholder: '20',
+                required: false,
+              },
+              {
+                name: 'includeReplies',
+                label: 'Include Replies',
+                type: 'text' as const,
+                placeholder: 'true or false',
+                required: false,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getAccountFeed(params.accountId, {
+                limit: params.limit ? parseInt(params.limit) : 20,
+                includeReplies: params.includeReplies === 'true',
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getHashtagFeed"
+            description="Get posts tagged with a specific hashtag"
+            fields={[
+              {
+                name: 'hashtag',
+                label: 'Hashtag',
+                type: 'text' as const,
+                placeholder: 'near',
+                required: true,
+              },
+              {
+                name: 'limit',
+                label: 'Limit',
+                type: 'number' as const,
+                placeholder: '20',
+                required: false,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getHashtagFeed(params.hashtag, {
+                limit: params.limit ? parseInt(params.limit) : 20,
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getActivityFeed"
+            description="Get all recent posts (activity feed)"
+            fields={[
+              {
+                name: 'limit',
+                label: 'Limit',
+                type: 'number' as const,
+                placeholder: '20',
+                required: false,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getActivityFeed({
+                limit: params.limit ? parseInt(params.limit) : 20,
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="getMentionedFeed"
+            description="Get posts/comments where an account was mentioned"
+            fields={[
+              {
+                name: 'accountId',
+                label: 'Account ID',
+                type: 'text' as const,
+                placeholder: 'alice.near',
+                required: true,
+              },
+              {
+                name: 'limit',
+                label: 'Limit',
+                type: 'number' as const,
+                placeholder: '20',
+                required: false,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getMentionedFeed(params.accountId, {
+                limit: params.limit ? parseInt(params.limit) : 20,
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          {/* Notification Methods */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">
+            Notifications
+          </h3>
+
+          <MethodCard
+            name="getNotifications"
+            description="Get notifications for an account (mentions, likes, comments, follows, reposts)"
+            fields={[
+              {
+                name: 'accountId',
+                label: 'Account ID',
+                type: 'text' as const,
+                placeholder: 'alice.near',
+                required: true,
+              },
+              {
+                name: 'limit',
+                label: 'Limit',
+                type: 'number' as const,
+                placeholder: '20',
+                required: false,
+              },
+            ]}
+            requiresWallet={false}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              return social.getNotifications(params.accountId, {
+                limit: params.limit ? parseInt(params.limit) : 20,
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          <MethodCard
+            name="notify"
+            description="Send a notification to another account (requires wallet)"
+            fields={[
+              {
+                name: 'targetAccountId',
+                label: 'Target Account ID',
+                type: 'text' as const,
+                placeholder: 'bob.near',
+                required: true,
+              },
+              {
+                name: 'type',
+                label: 'Notification Type',
+                type: 'text' as const,
+                placeholder: 'custom',
+                required: false,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              return notifyMutation.mutateAsync({
+                targetAccountId: params.targetAccountId,
+                type: params.type || 'custom',
+              });
+            }}
+            onResult={setResponse}
+          />
+
+          {/* Poke Method */}
+          <h3 className="text-lg font-semibold text-white/80 mt-4">Poke</h3>
+
+          <MethodCard
+            name="poke"
+            description="Poke another account (sends a simple notification)"
+            fields={[
+              {
+                name: 'targetAccountId',
+                label: 'Target Account ID',
+                type: 'text' as const,
+                placeholder: 'bob.near',
+                required: true,
+              },
+            ]}
+            requiresWallet={true}
+            isConnected={!!accountId}
+            onExecute={async (params: Record<string, string>) => {
+              if (!accountId) throw new Error('Wallet not connected');
+              return pokeMutation.mutateAsync(params.targetAccountId);
             }}
             onResult={setResponse}
           />
