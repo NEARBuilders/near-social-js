@@ -1,4 +1,4 @@
-import { Near, PrivateKey, generateKey } from 'near-kit';
+import { Near, generateKey, PrivateKey } from 'near-kit';
 import { Sandbox } from 'near-kit/sandbox';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -16,12 +16,7 @@ export async function createTestSandbox(
   const sandbox = await Sandbox.start();
   const rootAccountId = sandbox.rootAccount.id;
 
-  const near = new Near({
-    network: sandbox,
-    privateKey: sandbox.rootAccount.secretKey as PrivateKey,
-    defaultSignerId: rootAccountId,
-    defaultWaitUntil: 'FINAL',
-  });
+  const near = new Near({ network: sandbox, defaultWaitUntil: 'FINAL' });
 
   const contractId = `${contractPrefix}.${rootAccountId}`;
 
@@ -39,16 +34,10 @@ export async function createTestSandbox(
     .functionCall(contractId, 'new', {})
     .send();
 
-  const contractNear = new Near({
-    network: sandbox,
-    privateKey: contractKey.secretKey as PrivateKey,
-    defaultSignerId: contractId,
-    defaultWaitUntil: 'FINAL',
-  });
-
-  await contractNear
+  await near
     .transaction(contractId)
     .functionCall(contractId, 'set_status', { status: 'Live' })
+    .signWith(contractKey.secretKey as PrivateKey)
     .send();
 
   await near
@@ -75,7 +64,7 @@ export async function createTestSandbox(
           },
         },
       },
-      { gas: '100 Tgas', attachedDeposit: 1n }
+      { gas: '100 Tgas', attachedDeposit: '1 yocto' }
     )
     .send();
 
@@ -88,7 +77,7 @@ export async function createTestSandbox(
 }
 
 export async function stopTestSandbox(ctx: TestContext): Promise<void> {
-  if (ctx.sandbox) {
+  if (ctx?.sandbox) {
     await ctx.sandbox.stop();
   }
 }
