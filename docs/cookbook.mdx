@@ -38,9 +38,26 @@ await tx.send();
 
 ### Create a Post
 
+Posts automatically extract @mentions and #hashtags, sending notifications to mentioned users and indexing hashtags for discovery.
+
 ```typescript
 const tx = await social.createPost('alice.near', {
-  text: 'Hello NEAR! 🚀',
+  text: 'Hello @bob.near! Check out #near #blockchain 🚀',
+  type: 'md',
+});
+await tx.send();
+// Bob will receive a mention notification
+// Post will be discoverable via #near and #blockchain feeds
+```
+
+### Create a Post with Image
+
+```typescript
+const tx = await social.createPost('alice.near', {
+  text: 'Check out this cool image!',
+  type: 'md',
+  image: { ipfs_cid: 'bafybei...' },
+  // or use URL: image: { url: 'https://example.com/image.png' }
 });
 await tx.send();
 ```
@@ -49,16 +66,61 @@ await tx.send();
 
 ```typescript
 const post = await social.getPost('alice.near', 123456789);
-console.log(post?.text); // "Hello NEAR! 🚀"
+console.log(post?.text);  // "Hello @bob.near! Check out #near..."
+console.log(post?.type);  // "md"
+```
+
+### Get a Post with Comments
+
+```typescript
+const postWithComments = await social.getPost('alice.near', 123456789, {
+  comments: true,
+});
+console.log(postWithComments?.comments); // Array of comment entries
+```
+
+## Comments
+
+### Create a Comment
+
+Comments also auto-extract @mentions and #hashtags. The post author is automatically notified.
+
+```typescript
+const item = {
+  type: 'social',
+  path: 'bob.near/post/main',
+  blockHeight: 123456789,
+};
+
+const tx = await social.createComment('alice.near', {
+  item,
+  text: 'Great post @bob.near! #awesome',
+});
+await tx.send();
+// Bob receives a comment notification
+```
+
+### Get Comments for a Post
+
+```typescript
+const comments = await social.getComments({
+  type: 'social',
+  path: 'bob.near/post/main',
+  blockHeight: 123456789,
+});
+// Array of index entries with accountId and blockHeight
 ```
 
 ## Social Graph
 
 ### Follow an Account
 
+Following now automatically sends a notification to the followed account.
+
 ```typescript
 const tx = await social.follow('alice.near', 'bob.near');
 await tx.send();
+// Bob receives a follow notification
 ```
 
 ### Unfollow an Account
@@ -79,12 +141,14 @@ const following = await social.getFollowing('alice.near');
 
 ```typescript
 const followers = await social.getFollowers('alice.near');
-// { "dave.near": "", "eve.near": "" }
+// [{ accountId: "dave.near" }, { accountId: "eve.near" }]
 ```
 
 ## Likes
 
 ### Like a Post
+
+Liking now automatically sends a notification to the post author.
 
 ```typescript
 const item = {
@@ -95,6 +159,14 @@ const item = {
 
 const tx = await social.like('alice.near', item);
 await tx.send();
+// Bob receives a like notification
+```
+
+### Unlike a Post
+
+```typescript
+const tx = await social.unlike('alice.near', item);
+await tx.send();
 ```
 
 ### Get Likes
@@ -102,6 +174,163 @@ await tx.send();
 ```typescript
 const likes = await social.getLikes(item);
 // Array of index entries
+```
+
+## Reposts
+
+### Repost Content
+
+Reposting notifies the original author.
+
+```typescript
+const item = {
+  type: 'social',
+  path: 'bob.near/post/main',
+  blockHeight: 123456789,
+};
+
+const tx = await social.repost('alice.near', item);
+await tx.send();
+// Bob receives a repost notification
+```
+
+### Get Reposts
+
+```typescript
+const reposts = await social.getReposts(item);
+// Array of index entries showing who reposted
+```
+
+## Feeds
+
+### Get Account Feed
+
+```typescript
+const feed = await social.getAccountFeed('alice.near', {
+  limit: 20,
+  order: 'desc',
+});
+// Array of IndexEntry with accountId and blockHeight
+```
+
+### Get Account Feed with Replies
+
+```typescript
+// Include both posts and comments/replies made by the account
+const feedWithReplies = await social.getAccountFeed('alice.near', {
+  limit: 20,
+  order: 'desc',
+  includeReplies: true,
+});
+// Returns combined and sorted posts + comments
+```
+
+### Get Hashtag Feed
+
+```typescript
+const nearPosts = await social.getHashtagFeed('near', {
+  limit: 20,
+  order: 'desc',
+});
+// Posts tagged with #near
+```
+
+### Get Activity Feed
+
+```typescript
+const activityFeed = await social.getActivityFeed({
+  limit: 50,
+  order: 'desc',
+});
+// All recent posts across the network
+```
+
+### Get Mentioned Feed
+
+```typescript
+const mentions = await social.getMentionedFeed('alice.near', {
+  limit: 20,
+});
+// Posts/comments where alice.near was @mentioned
+```
+
+## Notifications
+
+### Get Notifications
+
+```typescript
+const notifications = await social.getNotifications('alice.near', {
+  limit: 50,
+  order: 'desc',
+});
+
+// Returns notifications for:
+// - mentions (@alice.near)
+// - likes on your posts
+// - comments on your posts
+// - new followers
+// - reposts of your content
+// - pokes
+
+notifications.forEach((n) => {
+  console.log(`${n.accountId} - ${n.value.type}`);
+  // "bob.near - like"
+  // "charlie.near - mention"
+  // "dave.near - follow"
+});
+```
+
+### Send a Custom Notification
+
+```typescript
+const tx = await social.notify('alice.near', 'bob.near', undefined, 'custom');
+await tx.send();
+```
+
+### Poke Someone
+
+```typescript
+const tx = await social.poke('alice.near', 'bob.near');
+await tx.send();
+// Bob receives a poke notification
+```
+
+## Mention & Hashtag Extraction
+
+### Extract Mentions from Text
+
+```typescript
+import { extractMentions } from 'near-social-js';
+
+const text = 'Hello @alice.near and @bob.near!';
+const mentions = extractMentions(text);
+// ['alice.near', 'bob.near']
+```
+
+### Extract Hashtags from Text
+
+```typescript
+import { extractHashtags } from 'near-social-js';
+
+const text = 'Building on #near #blockchain #web3';
+const hashtags = extractHashtags(text);
+// ['near', 'blockchain', 'web3']
+```
+
+### Build Notification Data
+
+```typescript
+import { buildNotifications } from 'near-social-js';
+
+const mentions = ['alice.near', 'bob.near'];
+const item = {
+  type: 'social',
+  path: 'charlie.near/post/main',
+  blockHeight: 12345,
+};
+
+const notificationData = buildNotifications(mentions, item);
+// { notify: '...' } - JSON stringified notification index data
 ```
 
 ## Deleting Data
@@ -234,6 +463,7 @@ Data is stored hierarchically: `{accountId}/{category}/{key}`
 |------|--------------|
 | Profile | `alice.near/profile/name` |
 | Post | `alice.near/post/main` |
+| Comment | `alice.near/post/comment` |
 | Widget | `alice.near/widget/MyWidget` |
 | Follow | `alice.near/graph/follow/bob.near` |
 
@@ -260,5 +490,7 @@ await graph.get({ keys: ['*/widget/*'] });
 | `post` | Posts feed |
 | `like` | Likes on items |
 | `comment` | Comments on posts |
+| `repost` | Reposts |
 | `graph` | Follow/unfollow events |
 | `notify` | Notifications |
+| `hashtag` | Hashtag indexing |

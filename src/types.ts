@@ -1,5 +1,9 @@
 import type { Near, Network } from 'near-kit';
 
+// ============================================
+// Graph Types
+// ============================================
+
 export interface GraphOptions {
   contractId?: string;
   network?: Network;
@@ -102,3 +106,80 @@ export interface GetNodesOptions {
   fromIndex?: number;
   limit?: number;
 }
+
+// ============================================
+// Social Types
+// ============================================
+
+export interface Profile {
+  name?: string;
+  description?: string;
+  image?: {
+    ipfs_cid?: string;
+    url?: string;
+  };
+  backgroundImage?: {
+    ipfs_cid?: string;
+    url?: string;
+  };
+  linktree?: Record<string, string>;
+  tags?: Record<string, string>;
+  [key: string]: unknown;
+}
+
+export interface Post {
+  text: string;
+  type?: string;
+  image?: {
+    ipfs_cid?: string;
+    url?: string;
+  };
+}
+
+export interface PostWithMetadata extends Post {
+  accountId: string;
+  blockHeight: number;
+}
+
+export interface CommentItem {
+  type: string;
+  path: string;
+  blockHeight: number;
+}
+
+export interface Comment {
+  item: CommentItem;
+  text: string;
+  image?: {
+    ipfs_cid?: string;
+    url?: string;
+  };
+}
+
+export interface FeedOptions {
+  limit?: number;
+  from?: number;
+  order?: 'asc' | 'desc';
+}
+
+export interface AccountFeedOptions extends FeedOptions {
+  includeReplies?: boolean;
+}
+
+export interface IndexEntry {
+  accountId: string;
+  blockHeight: number;
+  value?: unknown;
+}
+
+export interface Notification {
+  accountId: string;
+  blockHeight: number;
+  value: {
+    type: string;
+    item?: CommentItem;
+    accountId?: string;
+  };
+}
+
+export type SocialOptions = GraphOptions;

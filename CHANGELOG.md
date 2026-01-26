@@ -1,4 +1,24 @@
+# [2.0.2](https://github.com/NEARBuilders/near-social-js/compare/v2.0.1...v2.0.2) (2025-12-07)
 
+### Features
+
+* **Social Class - Comments**: Add `createComment(signerId, comment)` and `getComments(item)` methods for post comments
+* **Social Class - Unlike**: Add `unlike(signerId, item)` method for unliking posts
+* **Social Class - Repost**: Add `repost(signerId, item)` and `getReposts(item)` methods for reposting content
+* **Social Class - Feeds**: Add feed methods: `getAccountFeed` (with `includeReplies` option), `getHashtagFeed`, `getActivityFeed`, `getMentionedFeed`
+* **Social Class - Notifications**: Add `getNotifications(accountId, options?)` and `notify(signerId, targetAccountId, item?, type?)` methods
+* **Social Class - Poke**: Add `poke(signerId, targetAccountId)` method
+* **Social Class - Auto Extraction**: `createPost` and `createComment` now automatically extract @mentions and #hashtags
+* **Social Class - Auto Notifications**: `follow`, `like`, `repost`, and `createComment` now automatically notify the target user
+* **Social Class - getPost**: Updated to support `comments?: boolean` option to fetch comments with post
+* **Utility Functions**: Add `extractMentions(text)`, `extractHashtags(text)`, and `buildNotifications(mentions, item)` helper functions
+* **Types**: Export new types: `FeedOptions`, `IndexEntry`, `Notification`, `PostWithMetadata`
+
+### Enhancements
+
+* **Post Structure**: Posts now properly store `{ text, type }` JSON stringified in `post/main` with default type "md"
+* **Hashtag Indexing**: Posts and comments with hashtags are automatically indexed for hashtag feed discovery
+* **Notification System**: Comprehensive notifications for social interactions (mentions, likes, comments, follows, reposts, pokes)
 
 # [2.0.1](https://github.com/NEARBuilders/near-social-js/compare/v2.0.0...v2.0.1) (2025-12-04)
 

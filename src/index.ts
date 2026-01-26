@@ -1,5 +1,5 @@
 export { Graph } from './graph';
-export { Social, type Profile, type Post } from './social';
+export { Social, type SocialOptions } from './social';
 export * from './constants';
 export * from './errors';
 export * from './types';
