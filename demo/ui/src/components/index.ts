@@ -1,12 +1,3 @@
-export { ProfileCard } from './profile-card';
-export { ProfileAvatar } from './profile-avatar';
-export { ProfileEditDialog } from './profile-edit-dialog';
-export { JsonViewer } from './json-viewer';
-export { MethodCard } from './method-card';
-export { ResponsePanel } from './response-panel';
-export { WalletButton } from './wallet-button';
-export { Logo } from './logo';
-
 export { Badge } from './ui/badge';
 export { Button } from './ui/button';
 export {

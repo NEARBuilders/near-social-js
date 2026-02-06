@@ -25,7 +25,7 @@ const title = 'NearSocial.JS';
 const config = {
   baseUrl: '/near-social-js',
   deploymentBranch: 'gh-pages',
-  favicon: 'images/favicon.png',
+  favicon: 'images/near-social-favicon.png',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -80,16 +80,54 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // TODO: create a social card
-      // image: 'img/docusaurus-social-card.jpg',
+      image: 'images/social-card.png',
       metadata: [
         {
           name: 'keywords',
-          content: 'blockchain, near, nearprotocol',
+          content:
+            'near, near protocol, NEAR Social, social.near, javascript sdk, near-social-js',
+        },
+        {
+          name: 'description',
+          content: tagline,
+        },
+        {
+          property: 'og:title',
+          content: title,
+        },
+        {
+          property: 'og:description',
+          content: tagline,
+        },
+        {
+          property: 'og:image',
+          content: `${url}/near-social-js/images/social-card.png`,
+        },
+        {
+          name: 'twitter:card',
+          content: 'summary_large_image',
+        },
+        {
+          name: 'twitter:title',
+          content: title,
+        },
+        {
+          name: 'twitter:description',
+          content: tagline,
+        },
+        {
+          name: 'twitter:image',
+          content: `${url}/near-social-js/images/social-card.png`,
         },
       ],
       navbar: {
         title,
+        logo: {
+          alt: 'NearSocial.JS',
+          src: 'images/near-social-favicon.png',
+          height: 24,
+          width: 24,
+        },
         items: [
           {
             type: 'doc',
@@ -121,6 +159,20 @@ const config = {
       footer: {
         copyright: `
 <div class="footer__copyright-container">
+    <a
+      class="footer__brand-link"
+      href="${url}/near-social-js/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="NearSocial.JS Documentation"
+    >
+      <img
+        class="footer__brand-logo"
+        src="/near-social-js/images/near-social-favicon.png"
+        alt="NearSocial.JS"
+      />
+      <span class="footer__brand-text">${title}</span>
+    </a>
     <p class="footer__text">Licensed under <a class="footer__text--link" href="${githubLink}/blob/main/LICENSE" target="_blank">MIT</a>.</p>
 </div>
         `,
@@ -160,13 +212,6 @@ const config = {
             ],
           },
         ],
-        logo: {
-          alt: 'BuildDAO logo',
-          height: '50px',
-          href: buildDAOLink,
-          src: '/images/build_dao-banner_logo.svg',
-          target: '_blank',
-        },
         style: 'dark',
       },
       prism: {

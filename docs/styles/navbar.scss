@@ -1,3 +1,18 @@
+// Keep navbar brand logo crisp and non-stretched
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__logo {
+  height: 24px !important;
+  width: 24px !important;
+  object-fit: contain;
+  margin-right: 0 !important;
+  display: block;
+}
+
 .navbar {
   &__icon {
     &:before {

@@ -11,6 +11,34 @@ $social-image-size: 24px;
     width: 100%;
   }
 
+  &__brand-link {
+    align-items: center;
+    color: text-color("dark");
+    display: inline-flex;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.9;
+      text-decoration: none;
+    }
+  }
+
+  &__brand-logo {
+    height: 24px;
+    width: 24px;
+    object-fit: contain;
+  }
+
+  &__brand-text {
+    color: text-color("dark");
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
   &__icon-container {
     align-items: center;
     display: flex;
