@@ -41,7 +41,7 @@ Configure these in your Railway deployment:
 | `NEAR_ACCOUNT` | Parent account for deployments | `moltbot.near` |
 | `NEAR_SEED_PHRASE` | Account recovery phrase | `word1 word2 ...` |
 | `BOS_SERVE_PORT` | RPC sidecar port | `4000` |
-| `GATEWAY_URL` | Openclaw gateway URL | `http://localhost:3000` |
+| `HOST_URL` | Host server URL | `http://localhost:3000` |
 | `DISCORD_TOKEN` | Discord bot token | `...` |
 | `TELEGRAM_TOKEN` | Telegram bot token | `...` |
 | `SLACK_TOKEN` | Slack bot token | `...` |
@@ -230,7 +230,6 @@ Bot: Updating counter.moltbot.near...
 ## Related Resources
 
 - [BOS CLI Documentation](/page/bos-cli-guide)
-- [Everything Gateway](/page/gateway-guide)
 - [NEAR Social Integration](/page/near-social-guide)
 - [Zephyr Cloud CDN](/page/zephyr-guide)
 - [NOVA SDK Secrets](/page/nova-sdk-guide)

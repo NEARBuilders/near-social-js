@@ -1,47 +1,34 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const { EveryPluginDevServer } = require("every-plugin/build/rspack");
-const { withZephyr } = require("zephyr-rspack-plugin");
-const pkg = require("./package.json");
-
-const shouldDeploy = process.env.DEPLOY === 'true';
+const fs = require('node:fs');
+const path = require('node:path');
+const { EveryPluginDevServer } = require('every-plugin/build/rspack');
+const { withZephyr } = require('zephyr-rspack-plugin');
+const pkg = require('./package.json');
 
 function updateHostConfig(name, url) {
   try {
-    const configPath = path.resolve(__dirname, "../bos.config.json");
-    const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-
-    if (config.app.api.name !== name) {
-      console.error(`   ❌ API "${name}" not found in bos.config.json`);
-      return;
-    }
-
-    config.app.api.production = url;
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
-    console.log(`   ✅ Updated bos.config.json: app.api.production`);
+    const configPath = path.resolve(__dirname, '../host/registry.json');
+    const json = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    json.plugins[name].remote = url;
+    fs.writeFileSync(configPath, JSON.stringify(json, null, 2) + '\n');
+    console.log('   ✅ Updated host/registry.json');
   } catch (err) {
-    console.error("   ❌ Failed to update bos.config.json:", err.message);
+    console.error('   ❌ Failed to update host/registry.json:', err.message);
   }
 }
 
-const baseConfig = {
-  externals: [
-    /^@libsql\/.*/, 
-  ],
-  plugins: [new EveryPluginDevServer()],
-  infrastructureLogging: {
-    level: 'error',
+module.exports = withZephyr({
+  hooks: {
+    onDeployComplete: (info) => {
+      console.log('🚀 Deployment Complete!');
+      console.log(`   URL: ${info.url}`);
+      console.log(`   Module: ${info.snapshot.uid.app_name}`);
+      console.log(`   Build ID: ${info.snapshot.uid.build}`);
+      console.log(`   Dependencies: ${info.federatedDependencies.length}`);
+      console.log(`   Git: ${info.snapshot.git.branch}@${info.snapshot.git.commit}`);
+      console.log(`   CI: ${info.buildStats.context.isCI ? 'Yes' : 'No'}`);
+      updateHostConfig(pkg.name, info.url);
+    },
   },
-  stats: 'errors-warnings',
-};
-
-module.exports = shouldDeploy
-  ? withZephyr({
-      hooks: {
-        onDeployComplete: (info) => {
-          console.log("🚀 API Deployed:", info.url);
-          updateHostConfig(pkg.name, info.url);
-        },
-      },
-    })(baseConfig)
-  : baseConfig;
+})({
+  plugins: [new EveryPluginDevServer()],
+});

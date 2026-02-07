@@ -1,6 +1,6 @@
-# everything-dev
+# near-social-js demo
 
-Module Federation monorepo with runtime-loaded configuration, demonstrating every-plugin architecture and NEAR Protocol integration.
+Module Federation monorepo with runtime-loaded configuration, demonstrating `near-social-js` + NEAR Protocol integration.
 
 Built with React, Hono.js, oRPC, Better-Auth, and Module Federation.
 
@@ -95,11 +95,7 @@ All runtime configuration lives in `bos.config.json`:
 {
   "account": "every.near",
   "testnet": "althe.testnet",
-  "template": "near-everything/every-plugin/demo",
-  "gateway": {
-    "development": "http://localhost:8787",
-    "production": "https://everything.dev"
-  },
+  "template": "NEARBuilders/near-social-js/demo",
   "shared": {
     "ui": {
       "react": { "requiredVersion": "19.2.4", "singleton": true }
@@ -110,7 +106,7 @@ All runtime configuration lives in `bos.config.json`:
       "title": "App Title",
       "development": "http://localhost:3000",
       "production": "https://example.zephyrcloud.app",
-      "template": "near-everything/every-plugin/demo/host",
+      "template": "NEARBuilders/near-social-js/demo/host",
       "sync": { "scripts": ["dev", "build", "test"] }
     },
     "ui": {
@@ -126,7 +122,7 @@ All runtime configuration lives in `bos.config.json`:
       "name": "api",
       "development": "http://localhost:3014",
       "production": "https://example-api.zephyrcloud.app",
-      "secrets": ["API_DATABASE_URL", "API_DATABASE_AUTH_TOKEN"]
+      "secrets": ["RELAYER_ACCOUNT_ID", "RELAYER_PRIVATE_KEY"]
     }
   }
 }

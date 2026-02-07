@@ -39,7 +39,7 @@ export const queryClient = new QueryClient({
 
 function createApiLink() {
   return new RPCLink({
-    url: getApiBaseUrl,
+    url: getApiBaseUrl(),
     interceptors: [
       onError((error: unknown) => {
         console.error('oRPC API Error:', error);

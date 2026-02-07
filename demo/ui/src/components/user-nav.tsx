@@ -40,7 +40,7 @@ export function UserNav() {
 
   return (
     <Link
-      to="/login"
+      to="/"
       className="text-xs text-muted-foreground hover:text-foreground transition-colors font-mono"
     >
       login

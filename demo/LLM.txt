@@ -55,7 +55,7 @@ The **entire system** is configured via `bos.config.json` - a runtime-loaded JSO
       "development": "http://localhost:3014",
       "production": "https://cdn.example.com/api/remoteEntry.js",
       "variables": {},
-      "secrets": ["API_DATABASE_URL", "API_DATABASE_AUTH_TOKEN"]
+      "secrets": ["RELAYER_ACCOUNT_ID", "RELAYER_PRIVATE_KEY"]
     }
   }
 }
@@ -132,8 +132,7 @@ api/
 │   ├── contract.ts      # oRPC route definitions
 │   ├── index.ts         # createPlugin() implementation
 │   ├── schema.ts        # Zod schemas for validation
-│   ├── services/        # Business logic (Effect-based)
-│   └── db/              # Database schema (Drizzle)
+│   └── service.ts       # Relayer business logic
 └── plugin.dev.ts        # Dev server config
 ```
 
@@ -147,16 +146,19 @@ export default createPlugin({
   }),
   
   secrets: z.object({
-    API_DATABASE_URL: z.string(),
-    API_DATABASE_AUTH_TOKEN: z.string()
+    relayerAccountId: z.string(),
+    relayerPrivateKey: z.string()
   }),
   
   contract,  // oRPC contract from contract.ts
   
   initialize: (config) => Effect.gen(function* () {
     // Create services with config
-    const db = createDb(config.secrets.API_DATABASE_URL);
-    const service = new MyService(db);
+    const service = new RelayerService(
+      /* near */ near,
+      /* relayerAccountId */ config.secrets.relayerAccountId,
+      /* contractId */ config.variables.contractId
+    );
     
     return { service };
   }),

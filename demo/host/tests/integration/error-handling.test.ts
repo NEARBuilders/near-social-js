@@ -24,21 +24,6 @@ interface ORPCErrorResponse {
   data?: Record<string, unknown>;
 }
 
-const parseORPCError = async (response: Response): Promise<ORPCErrorResponse | null> => {
-  try {
-    const json = await response.json();
-    if (json && typeof json === 'object' && 'code' in json) {
-      return json as ORPCErrorResponse;
-    }
-    if (json && typeof json === 'object' && 'error' in json) {
-      return json.error as ORPCErrorResponse;
-    }
-    return json;
-  } catch {
-    return null;
-  }
-};
-
 describe("Error Propagation & Formatting", () => {
   let routerModule: RouterModule;
   let config: RuntimeConfig;

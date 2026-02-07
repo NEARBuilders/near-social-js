@@ -10,144 +10,58 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutRouteImport } from './routes/_layout'
-import { Route as LayoutLoginRouteImport } from './routes/_layout/login'
-import { Route as LayoutAuthenticatedRouteImport } from './routes/_layout/_authenticated'
-import { Route as LayoutRegistryIndexRouteImport } from './routes/_layout/registry/index'
-import { Route as LayoutAuthenticatedIndexRouteImport } from './routes/_layout/_authenticated/index'
-import { Route as LayoutPageKeyRouteImport } from './routes/_layout/page/$key'
-import { Route as LayoutAuthenticatedAdminRouteImport } from './routes/_layout/_authenticated/_admin'
-import { Route as LayoutAuthenticatedKeysIndexRouteImport } from './routes/_layout/_authenticated/keys/index'
-import { Route as LayoutRegistryAccountDomainRouteImport } from './routes/_layout/registry/$account.$domain'
-import { Route as LayoutAuthenticatedKeysKeyRouteImport } from './routes/_layout/_authenticated/keys/$key'
-import { Route as LayoutAuthenticatedAdminDashboardRouteImport } from './routes/_layout/_authenticated/_admin/dashboard'
+import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutSocialRouteImport } from './routes/_layout/social'
+import { Route as LayoutGraphRouteImport } from './routes/_layout/graph'
 
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutLoginRoute = LayoutLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const LayoutIndexRoute = LayoutIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutAuthenticatedRoute = LayoutAuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const LayoutSocialRoute = LayoutSocialRouteImport.update({
+  id: '/social',
+  path: '/social',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutRegistryIndexRoute = LayoutRegistryIndexRouteImport.update({
-  id: '/registry/',
-  path: '/registry/',
+const LayoutGraphRoute = LayoutGraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutAuthenticatedIndexRoute =
-  LayoutAuthenticatedIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => LayoutAuthenticatedRoute,
-  } as any)
-const LayoutPageKeyRoute = LayoutPageKeyRouteImport.update({
-  id: '/page/$key',
-  path: '/page/$key',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutAuthenticatedAdminRoute =
-  LayoutAuthenticatedAdminRouteImport.update({
-    id: '/_admin',
-    getParentRoute: () => LayoutAuthenticatedRoute,
-  } as any)
-const LayoutAuthenticatedKeysIndexRoute =
-  LayoutAuthenticatedKeysIndexRouteImport.update({
-    id: '/keys/',
-    path: '/keys/',
-    getParentRoute: () => LayoutAuthenticatedRoute,
-  } as any)
-const LayoutRegistryAccountDomainRoute =
-  LayoutRegistryAccountDomainRouteImport.update({
-    id: '/registry/$account/$domain',
-    path: '/registry/$account/$domain',
-    getParentRoute: () => LayoutRoute,
-  } as any)
-const LayoutAuthenticatedKeysKeyRoute =
-  LayoutAuthenticatedKeysKeyRouteImport.update({
-    id: '/keys/$key',
-    path: '/keys/$key',
-    getParentRoute: () => LayoutAuthenticatedRoute,
-  } as any)
-const LayoutAuthenticatedAdminDashboardRoute =
-  LayoutAuthenticatedAdminDashboardRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => LayoutAuthenticatedAdminRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof LayoutAuthenticatedIndexRoute
-  '/login': typeof LayoutLoginRoute
-  '/page/$key': typeof LayoutPageKeyRoute
-  '/registry/': typeof LayoutRegistryIndexRoute
-  '/dashboard': typeof LayoutAuthenticatedAdminDashboardRoute
-  '/keys/$key': typeof LayoutAuthenticatedKeysKeyRoute
-  '/registry/$account/$domain': typeof LayoutRegistryAccountDomainRoute
-  '/keys/': typeof LayoutAuthenticatedKeysIndexRoute
+  '/': typeof LayoutIndexRoute
+  '/graph': typeof LayoutGraphRoute
+  '/social': typeof LayoutSocialRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof LayoutAuthenticatedIndexRoute
-  '/login': typeof LayoutLoginRoute
-  '/page/$key': typeof LayoutPageKeyRoute
-  '/registry': typeof LayoutRegistryIndexRoute
-  '/dashboard': typeof LayoutAuthenticatedAdminDashboardRoute
-  '/keys/$key': typeof LayoutAuthenticatedKeysKeyRoute
-  '/registry/$account/$domain': typeof LayoutRegistryAccountDomainRoute
-  '/keys': typeof LayoutAuthenticatedKeysIndexRoute
+  '/graph': typeof LayoutGraphRoute
+  '/social': typeof LayoutSocialRoute
+  '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
-  '/_layout/_authenticated': typeof LayoutAuthenticatedRouteWithChildren
-  '/_layout/login': typeof LayoutLoginRoute
-  '/_layout/_authenticated/_admin': typeof LayoutAuthenticatedAdminRouteWithChildren
-  '/_layout/page/$key': typeof LayoutPageKeyRoute
-  '/_layout/_authenticated/': typeof LayoutAuthenticatedIndexRoute
-  '/_layout/registry/': typeof LayoutRegistryIndexRoute
-  '/_layout/_authenticated/_admin/dashboard': typeof LayoutAuthenticatedAdminDashboardRoute
-  '/_layout/_authenticated/keys/$key': typeof LayoutAuthenticatedKeysKeyRoute
-  '/_layout/registry/$account/$domain': typeof LayoutRegistryAccountDomainRoute
-  '/_layout/_authenticated/keys/': typeof LayoutAuthenticatedKeysIndexRoute
+  '/_layout/graph': typeof LayoutGraphRoute
+  '/_layout/social': typeof LayoutSocialRoute
+  '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/login'
-    | '/page/$key'
-    | '/registry/'
-    | '/dashboard'
-    | '/keys/$key'
-    | '/registry/$account/$domain'
-    | '/keys/'
+  fullPaths: '/' | '/graph' | '/social'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/login'
-    | '/page/$key'
-    | '/registry'
-    | '/dashboard'
-    | '/keys/$key'
-    | '/registry/$account/$domain'
-    | '/keys'
+  to: '/graph' | '/social' | '/'
   id:
     | '__root__'
     | '/_layout'
-    | '/_layout/_authenticated'
-    | '/_layout/login'
-    | '/_layout/_authenticated/_admin'
-    | '/_layout/page/$key'
-    | '/_layout/_authenticated/'
-    | '/_layout/registry/'
-    | '/_layout/_authenticated/_admin/dashboard'
-    | '/_layout/_authenticated/keys/$key'
-    | '/_layout/registry/$account/$domain'
-    | '/_layout/_authenticated/keys/'
+    | '/_layout/graph'
+    | '/_layout/social'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -163,125 +77,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout/login': {
-      id: '/_layout/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LayoutLoginRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/_authenticated': {
-      id: '/_layout/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof LayoutAuthenticatedRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/registry/': {
-      id: '/_layout/registry/'
-      path: '/registry'
-      fullPath: '/registry/'
-      preLoaderRoute: typeof LayoutRegistryIndexRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/_authenticated/': {
-      id: '/_layout/_authenticated/'
+    '/_layout/': {
+      id: '/_layout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof LayoutAuthenticatedIndexRouteImport
-      parentRoute: typeof LayoutAuthenticatedRoute
-    }
-    '/_layout/page/$key': {
-      id: '/_layout/page/$key'
-      path: '/page/$key'
-      fullPath: '/page/$key'
-      preLoaderRoute: typeof LayoutPageKeyRouteImport
+      preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
-    '/_layout/_authenticated/_admin': {
-      id: '/_layout/_authenticated/_admin'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof LayoutAuthenticatedAdminRouteImport
-      parentRoute: typeof LayoutAuthenticatedRoute
-    }
-    '/_layout/_authenticated/keys/': {
-      id: '/_layout/_authenticated/keys/'
-      path: '/keys'
-      fullPath: '/keys/'
-      preLoaderRoute: typeof LayoutAuthenticatedKeysIndexRouteImport
-      parentRoute: typeof LayoutAuthenticatedRoute
-    }
-    '/_layout/registry/$account/$domain': {
-      id: '/_layout/registry/$account/$domain'
-      path: '/registry/$account/$domain'
-      fullPath: '/registry/$account/$domain'
-      preLoaderRoute: typeof LayoutRegistryAccountDomainRouteImport
+    '/_layout/social': {
+      id: '/_layout/social'
+      path: '/social'
+      fullPath: '/social'
+      preLoaderRoute: typeof LayoutSocialRouteImport
       parentRoute: typeof LayoutRoute
     }
-    '/_layout/_authenticated/keys/$key': {
-      id: '/_layout/_authenticated/keys/$key'
-      path: '/keys/$key'
-      fullPath: '/keys/$key'
-      preLoaderRoute: typeof LayoutAuthenticatedKeysKeyRouteImport
-      parentRoute: typeof LayoutAuthenticatedRoute
-    }
-    '/_layout/_authenticated/_admin/dashboard': {
-      id: '/_layout/_authenticated/_admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof LayoutAuthenticatedAdminDashboardRouteImport
-      parentRoute: typeof LayoutAuthenticatedAdminRoute
+    '/_layout/graph': {
+      id: '/_layout/graph'
+      path: '/graph'
+      fullPath: '/graph'
+      preLoaderRoute: typeof LayoutGraphRouteImport
+      parentRoute: typeof LayoutRoute
     }
   }
 }
-
-interface LayoutAuthenticatedAdminRouteChildren {
-  LayoutAuthenticatedAdminDashboardRoute: typeof LayoutAuthenticatedAdminDashboardRoute
-}
-
-const LayoutAuthenticatedAdminRouteChildren: LayoutAuthenticatedAdminRouteChildren =
-  {
-    LayoutAuthenticatedAdminDashboardRoute:
-      LayoutAuthenticatedAdminDashboardRoute,
-  }
-
-const LayoutAuthenticatedAdminRouteWithChildren =
-  LayoutAuthenticatedAdminRoute._addFileChildren(
-    LayoutAuthenticatedAdminRouteChildren,
-  )
-
-interface LayoutAuthenticatedRouteChildren {
-  LayoutAuthenticatedAdminRoute: typeof LayoutAuthenticatedAdminRouteWithChildren
-  LayoutAuthenticatedIndexRoute: typeof LayoutAuthenticatedIndexRoute
-  LayoutAuthenticatedKeysKeyRoute: typeof LayoutAuthenticatedKeysKeyRoute
-  LayoutAuthenticatedKeysIndexRoute: typeof LayoutAuthenticatedKeysIndexRoute
-}
-
-const LayoutAuthenticatedRouteChildren: LayoutAuthenticatedRouteChildren = {
-  LayoutAuthenticatedAdminRoute: LayoutAuthenticatedAdminRouteWithChildren,
-  LayoutAuthenticatedIndexRoute: LayoutAuthenticatedIndexRoute,
-  LayoutAuthenticatedKeysKeyRoute: LayoutAuthenticatedKeysKeyRoute,
-  LayoutAuthenticatedKeysIndexRoute: LayoutAuthenticatedKeysIndexRoute,
-}
-
-const LayoutAuthenticatedRouteWithChildren =
-  LayoutAuthenticatedRoute._addFileChildren(LayoutAuthenticatedRouteChildren)
 
 interface LayoutRouteChildren {
-  LayoutAuthenticatedRoute: typeof LayoutAuthenticatedRouteWithChildren
-  LayoutLoginRoute: typeof LayoutLoginRoute
-  LayoutPageKeyRoute: typeof LayoutPageKeyRoute
-  LayoutRegistryIndexRoute: typeof LayoutRegistryIndexRoute
-  LayoutRegistryAccountDomainRoute: typeof LayoutRegistryAccountDomainRoute
+  LayoutGraphRoute: typeof LayoutGraphRoute
+  LayoutSocialRoute: typeof LayoutSocialRoute
+  LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutAuthenticatedRoute: LayoutAuthenticatedRouteWithChildren,
-  LayoutLoginRoute: LayoutLoginRoute,
-  LayoutPageKeyRoute: LayoutPageKeyRoute,
-  LayoutRegistryIndexRoute: LayoutRegistryIndexRoute,
-  LayoutRegistryAccountDomainRoute: LayoutRegistryAccountDomainRoute,
+  LayoutGraphRoute: LayoutGraphRoute,
+  LayoutSocialRoute: LayoutSocialRoute,
+  LayoutIndexRoute: LayoutIndexRoute,
 }
 
 const LayoutRouteWithChildren =

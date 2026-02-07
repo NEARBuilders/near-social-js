@@ -1,89 +1,138 @@
-# api
+# near-social-js Relayer
 
-[every-plugin](https://github.com/near-everything/every-plugin) based API with oRPC and Effect-TS.
+A relayer plugin for near-social-js that enables gasless transactions on [NEAR Social](https://near.social) (`social.near` contract).
 
-## Plugin Architecture
+## Features
 
-Built with **every-plugin** framework (Rspack + Module Federation):
+- **Connect**: Ensures users have storage deposit on social.near
+- **Publish**: Relays signed delegate actions (meta-transactions) for gasless social posts and profile updates
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    createPlugin()                       │
-├─────────────────────────────────────────────────────────┤
-│  variables: { ... }                                     │
-│  secrets: { ... }                                       │
-│  contract: oRPC route definitions                       │
-│  initialize(): Effect → services                        │
-│  createRouter(): handlers using services                │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                   Host Integration                      │
-├─────────────────────────────────────────────────────────┤
-│  bos.config.json → plugin URL + secrets                 │
-│  runtime.ts → createPluginRuntime().usePlugin()         │
-│  routers/index.ts → merge plugin.router into AppRouter  │
-└─────────────────────────────────────────────────────────┘
-```
+## Quick Start
 
-**Plugin Structure:**
-
-- `contract.ts` - oRPC contract definition (routes, schemas)
-- `index.ts` - Plugin initialization + router handlers
-- `services/` - Business logic with Effect-TS
-- `db/` - Database schema and migrations
-
-## Development
+### 1. Install dependencies
 
 ```bash
-bos dev --host remote   # Remote host, local UI + API (typical)
-bos dev --ui remote     # Isolate API work
+cd demo/api
+bun install
+```
+
+### 2. Configure secrets
+
+Create a `.env` file or set environment variables:
+
+```bash
+RELAYER_ACCOUNT_ID=your-relayer.near
+RELAYER_PRIVATE_KEY=ed25519:...
+```
+
+### 3. Run the dev server
+
+```bash
+bun run dev
+```
+
+The relayer will be available at `http://localhost:3014/api/rpc`
+
+## API Endpoints
+
+### POST /connect
+
+Ensures an account has storage deposit on social.near.
+
+**Request:**
+```json
+{
+  "accountId": "user.near"
+}
+```
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "hasStorage": false,
+  "depositTxHash": "ABC123..."
+}
+```
+
+### POST /publish
+
+Submits a signed delegate action to the network.
+
+**Request:**
+```json
+{
+  "payload": "base64-encoded-signed-delegate-action"
+}
+```
+
+**Response:**
+```json
+{
+  "hash": "DEF456..."
+}
+```
+
+### GET /ping
+
+Health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
+```
+
+## Client Usage
+
+### Creating a delegate action for profile update
+
+```typescript
+import { Social } from "near-social-js";
+import { Near } from "near-kit";
+
+const near = new Near({
+  network: "mainnet",
+  wallet: yourWalletAdapter,
+});
+
+const social = new Social({ near });
+
+const tx = await social.setProfile("user.near", {
+  name: "My Name",
+  description: "Hello world",
+});
+
+const { payload } = await tx.delegate();
+
+const response = await fetch("http://localhost:3014/api/rpc/publish", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ payload }),
+});
+
+const result = await response.json();
+console.log("Transaction hash:", result.hash);
 ```
 
 ## Configuration
 
-**bos.config.json**:
+### Variables
 
-```json
-{
-  "app": {
-    "api": {
-      "name": "api",
-      "development": "http://localhost:3014",
-      "production": "https://example-api.zephyrcloud.app",
-      "proxy": "https://example-api.zephyrcloud.app",
-      "variables": {},
-      "secrets": [
-        "API_DATABASE_URL",
-        "API_DATABASE_AUTH_TOKEN"
-      ],
-      "template": "near-everything/every-plugin/demo/api",
-      "files": [
-        "rspack.config.cjs",
-        "tsconfig.json",
-        "vitest.config.ts",
-        "drizzle.config.ts",
-        "plugin.dev.ts"
-      ],
-      "sync": {
-        "scripts": ["dev", "build", "test"]
-      }
-    }
-  }
-}
-```
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `network` | `"mainnet" \| "testnet"` | `"mainnet"` | NEAR network to connect to |
+| `contractId` | `string` | `"social.near"` | Social contract ID |
 
-## Tech Stack
+### Secrets
 
-- **Framework**: every-plugin + oRPC
-- **Effects**: Effect-TS for service composition
-- **Database**: SQLite (libsql) + Drizzle ORM
-- **Build**: Rspack + Module Federation
+| Name | Required | Description |
+|------|----------|-------------|
+| `relayerAccountId` | Yes | Account ID of the relayer (pays for gas) |
+| `relayerPrivateKey` | Yes | Private key of the relayer account |
 
-## Scripts
+## License
 
-- `bun dev` - Start dev server (port 3014)
-- `bun build` - Build plugin
-- `bun test` - Run tests
-- `bun db:push` - Push schema to database
-- `bun db:studio` - Open Drizzle Studio
+Part of the [near-social-js](https://github.com/NEARBuilders/near-social-js) library.

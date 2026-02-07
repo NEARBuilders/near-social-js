@@ -45,8 +45,6 @@ function getOrCreateFederationInstance(config: RuntimeConfig) {
     });
   }
 
-  const shared = transformSharedConfig(config.shared?.ui);
-
   if (existingInstance) {
     existingInstance.registerRemotes([{
       name: config.ui.name,
@@ -117,5 +115,5 @@ export class FederationServerService extends Context.Tag("host/FederationServerS
       const config = yield* ConfigService;
       return yield* loadRouterModule(config);
     })
-  ).pipe(Layer.provide(ConfigService.Default));
+  );
 }

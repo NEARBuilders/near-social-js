@@ -1,154 +1,88 @@
-import { createPlugin } from "every-plugin";
-import { Cause, Effect, Exit, Layer } from "every-plugin/effect";
-import { ORPCError } from "every-plugin/orpc";
-import { z } from "every-plugin/zod";
-import { contract } from "./contract";
-import { DatabaseLive } from "./db/layer";
-import { KvService, KvServiceLive } from "./services/kv";
+import { createPlugin } from 'every-plugin';
+import { Effect } from 'every-plugin/effect';
+import { z } from 'every-plugin/zod';
+import { Near, InMemoryKeyStore, parseKey, type Network } from 'near-kit';
+
+import { contract } from './contract';
+import { RelayerService } from './service';
+
+export * from './schema';
 
 export default createPlugin({
-  variables: z.object({}),
-
-  secrets: z.object({
-    API_DATABASE_URL: z.string().default("file:./api.db"),
-    API_DATABASE_AUTH_TOKEN: z.string().optional(),
+  variables: z.object({
+    network: z.enum(['mainnet', 'testnet']).default('mainnet'),
+    contractId: z.string().default('social.near'),
+    nodeUrl: z.string().optional(),
   }),
 
-  context: z.object({
-    nearAccountId: z.string().optional(),
+  secrets: z.object({
+    relayerAccountId: z.string().min(1, 'Relayer account ID is required'),
+    relayerPrivateKey: z.string().min(1, 'Relayer private key is required'),
   }),
 
   contract,
 
   initialize: (config) =>
     Effect.gen(function* () {
-      const Database = DatabaseLive(
-        config.secrets.API_DATABASE_URL,
-        config.secrets.API_DATABASE_AUTH_TOKEN
+      const networkConfig = config.variables.nodeUrl
+        ? {
+            networkId: config.variables.network,
+            rpcUrl: config.variables.nodeUrl,
+          }
+        : (config.variables.network as Network);
+
+      console.log(`[Relayer Init] relayerAccountId: ${config.secrets.relayerAccountId}`);
+
+      console.log(`[Relayer Init] network: ${config.variables.network}`);
+      console.log(`[Relayer Init] contractId: ${config.variables.contractId}`);
+
+      // add key to keyStore
+      const keyStore = new InMemoryKeyStore();
+      yield* Effect.promise(() =>
+        keyStore.add(
+          config.secrets.relayerAccountId,
+          parseKey(config.secrets.relayerPrivateKey)
+        )
       );
 
-      const Services = KvServiceLive.pipe(Layer.provide(Database));
+      const near = new Near({
+        network: networkConfig,
+        keyStore,
+        defaultSignerId: config.secrets.relayerAccountId,
+        defaultWaitUntil: 'FINAL', // wait until transactions complete before responding
+      });
 
-      const services = yield* Effect.provide(KvService, Services);
+      const service = new RelayerService(
+        near,
+        config.secrets.relayerAccountId,
+        config.variables.contractId
+      );
 
-      console.log("[API] Services Initialized");
-      return services;
+      console.debug('[Relayer Init] RelayerService initialized');
+
+      return { service };
     }),
 
-  shutdown: () => Effect.log("[API] Shutdown"),
+  shutdown: () => Effect.void,
 
-  createRouter: (services, builder) => {
-    const authed = builder.middleware(({ context, next }) => {
-      if (!context.nearAccountId) {
-        throw new ORPCError("UNAUTHORIZED", { message: "Auth required" });
-      }
-      return next({ context: { owner: context.nearAccountId } });
-    });
+  createRouter: (context, builder) => {
+    const { service } = context;
 
     return {
-      ping: builder.ping.handler(async () => ({
-        status: "ok",
-        timestamp: new Date().toISOString(),
-      })),
+      connect: builder.connect.handler(async ({ input }) => {
+        return await service.ensureStorageDeposit(input.accountId);
+      }),
 
-      protected: builder.protected.use(authed).handler(async ({ context }) => ({
-        message: "Protected data",
-        accountId: context.owner,
-        timestamp: new Date().toISOString(),
-      })),
+      publish: builder.publish.handler(async ({ input }) => {
+        return await service.submitDelegateAction(input.payload);
+      }),
 
-      listKeys: builder.listKeys
-        .use(authed)
-        .handler(async ({ input, context }) => {
-          const exit = await Effect.runPromiseExit(
-            services.listKeys(context.owner, input.limit, input.offset)
-          );
-
-          if (Exit.isFailure(exit)) {
-            throw Cause.squash(exit.cause);
-          }
-
-          return exit.value;
-        }),
-
-      getValue: builder.getValue
-        .use(authed)
-        .handler(async ({ input, context, errors }) => {
-          const exit = await Effect.runPromiseExit(
-            services.getValue(input.key, context.owner)
-          );
-
-          if (Exit.isFailure(exit)) {
-            const error = Cause.squash(exit.cause);
-            if (error instanceof ORPCError) {
-              if (error.code === "NOT_FOUND") {
-                throw errors.NOT_FOUND({
-                  message: "Key not found",
-                  data: { resource: "kv", resourceId: input.key },
-                });
-              }
-              if (error.code === "FORBIDDEN") {
-                throw errors.FORBIDDEN({
-                  message: "Access denied",
-                  data: { action: "read" },
-                });
-              }
-            }
-            throw error;
-          }
-
-          return exit.value;
-        }),
-
-      setValue: builder.setValue
-        .use(authed)
-        .handler(async ({ input, context, errors }) => {
-          const exit = await Effect.runPromiseExit(
-            services.setValue(input.key, input.value, context.owner)
-          );
-
-          if (Exit.isFailure(exit)) {
-            const error = Cause.squash(exit.cause);
-            if (error instanceof ORPCError && error.code === "FORBIDDEN") {
-              throw errors.FORBIDDEN({
-                message: "Access denied",
-                data: { action: "write" },
-              });
-            }
-            throw error;
-          }
-
-          return exit.value;
-        }),
-
-      deleteKey: builder.deleteKey
-        .use(authed)
-        .handler(async ({ input, context, errors }) => {
-          const exit = await Effect.runPromiseExit(
-            services.deleteKey(input.key, context.owner)
-          );
-
-          if (Exit.isFailure(exit)) {
-            const error = Cause.squash(exit.cause);
-            if (error instanceof ORPCError) {
-              if (error.code === "NOT_FOUND") {
-                throw errors.NOT_FOUND({
-                  message: "Key not found",
-                  data: { resource: "kv", resourceId: input.key },
-                });
-              }
-              if (error.code === "FORBIDDEN") {
-                throw errors.FORBIDDEN({
-                  message: "Access denied",
-                  data: { action: "delete" },
-                });
-              }
-            }
-            throw error;
-          }
-
-          return exit.value;
-        }),
+      ping: builder.ping.handler(async () => {
+        return {
+          status: 'ok' as const,
+          timestamp: new Date().toISOString(),
+        };
+      }),
     };
   },
 });
