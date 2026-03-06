@@ -15,7 +15,7 @@ export const contract = oc.router({
       summary: 'Connect to contract',
       description:
         'Ensures the account has storage deposit on the contract. If not, makes a deposit on behalf of the user.',
-      tags: ['Relayer'],
+      tags: ['API'],
     })
     .input(ConnectInputSchema)
     .output(ConnectOutputSchema),
@@ -26,8 +26,8 @@ export const contract = oc.router({
       path: '/publish',
       summary: 'Publish a signed delegate action',
       description:
-        'Submits a signed delegate action (meta-transaction) to the network. Used for gasless social posts and profile updates.',
-      tags: ['Relayer'],
+        'Submits a signed delegate action (meta-transaction) to the network. Used for API-backed gasless social posts and profile updates.',
+      tags: ['API'],
     })
     .input(PublishInputSchema)
     .output(PublishOutputSchema),
@@ -38,7 +38,7 @@ export const contract = oc.router({
       path: '/ping',
       summary: 'Health check',
       description:
-        'Simple ping endpoint to verify the relayer is responding correctly.',
+        'Simple ping endpoint to verify the API is responding correctly.',
       tags: ['Health'],
     })
     .output(

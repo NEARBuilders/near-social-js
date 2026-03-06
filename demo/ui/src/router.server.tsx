@@ -9,6 +9,8 @@ import {
   renderRouterToStream,
   RouterServer,
 } from "@tanstack/react-router/ssr/server";
+import { WalletProvider } from "./integrations/near-wallet";
+import { ApiProvider } from "./providers/api-provider";
 import { createRouter, routeTree } from "./router";
 import type {
   HeadData,
@@ -167,7 +169,11 @@ export async function renderToStream(
       router,
       children: (
         <QueryClientProvider client={queryClientRef!}>
-          <RouterServer router={router} />
+          <WalletProvider network="mainnet">
+            <ApiProvider>
+              <RouterServer router={router} />
+            </ApiProvider>
+          </WalletProvider>
         </QueryClientProvider>
       ),
     }),

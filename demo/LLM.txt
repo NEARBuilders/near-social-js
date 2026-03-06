@@ -55,7 +55,7 @@ The **entire system** is configured via `bos.config.json` - a runtime-loaded JSO
       "development": "http://localhost:3014",
       "production": "https://cdn.example.com/api/remoteEntry.js",
       "variables": {},
-      "secrets": ["RELAYER_ACCOUNT_ID", "RELAYER_PRIVATE_KEY"]
+      "secrets": ["API_ACCOUNT_ID", "API_PRIVATE_KEY"]
     }
   }
 }
@@ -132,7 +132,7 @@ api/
 │   ├── contract.ts      # oRPC route definitions
 │   ├── index.ts         # createPlugin() implementation
 │   ├── schema.ts        # Zod schemas for validation
-│   └── service.ts       # Relayer business logic
+│   └── service.ts       # API business logic
 └── plugin.dev.ts        # Dev server config
 ```
 
@@ -146,17 +146,17 @@ export default createPlugin({
   }),
   
   secrets: z.object({
-    relayerAccountId: z.string(),
-    relayerPrivateKey: z.string()
+    apiAccountId: z.string(),
+    apiPrivateKey: z.string()
   }),
   
   contract,  // oRPC contract from contract.ts
   
   initialize: (config) => Effect.gen(function* () {
     // Create services with config
-    const service = new RelayerService(
+    const service = new ApiService(
       /* near */ near,
-      /* relayerAccountId */ config.secrets.relayerAccountId,
+      /* apiAccountId */ config.secrets.apiAccountId,
       /* contractId */ config.variables.contractId
     );
     
@@ -350,7 +350,7 @@ See [better-near-auth LLM.txt](https://github.com/elliotBraem/better-near-auth/b
 - ✅ Transaction signing
 - ✅ Balance queries
 - ✅ Storage deposit management
-- ✅ Meta-transaction support (via relayer)
+- ✅ Meta-transaction support (via API account)
 
 ## Database Schema
 

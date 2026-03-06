@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { RelayerService } from '@/service';
+import { ApiService } from '@/service';
 
 const mockSend = vi.fn();
 const mockFunctionCall = vi.fn(() => ({ send: mockSend }));
@@ -35,17 +35,17 @@ vi.mock('near-social-js', () => ({
   Graph: GraphMock,
 }));
 
-describe('RelayerService', () => {
-  let service: RelayerService;
+describe('ApiService', () => {
+  let service: ApiService;
   const mockNear = {
     transaction: mockTransaction,
   };
-  const relayerAccountId = 'relayer.near';
+  const apiAccountId = 'api.near';
   const contractId = 'social.near';
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new RelayerService(mockNear as any, relayerAccountId, contractId);
+    service = new ApiService(mockNear as any, apiAccountId, contractId);
   });
 
   describe('ensureStorageDeposit', () => {
@@ -77,7 +77,7 @@ describe('RelayerService', () => {
         hasStorage: false,
         depositTxHash: 'tx-hash-123',
       });
-      expect(mockTransaction).toHaveBeenCalledWith(relayerAccountId);
+      expect(mockTransaction).toHaveBeenCalledWith(apiAccountId);
       expect(mockFunctionCall).toHaveBeenCalledWith(
         contractId,
         'storage_deposit',
@@ -118,7 +118,7 @@ describe('RelayerService', () => {
       expect(result).toEqual({
         hash: 'delegate-tx-hash',
       });
-      expect(mockTransaction).toHaveBeenCalledWith(relayerAccountId);
+      expect(mockTransaction).toHaveBeenCalledWith(apiAccountId);
       expect(mockSignedDelegateAction).toHaveBeenCalledWith({
         decoded: true,
         payload: mockPayload,

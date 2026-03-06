@@ -122,7 +122,7 @@ All runtime configuration lives in `bos.config.json`:
       "name": "api",
       "development": "http://localhost:3014",
       "production": "https://example-api.zephyrcloud.app",
-      "secrets": ["RELAYER_ACCOUNT_ID", "RELAYER_PRIVATE_KEY"]
+      "secrets": ["API_ACCOUNT_ID", "API_PRIVATE_KEY"]
     }
   }
 }

@@ -5,19 +5,19 @@ import type { ConnectOutput, PublishOutput } from './schema';
 const DEFAULT_STORAGE_DEPOSIT = '500000000000000000000000';
 const DEFAULT_CONTRACT_ID = 'social.near';
 
-export class RelayerService {
+export class ApiService {
   private readonly near: Near;
   private readonly graph: Graph;
-  private readonly relayerAccountId: string;
+  private readonly apiAccountId: string;
   private readonly contractId: string;
 
   constructor(
     near: Near,
-    relayerAccountId: string,
+    apiAccountId: string,
     contractId: string = DEFAULT_CONTRACT_ID
   ) {
     this.near = near;
-    this.relayerAccountId = relayerAccountId;
+    this.apiAccountId = apiAccountId;
     this.contractId = contractId;
     this.graph = new Graph({
       near,
@@ -40,7 +40,7 @@ export class RelayerService {
 
     // otherwise
     const result = await this.near
-      .transaction(this.relayerAccountId)
+      .transaction(this.apiAccountId)
       .functionCall(
         this.contractId,
         'storage_deposit',
@@ -59,10 +59,10 @@ export class RelayerService {
   async submitDelegateAction(payload: string): Promise<PublishOutput> {
     const signedDelegateAction = decodeSignedDelegateAction(payload);
 
-    console.debug(`[Relayer] signed delegate submitted to ${this.relayerAccountId}`);
+    console.debug(`[API] signed delegate submitted to ${this.apiAccountId}`);
 
     const result = await this.near
-      .transaction(this.relayerAccountId)
+      .transaction(this.apiAccountId)
       .signedDelegateAction(signedDelegateAction)
       .send();
 

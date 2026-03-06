@@ -4,7 +4,7 @@ import { z } from 'every-plugin/zod';
 import { Near, InMemoryKeyStore, parseKey, type Network } from 'near-kit';
 
 import { contract } from './contract';
-import { RelayerService } from './service';
+import { ApiService } from './service';
 
 export * from './schema';
 
@@ -16,8 +16,8 @@ export default createPlugin({
   }),
 
   secrets: z.object({
-    relayerAccountId: z.string().min(1, 'Relayer account ID is required'),
-    relayerPrivateKey: z.string().min(1, 'Relayer private key is required'),
+    apiAccountId: z.string().min(1, 'API account ID is required'),
+    apiPrivateKey: z.string().min(1, 'API private key is required'),
   }),
 
   contract,
@@ -31,34 +31,34 @@ export default createPlugin({
           }
         : (config.variables.network as Network);
 
-      console.log(`[Relayer Init] relayerAccountId: ${config.secrets.relayerAccountId}`);
+      console.log(`[API Init] apiAccountId: ${config.secrets.apiAccountId}`);
 
-      console.log(`[Relayer Init] network: ${config.variables.network}`);
-      console.log(`[Relayer Init] contractId: ${config.variables.contractId}`);
+      console.log(`[API Init] network: ${config.variables.network}`);
+      console.log(`[API Init] contractId: ${config.variables.contractId}`);
 
       // add key to keyStore
       const keyStore = new InMemoryKeyStore();
       yield* Effect.promise(() =>
         keyStore.add(
-          config.secrets.relayerAccountId,
-          parseKey(config.secrets.relayerPrivateKey)
+          config.secrets.apiAccountId,
+          parseKey(config.secrets.apiPrivateKey)
         )
       );
 
       const near = new Near({
         network: networkConfig,
         keyStore,
-        defaultSignerId: config.secrets.relayerAccountId,
+        defaultSignerId: config.secrets.apiAccountId,
         defaultWaitUntil: 'FINAL', // wait until transactions complete before responding
       });
 
-      const service = new RelayerService(
+      const service = new ApiService(
         near,
-        config.secrets.relayerAccountId,
+        config.secrets.apiAccountId,
         config.variables.contractId
       );
 
-      console.debug('[Relayer Init] RelayerService initialized');
+      console.debug('[API Init] ApiService initialized');
 
       return { service };
     }),

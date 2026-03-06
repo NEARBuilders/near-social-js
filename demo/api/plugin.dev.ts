@@ -12,8 +12,8 @@ export default {
       contractId: 'social.near',
     },
     secrets: {
-      relayerAccountId: process.env.RELAYER_ACCOUNT_ID!,
-      relayerPrivateKey: process.env.RELAYER_PRIVATE_KEY!,
+      apiAccountId: process.env.API_ACCOUNT_ID!,
+      apiPrivateKey: process.env.API_PRIVATE_KEY!,
     },
   } satisfies PluginConfigInput<typeof Plugin>,
 };

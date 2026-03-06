@@ -1,7 +1,7 @@
 {
-  "name": "near-social-js-relayer",
+  "name": "api",
   "version": "0.0.1",
-  "description": "Relayer for near-social-js",
+  "description": "API plugin for near-social-js",
   "type": "module",
   "exports": {
     ".": {

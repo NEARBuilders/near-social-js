@@ -1,10 +1,10 @@
 // @ts-ignore
 import '../styles.css';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WalletProvider } from '../integrations/near-wallet';
-import { RelayerProvider } from './relayer-provider';
-import type { Network } from 'near-kit';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { Network } from "near-kit";
+import { WalletProvider } from "../integrations/near-wallet";
+import { ApiProvider } from "./api-provider";
 
 const defaultQueryClient = new QueryClient({
   defaultOptions: {
@@ -31,14 +31,14 @@ export function SocialProvider({
   return (
     <QueryClientProvider client={queryClient}>
       <WalletProvider network={network}>
-        <RelayerProvider>{children}</RelayerProvider>
+        <ApiProvider>{children}</ApiProvider>
       </WalletProvider>
     </QueryClientProvider>
   );
 }
 
-export { WalletProvider, QueryClientProvider, RelayerProvider };
-export { useRelayer } from './relayer-provider';
+export { WalletProvider, QueryClientProvider, ApiProvider };
+export { useApi } from "./api-provider";
 
 export function createQueryClient() {
   return new QueryClient({

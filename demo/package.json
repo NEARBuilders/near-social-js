@@ -44,7 +44,7 @@
     "build:host": "bun run --cwd host rsbuild build",
     "build:ui": "bun run --cwd ui rsbuild build",
     "deploy": "bos deploy",
-    "test": "bos test",
+    "test": "bun run --cwd host test && bun run --cwd api test",
     "typecheck": "bun run --cwd host tsc --noEmit && bun run --cwd ui tsc --noEmit && bun run --cwd api tsc --noEmit",
     "start": "bos start --no-interactive",
     "serve": "bos serve",

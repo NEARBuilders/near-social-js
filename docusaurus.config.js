@@ -25,7 +25,7 @@ const title = 'NearSocial.JS';
 const config = {
   baseUrl: '/near-social-js',
   deploymentBranch: 'gh-pages',
-  favicon: 'images/near-social-favicon.png',
+  favicon: 'images/near-social-icon.svg',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -121,12 +121,12 @@ const config = {
         },
       ],
       navbar: {
-        title,
+        title: title,
         logo: {
           alt: 'NearSocial.JS',
-          src: 'images/near-social-favicon.png',
-          height: 24,
-          width: 24,
+          src: 'images/near-social-icon.svg',
+          height: 26,
+          width: 29,
         },
         items: [
           {
@@ -168,7 +168,7 @@ const config = {
     >
       <img
         class="footer__brand-logo"
-        src="/near-social-js/images/near-social-favicon.png"
+        src="/near-social-js/images/near-social-icon.svg"
         alt="NearSocial.JS"
       />
       <span class="footer__brand-text">${title}</span>

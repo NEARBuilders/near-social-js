@@ -4,6 +4,14 @@
   "nova": {
     "account": "efiz.nova-sdk.near"
   },
+  "gateway": {
+    "development": "http://localhost:8787",
+    "production": "https://everything.dev",
+    "account": "every.near",
+    "nova": {
+      "account": "every.nova-sdk.near"
+    }
+  },
   "template": "NEARBuilders/near-social-js/demo",
   "shared": {
     "ui": {
@@ -96,8 +104,8 @@
       "proxy": "https://elliot-braem-1811-api-every-plugin-near-everythin-2defcb105-ze.zephyrcloud.app",
       "variables": {},
       "secrets": [
-        "RELAYER_ACCOUNT_ID",
-        "RELAYER_PRIVATE_KEY"
+        "API_ACCOUNT_ID",
+        "API_PRIVATE_KEY"
       ],
       "template": "NEARBuilders/near-social-js/demo/api",
       "files": [

@@ -19,6 +19,14 @@ const isServerBuild = buildTarget === "server";
 const bosConfigPath = path.resolve(__dirname, "../bos.config.json");
 const bosConfig = JSON.parse(fs.readFileSync(bosConfigPath, "utf8"));
 const uiSharedDeps = bosConfig.shared?.ui ?? {};
+const uiDevelopmentUrl = bosConfig.app?.ui?.development;
+const uiDevelopmentPort = (() => {
+  try {
+    return Number(new URL(uiDevelopmentUrl).port) || 3002;
+  } catch {
+    return 3002;
+  }
+})();
 
 function updateBosConfig(field: "production" | "ssr", url: string) {
   try {
@@ -94,7 +102,7 @@ function createClientConfig() {
       },
     },
     server: {
-      port: 3002,
+      port: uiDevelopmentPort,
       printUrls: ({ urls }) => urls.filter((url) => url.includes("localhost")),
       headers: {
         "Access-Control-Allow-Origin": "*",
