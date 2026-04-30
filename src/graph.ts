@@ -53,7 +53,9 @@ export class Graph {
     const response = await fetch(this.apiServer + endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body, (key, value) =>
+        typeof value === 'bigint' ? value.toString() : value
+      ),
     });
     return response.json();
   }
