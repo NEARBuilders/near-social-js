@@ -1,67 +1,87 @@
-# near-social-js UI
+# ui
 
-Interactive demo application showcasing the capabilities of the [near-social-js](https://github.com/NEARBuilders/near-social-js) TypeScript SDK for interacting with [NEAR Social](https://near.social) (`social.near` contract).
+Remote frontend module with TanStack Router and Module Federation.
 
 ## Module Federation
 
-This package is configured as a Module Federation **remote**, exposing components, hooks, and providers that can be consumed by host applications. It also provides a [shadcn/ui registry](https://ui.shadcn.com/docs/registry) for easy component installation.
+Exposed as remote module via `remoteEntry.js`:
 
-### Exposed Modules
+| Export | Path | Description |
+|--------|------|-------------|
+| `./Router` | `./src/router.tsx` | TanStack Router instance |
+| `./Hydrate` | `./src/hydrate.tsx` | SSR hydration entry |
+| `./components` | `./src/components/index.ts` | Reusable UI components |
+| `./providers` | `./src/providers/index.tsx` | Context providers |
+| `./hooks` | `./src/hooks/index.ts` | React hooks |
+| `./types` | `./src/types/index.ts` | TypeScript types |
 
-- `./App` - Main application entry point
-- `./components` - UI components (ProfileCard, ProfileAvatar, WalletButton, etc.)
-- `./providers` - React context providers (SocialProvider)
-- `./hooks/social` - NEAR Social data hooks
-- `./hooks/graph` - Graph data hooks
-- `./hooks/wallet` - Wallet connection hooks
+**Shared dependencies** (singleton via `bos.config.json → shared.ui`):
 
-### Component Registry
+- `react`, `react-dom`
+- `@tanstack/react-query`, `@tanstack/react-router`
+- `@hot-labs/near-connect`, `near-kit`
+- `better-auth`, `better-near-auth`
 
-Install components via shadcn CLI:
-
-```bash
-npx shadcn@latest add -r <remote-url> profile-card
-```
-
-## Getting Started
-
-Install dependencies:
+## Development
 
 ```bash
-bun install
+bos dev --host remote   # Typical: remote host, local UI + API
+bos dev --api remote    # Isolate UI work
 ```
 
-Run the development server:
+## Configuration
 
-```bash
-bun dev
+**bos.config.json**:
+
+```json
+{
+  "app": {
+    "ui": {
+      "name": "ui",
+      "development": "http://localhost:3002",
+      "production": "https://example-ui.zephyrcloud.app",
+      "ssr": "https://example-ui-ssr.zephyrcloud.app",
+      "exposes": {
+        "./Router": "./src/router.tsx",
+        "./Hydrate": "./src/hydrate.tsx",
+        "./components": "./src/components/index.ts",
+        "./providers": "./src/providers/index.tsx",
+        "./hooks": "./src/hooks/index.ts",
+        "./types": "./src/types/index.ts"
+      },
+      "template": "near-everything/every-plugin/demo/ui",
+      "files": [
+        "rsbuild.config.ts",
+        "tsconfig.json",
+        "postcss.config.mjs",
+        "components.json"
+      ],
+      "sync": {
+        "scripts": ["dev", "build", "type-check"]
+      }
+    }
+  }
+}
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000)
+## Route Protection
 
-## Building for Production
+File-based routing with auth guards via TanStack Router:
 
-```bash
-bun run build
-```
+- `_authenticated.tsx` - Requires login, redirects to `/login`
+- `_authenticated/_admin.tsx` - Requires admin role
 
 ## Tech Stack
 
-- **[TanStack Router](https://tanstack.com/router)** - File-based routing
-- **[TanStack Query](https://tanstack.com/query)** - Data fetching and state management
-- **[React](https://react.dev)** - UI library
-- **[Tailwind CSS](https://tailwindcss.com)** - Styling
-- **[Rsbuild](https://rsbuild.dev)** - Build tool
-- **[near-social-js](https://nearbuilders.github.io/near-social-js)** - NEAR social contract SDK
+- **Framework**: React 19
+- **Routing**: TanStack Router (file-based)
+- **Data**: TanStack Query + oRPC client
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **Build**: Rsbuild + Module Federation
+- **Auth**: better-auth client
 
-## Project Structure
+## Scripts
 
-- `src/routes/` - File-based routes
-- `src/components/` - Reusable React components
-- `src/integrations/` - NEAR wallet and SDK integrations
-
-## Links
-
-- [Documentation](https://nearbuilders.github.io/near-social-js)
-- [GitHub Repository](https://github.com/NEARBuilders/near-social-js)
-- [Live Demo](https://nearbuilders.github.io/near-social-js)
+- `bun dev` - Start dev server (port 3002)
+- `bun build` - Build for production
+- `bun type-check` - Type checking

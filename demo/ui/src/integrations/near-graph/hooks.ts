@@ -9,8 +9,8 @@ import { useWallet } from '../near-wallet';
 import { graphKeys } from './query-keys';
 import { socialKeys } from '../near-social/query-keys';
 import { useMemo } from 'react';
-import { useRelayer } from '../../providers';
-import { relayerClient } from '../../utils/orpc';
+import { useApi } from '../../providers';
+import { apiClient } from '../../utils/orpc';
 
 export function useGraphInstance() {
   const { near } = useWallet();
@@ -194,7 +194,7 @@ export function useGraphNodeCount(
 }
 
 export function useDelegateGraphInstance() {
-  const { delegateNear } = useRelayer();
+  const { delegateNear } = useApi();
   return useMemo(
     () =>
       delegateNear
@@ -209,7 +209,7 @@ export function useGraphSet() {
   const { accountId } = useWallet();
   const graph = useGraphInstance();
   const delegateGraph = useDelegateGraphInstance();
-  const { isRelayerEnabled, delegateNear } = useRelayer();
+  const { isApiEnabled, delegateNear } = useApi();
 
   return useMutation({
     mutationFn: async (data: Record<string, Record<string, unknown>>) => {
@@ -217,17 +217,17 @@ export function useGraphSet() {
         throw new Error('Wallet not connected');
       }
 
-      if (isRelayerEnabled) {
+      if (isApiEnabled) {
         if (!delegateNear) {
           throw new Error('Delegate key not initialized');
         }
-        await relayerClient.connect({ accountId });
+        await apiClient.connect({ accountId });
         const txBuilder = await delegateGraph.set({
           signerId: accountId,
           data,
         });
         const { payload } = await txBuilder.delegate();
-        return relayerClient.publish({ payload });
+        return apiClient.publish({ payload });
       }
 
       const txBuilder = await graph.set({ signerId: accountId, data });
@@ -245,7 +245,7 @@ export function useGraphGrantWritePermission() {
   const { accountId } = useWallet();
   const graph = useGraphInstance();
   const delegateGraph = useDelegateGraphInstance();
-  const { isRelayerEnabled, delegateNear } = useRelayer();
+  const { isApiEnabled, delegateNear } = useApi();
 
   return useMutation({
     mutationFn: async (params: {
@@ -257,17 +257,17 @@ export function useGraphGrantWritePermission() {
         throw new Error('Wallet not connected');
       }
 
-      if (isRelayerEnabled) {
+      if (isApiEnabled) {
         if (!delegateNear) {
           throw new Error('Delegate key not initialized');
         }
-        await relayerClient.connect({ accountId });
+        await apiClient.connect({ accountId });
         const txBuilder = await delegateGraph.grantWritePermission({
           signerId: accountId,
           ...params,
         });
         const { payload } = await txBuilder.delegate();
-        return relayerClient.publish({ payload });
+        return apiClient.publish({ payload });
       }
 
       const txBuilder = await graph.grantWritePermission({
@@ -287,7 +287,7 @@ export function useGraphStorageDeposit() {
   const { accountId } = useWallet();
   const graph = useGraphInstance();
   const delegateGraph = useDelegateGraphInstance();
-  const { isRelayerEnabled, delegateNear } = useRelayer();
+  const { isApiEnabled, delegateNear } = useApi();
 
   return useMutation({
     mutationFn: async (params: {
@@ -299,17 +299,17 @@ export function useGraphStorageDeposit() {
         throw new Error('Wallet not connected');
       }
 
-      if (isRelayerEnabled) {
+      if (isApiEnabled) {
         if (!delegateNear) {
           throw new Error('Delegate key not initialized');
         }
-        await relayerClient.connect({ accountId });
+        await apiClient.connect({ accountId });
         const txBuilder = await delegateGraph.storageDeposit({
           signerId: accountId,
           ...params,
         });
         const { payload } = await txBuilder.delegate();
-        return relayerClient.publish({ payload });
+        return apiClient.publish({ payload });
       }
 
       const txBuilder = await graph.storageDeposit({
@@ -329,7 +329,7 @@ export function useGraphStorageWithdraw() {
   const { accountId } = useWallet();
   const graph = useGraphInstance();
   const delegateGraph = useDelegateGraphInstance();
-  const { isRelayerEnabled, delegateNear } = useRelayer();
+  const { isApiEnabled, delegateNear } = useApi();
 
   return useMutation({
     mutationFn: async (params: { amount?: string }) => {
@@ -337,17 +337,17 @@ export function useGraphStorageWithdraw() {
         throw new Error('Wallet not connected');
       }
 
-      if (isRelayerEnabled) {
+      if (isApiEnabled) {
         if (!delegateNear) {
           throw new Error('Delegate key not initialized');
         }
-        await relayerClient.connect({ accountId });
+        await apiClient.connect({ accountId });
         const txBuilder = await delegateGraph.storageWithdraw({
           signerId: accountId,
           ...params,
         });
         const { payload } = await txBuilder.delegate();
-        return relayerClient.publish({ payload });
+        return apiClient.publish({ payload });
       }
 
       const txBuilder = await graph.storageWithdraw({
@@ -367,7 +367,7 @@ export function useGraphStorageUnregister() {
   const { accountId } = useWallet();
   const graph = useGraphInstance();
   const delegateGraph = useDelegateGraphInstance();
-  const { isRelayerEnabled, delegateNear } = useRelayer();
+  const { isApiEnabled, delegateNear } = useApi();
 
   return useMutation({
     mutationFn: async (params: { force?: boolean }) => {
@@ -375,17 +375,17 @@ export function useGraphStorageUnregister() {
         throw new Error('Wallet not connected');
       }
 
-      if (isRelayerEnabled) {
+      if (isApiEnabled) {
         if (!delegateNear) {
           throw new Error('Delegate key not initialized');
         }
-        await relayerClient.connect({ accountId });
+        await apiClient.connect({ accountId });
         const txBuilder = await delegateGraph.storageUnregister({
           signerId: accountId,
           ...params,
         });
         const { payload } = await txBuilder.delegate();
-        return relayerClient.publish({ payload });
+        return apiClient.publish({ payload });
       }
 
       const txBuilder = await graph.storageUnregister({

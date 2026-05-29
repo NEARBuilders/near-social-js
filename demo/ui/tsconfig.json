@@ -19,10 +19,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "near-social-js": ["../../src/index.ts"]
     }
   }
 }

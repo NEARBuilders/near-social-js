@@ -40,9 +40,24 @@ export function WalletProvider({
     setConnector(nearConnector);
 
     nearConnector.on('wallet:signIn', async (data) => {
+      const hotConnect = {
+        wallet: async () => {
+          const wallet = await nearConnector.wallet();
+          const originalGetAccounts = wallet.getAccounts.bind(wallet);
+          wallet.getAccounts = async (...args: Parameters<typeof originalGetAccounts>) => {
+            const accounts = await originalGetAccounts(...args);
+            return accounts.map((a) => ({
+              ...a,
+              publicKey: a.publicKey ?? '',
+            }));
+          };
+          return wallet as unknown;
+        },
+      } as unknown as Parameters<typeof fromHotConnect>[0];
+
       const nearInstance = new Near({
         network,
-        wallet: fromHotConnect(nearConnector),
+        wallet: fromHotConnect(hotConnect),
       });
 
       setNear(nearInstance);
@@ -58,9 +73,21 @@ export function WalletProvider({
     nearConnector.wallet().then(async (wallet) => {
       const accounts = await wallet.getAccounts();
       if (accounts && accounts.length > 0) {
+        const hotConnect = {
+          wallet: async () => {
+            const w = await nearConnector.wallet();
+            const originalGetAccounts = w.getAccounts.bind(w);
+            w.getAccounts = async (...args: Parameters<typeof originalGetAccounts>) => {
+              const a = await originalGetAccounts(...args);
+              return a.map((acc) => ({ ...acc, publicKey: acc.publicKey ?? '' }));
+            };
+            return w as unknown;
+          },
+        } as unknown as Parameters<typeof fromHotConnect>[0];
+
         const nearInstance = new Near({
           network,
-          wallet: fromHotConnect(nearConnector),
+          wallet: fromHotConnect(hotConnect),
         });
 
         setNear(nearInstance);

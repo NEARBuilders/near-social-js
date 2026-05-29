@@ -1,3 +1,8 @@
+---
+title: API Reference
+description: Full reference for Social and Graph classes, types, and utilities.
+---
+
 # API Reference
 
 ## Classes

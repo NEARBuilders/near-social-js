@@ -1,3 +1,20 @@
+// Keep the icon crisp and let the navbar title render beside it.
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__logo {
+  height: 26px !important;
+  width: auto !important;
+  max-width: 29px;
+  object-fit: contain;
+  margin-right: 0 !important;
+  display: block;
+  flex-shrink: 0;
+}
+
 .navbar {
   &__icon {
     &:before {

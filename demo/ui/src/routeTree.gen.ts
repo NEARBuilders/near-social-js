@@ -35,9 +35,9 @@ const LayoutGraphRoute = LayoutGraphRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof LayoutIndexRoute
   '/graph': typeof LayoutGraphRoute
   '/social': typeof LayoutSocialRoute
-  '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesByTo {
   '/graph': typeof LayoutGraphRoute
@@ -53,7 +53,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/graph' | '/social' | '/'
+  fullPaths: '/' | '/graph' | '/social'
   fileRoutesByTo: FileRoutesByTo
   to: '/graph' | '/social' | '/'
   id:
@@ -73,7 +73,7 @@ declare module '@tanstack/react-router' {
     '/_layout': {
       id: '/_layout'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }

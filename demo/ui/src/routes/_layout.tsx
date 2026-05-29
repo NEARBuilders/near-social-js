@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { Logo } from '../components/logo';
 import { WalletButton } from '../components/wallet-button';
 import { useWallet } from '../integrations/near-wallet';
-import { useRelayer } from '../providers';
+import { useApi } from '../providers';
 
 export const Route = createFileRoute('/_layout')({
   component: LayoutComponent,
@@ -37,12 +37,12 @@ function LayoutComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const { accountId } = useWallet();
   const {
-    isRelayerEnabled,
-    toggleRelayer,
+    isApiEnabled,
+    toggleApi,
     deleteDelegateKey,
     isLoading,
     canToggle,
-  } = useRelayer();
+  } = useApi();
 
   return (
     <div className="relative flex flex-col w-full min-h-screen bg-[#0d1117] overflow-hidden">
@@ -89,19 +89,19 @@ function LayoutComponent() {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => toggleRelayer()}
+                  onClick={() => toggleApi()}
                   disabled={isLoading || !canToggle}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isRelayerEnabled
+                    isApiEnabled
                       ? 'bg-[#00EC97]/20 text-[#00EC97] border border-[#00EC97]/30'
                       : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
                   }`}
                   title={
                     !canToggle
-                      ? 'Connect wallet to enable relayer'
-                      : isRelayerEnabled
-                        ? 'Relayer enabled - transactions are gasless'
-                        : 'Relayer disabled - using direct wallet'
+                      ? 'Connect wallet to enable API mode'
+                      : isApiEnabled
+                        ? 'API mode enabled - transactions are gasless'
+                        : 'API mode disabled - using direct wallet'
                   }
                 >
                   {isLoading ? (
@@ -109,22 +109,22 @@ function LayoutComponent() {
                   ) : (
                     <Radio
                       size={16}
-                      className={isRelayerEnabled ? 'animate-pulse' : ''}
+                      className={isApiEnabled ? 'animate-pulse' : ''}
                     />
                   )}
                   <span className="hidden sm:inline">
                     {isLoading
                       ? 'Loading...'
-                      : isRelayerEnabled
-                        ? 'Relayed'
+                      : isApiEnabled
+                        ? 'API'
                         : 'Direct'}
                   </span>
                 </button>
-                {isRelayerEnabled && (
+                {isApiEnabled && (
                   <button
                     onClick={deleteDelegateKey}
                     className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors cursor-pointer"
-                    title="Remove delegate key and disable relayer"
+                    title="Remove delegate key and disable API mode"
                   >
                     <Trash2 size={14} />
                   </button>
