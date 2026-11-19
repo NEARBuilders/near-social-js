@@ -3,12 +3,18 @@ name: "Pull Request Checks"
 on:
   pull_request:
 
+# Cancel superseded PR checks; keep every non-PR invocation independent.
+concurrency:
+  group: pull_request_checks.yml-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ##
   # install
   ##
 
   install:
+    timeout-minutes: 60
     name: "Install"
     runs-on: ubuntu-latest
     steps:
@@ -22,6 +28,7 @@ jobs:
   ##
 
   lint:
+    timeout-minutes: 60
     name: "Lint"
     needs: install
     runs-on: ubuntu-latest
@@ -34,6 +41,7 @@ jobs:
         run: bun run lint
 
   build_documenation:
+    timeout-minutes: 60
     name: "Build Documentation"
     needs: install
     runs-on: ubuntu-latest
@@ -46,6 +54,7 @@ jobs:
         run: bun run docs:build
 
   build_pakage:
+    timeout-minutes: 60
     name: "Build Package"
     needs: install
     runs-on: ubuntu-latest
@@ -58,6 +67,7 @@ jobs:
         run: bun run build
 
   test:
+    timeout-minutes: 60
     name: "Test"
     needs: install
     runs-on: ubuntu-latest
