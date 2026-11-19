@@ -8,6 +8,7 @@ on:
 
 jobs:
   install:
+    timeout-minutes: 60
     name: "Install"
     runs-on: ubuntu-latest
     steps:
@@ -17,6 +18,7 @@ jobs:
         uses: ./.github/actions/use-bun-dependencies
 
   deploy:
+    timeout-minutes: 60
     name: "Deploy"
     needs: install
     permissions:
